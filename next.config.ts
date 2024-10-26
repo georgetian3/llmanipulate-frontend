@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
     locales: ['en', 'zh'], // Add your supported locales
     defaultLocale: 'en', // Set the default locale
   },
+  output: 'standalone',
 };
 
 export default nextConfig;
