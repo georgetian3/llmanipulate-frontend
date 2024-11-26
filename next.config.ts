@@ -8,4 +8,15 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 };
 
+module.exports = {
+  async redirects() {
+    return [
+      {
+        source: "/main",
+        destination: "/login",
+        permanent: true, // Set to true for SEO-friendly 301 redirects
+      },
+    ];
+  },
+};
 export default nextConfig;
