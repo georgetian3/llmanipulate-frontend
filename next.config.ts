@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     defaultLocale: 'en', // Set the default locale
   },
   output: 'standalone',
+  
 };
 
 module.exports = {
