@@ -1,7 +1,7 @@
 "use client";
 import ChatBox from "../../components/ChatBox";
 import ChatOptionCard from "../../components/ChatOptionCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/chat_page.css";
 import tasks_list from "../../data/tasks.json";
@@ -29,14 +29,10 @@ type Task = {
     hidden_incentive: string;
 };
 
-type TasksList = {
-    Financial: Task[];
-    Emotional: Task[];
-};
 
 type TaskType = "Financial" | "Emotional";
 
-export default function ChatPage() {
+function ChatPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -48,7 +44,6 @@ export default function ChatPage() {
     const [task, setTask] = useState<Task | null>(null);
     const [messagesCount, setMessagesCount] = useState(0);
     const [chatHistory, setChatHistory] = useState<{ user: string; agent: string }[]>([]);
-    const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
     const initialScores = searchParams.get("initialScores") ? JSON.parse(decodeURIComponent(searchParams.get("initialScores")!)) : { scores: [], confidence: 5, familiarity: 5 };
@@ -195,4 +190,10 @@ export default function ChatPage() {
             </div>
         </div>
     );
+}
+
+export default function ChatPageWrapper() {
+    return <Suspense>
+        <ChatPage />
+    </Suspense>
 }

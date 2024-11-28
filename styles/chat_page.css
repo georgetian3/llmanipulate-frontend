@@ -120,13 +120,13 @@
 
 .user-message {
     align-self: flex-end;
-    background-color: #6558d3; 
+    background-color: #867bea; 
     color: white;
 }
 
 .agent-message {
     align-self: flex-start;
-    background-color: #ecf0ff; 
+    background-color: #ebecf0; 
     color: #2c3e50;
 }
 
