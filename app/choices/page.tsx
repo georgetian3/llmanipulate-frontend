@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/choices_page.css";
 import OptionCard from "../../components/OptionCard";
@@ -28,14 +28,10 @@ type Task = {
     hidden_incentive: string;
 };
 
-type TasksList = {
-    Financial: Task[];
-    Emotional: Task[];
-};
 
 type TaskType = "Financial" | "Emotional";
 
-export default function ChoicePage() {
+function ChoicePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -150,4 +146,10 @@ export default function ChoicePage() {
             </button>
         </div>
     );
+}
+
+export default function ChoicePageWrapper() {
+    return <Suspense>
+        <ChoicePage />
+    </Suspense>
 }

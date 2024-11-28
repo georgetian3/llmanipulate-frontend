@@ -44,7 +44,7 @@ export default function ChatBox({ onSendMessage, chatHistory, loading }: ChatBox
         <div className="chatbox">
             <div className="chat-messages">
                 {flattenedMessages.map((message, index) => (
-                    <p key={index} className={index % 2 === 0 ? "user-message" : "agent-message"}>
+                    <p key={index} className={"message " + (index % 2 === 0 ? "user-message" : "agent-message")}>
                         {message}
                     </p>
                 ))}
