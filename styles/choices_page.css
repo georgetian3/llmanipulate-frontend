@@ -1,0 +1,129 @@
+/* Container for the entire choices section */
+.initial-option-container {
+    text-align: center;
+    padding: 40px;
+    background-color: #f3f5f7;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Page title styling */
+.page-title {
+    font-size: 2em;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Instruction text */
+.instruction-text {
+    font-size: 1.2em;
+    color: #72808e;
+    margin-bottom: 30px;
+}
+
+/* Container for the option cards */
+.initial-option-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* OptionCard styling */
+.option-card {
+    background-color: #ebedf1;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    transition: transform 0.2s ease-in-out;
+}
+
+.option-card:hover {
+    transform: translateY(-4px);
+}
+
+/* OptionCard title */
+.option-card-title {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #6558d3;
+    margin-bottom: 12px;
+}
+
+/* OptionCard description */
+.option-card-description {
+    font-size: 1em;
+    color: #444b52;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+/* Slider styling */
+.option-slider {
+    width: 100%;
+    border-radius: 6px;
+    background-color: #ffffff;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.option-slider:focus {
+    background-color: #ecf0ff;
+}
+
+/* Score text */
+.option-score {
+    font-size: 1.1em;
+    color: #444b52;
+}
+
+/* Additional sliders below the option cards */
+.additional-sliders {
+    margin-top: 30px;
+    text-align: left;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+}
+
+.slider-group {
+    margin-bottom: 20px;
+}
+
+.slider-group label {
+    font-size: 1.2em;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.slider-group p {
+    font-size: 1.1em;
+    color: #444b52;
+    margin-top: 8px;
+}
+
+/* Submit button styling */
+.initial-option-submit {
+    background-color: #6558d3;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 40px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.initial-option-submit:hover {
+    background-color: #4133B7;
+    transform: translateY(-2px); 
+}
