@@ -221,47 +221,6 @@
     margin-bottom: 12px;
 }
 
-/* Collapsible content styling */
-.option-card-accordion {
-    background-color: #fff;
-    color: #444b52;
-    border: 1px solid #e4e2e2;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.option-card-accordion p {
-    max-height: 250px; 
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 8px;
-    color: #444b52;
-    margin: 0;
-}
-
-.option-card-accordion strong {
-    color: #444b52;
-}
-
-/* Buttons within the accordion */
-.option-card-accordion button {
-    background-color: inherit;
-    color: #444b52;
-    border: none;
-    padding: 8px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.option-card .form {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px;
-    background: inherit;
-    border: none;
-}
 
 /* Slider */
 .slider-group {
@@ -279,9 +238,4 @@
     background-color: #ffffff;
     padding: 8px 12px;
     transition: background-color 0.3s ease;
-}
-
-/* Option slider focus state */
-.option-slider:focus {
-    background-color: #f0f0f0;
 }
