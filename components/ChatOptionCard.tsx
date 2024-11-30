@@ -1,5 +1,7 @@
 "use client";
+import { useState } from "react";
 import "../styles/chat_page.css";
+import Slider from "./Slider";
 
 type OptionCardProps = {
   title: string;
@@ -8,24 +10,34 @@ type OptionCardProps = {
   onScoreChange: (value: number) => void;
 };
 
+function Accordion({text}: {text: string}) {
+  const [expanded, setExpanded] = useState(false)
+
+  return <div className="bg-white rounded p-2">      
+    <div onClick={() => setExpanded(!expanded)} className="flex justify-between items-center cursor-pointer">
+      <div>
+        See details
+      </div>
+      <div className="text-2xl">
+        {expanded ? "▾" : "◂"}
+      </div>
+    </div>
+    {expanded && <div className="text-justify">
+      {text}
+    </div>}
+  </div>
+}
+
 export default function ChatOptionCard({ title, description, score, onScoreChange }: OptionCardProps) {
   return (
-    <div className="option-card">
+    <div className="space-y-4">
       <h1>{title}</h1>
-      <div className="option-card-accordion">
-        <button>f</button>
-        <p>{description}</p>
-      </div>
-      <input
-        type="range"
-        min="1"
-        max="10"
-        step="1"
+      <Accordion text={description} />
+      <Slider
+        label="Preference for this option"
         value={score}
-        onChange={(e) => onScoreChange(Number(e.target.value))}
-        className="option-slider"
+        onChange={(newValue) => onScoreChange(newValue)}
       />
-      <p>Score: {score}</p>
     </div>
   );
 }

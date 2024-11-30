@@ -40,12 +40,8 @@
     flex-direction: column;
     justify-content: space-between;
     text-align: left;
-    transition: transform 0.2s ease-in-out;
 }
 
-.option-card:hover {
-    transform: translateY(-4px);
-}
 
 /* OptionCard title */
 .option-card-title {
@@ -63,50 +59,7 @@
     line-height: 1.5;
 }
 
-/* Slider styling */
-.option-slider {
-    width: 100%;
-    border-radius: 6px;
-    background-color: #ffffff;
-    padding: 8px;
-    margin-bottom: 10px;
-}
 
-.option-slider:focus {
-    background-color: #ecf0ff;
-}
-
-/* Score text */
-.option-score {
-    font-size: 1.1em;
-    color: #444b52;
-}
-
-/* Additional sliders below the option cards */
-.additional-sliders {
-    margin-top: 30px;
-    text-align: left;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 12px;
-}
-
-.slider-group {
-    margin-bottom: 20px;
-}
-
-.slider-group label {
-    font-size: 1.2em;
-    color: #2c3e50;
-    margin-bottom: 8px;
-    display: block;
-}
-
-.slider-group p {
-    font-size: 1.1em;
-    color: #444b52;
-    margin-top: 8px;
-}
 
 /* Submit button styling */
 .initial-option-submit {

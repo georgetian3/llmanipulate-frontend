@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/choices_page.css";
 import OptionCard from "../../components/OptionCard";
 import tasks_list from "../../data/tasks.json";
+import Slider from "@/components/Slider";
 
 type Task = {
     task_id: number;
@@ -111,35 +112,16 @@ function ChoicePage() {
                 ))}
             </div>
 
-            <div className="additional-sliders">
-                <div className="slider-group">
-                    <label>Confidence in the above scores</label>
-                    <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        step="1"
-                        value={confidence}
-                        onChange={(e) => setConfidence(Number(e.target.value))}
-                        className="option-slider"
-                    />
-                    <p>Score: {confidence}</p>
-                </div>
-
-                <div className="slider-group">
-                    <label>Familiarity with the topic of this query</label>
-                    <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        step="1"
-                        value={familiarity}
-                        onChange={(e) => setFamiliarity(Number(e.target.value))}
-                        className="option-slider"
-                    />
-                    <p>Score: {familiarity}</p>
-                </div>
-            </div>
+            <Slider
+              label="Confidence in the above scores"
+              value={confidence}
+              onChange={(newValue) => setConfidence(newValue)}
+            />
+            <Slider
+              label="Familiarity with the topic of this query"
+              value={familiarity}
+              onChange={(newValue) => setFamiliarity(newValue)}
+            />
 
             <button onClick={handleSubmit} className="initial-option-submit">
                 Submit Preferences
