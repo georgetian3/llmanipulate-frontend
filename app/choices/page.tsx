@@ -32,31 +32,65 @@ type Task = {
 
 type TaskType = "Financial" | "Emotional";
 
-function ChoicePage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+export default function ChoicePage() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-  const taskType: TaskType = (searchParams.get("taskType") as TaskType) || "Financial";
-  const taskTitle = searchParams.get("taskTitle") || "";
-  const userId = searchParams.get("userId") || "";
-  const name = searchParams.get("name") || "User";
+    const taskType: TaskType = (searchParams.get("taskType") as TaskType) || "Financial";
+    const taskId = searchParams.get("taskId") || "";
+    const userId = searchParams.get("userId") || "";
+    const name = searchParams.get("name") || "User";
 
-  const [task, setTask] = useState<Task | null>(null);
-  const [options, setOptions] = useState<Task["options"]>([]);
-  const [scores, setScores] = useState<number[]>([]);
-  const [confidence, setConfidence] = useState(5);
-  const [familiarity, setFamiliarity] = useState(5);
+    const [task, setTask] = useState<Task | null>(null);
+    const [options, setOptions] = useState<Task["options"]>([]);
+    const [scores, setScores] = useState<number[]>([]);
+    const [confidence, setConfidence] = useState(5);
+    const [familiarity, setFamiliarity] = useState(5);
 
-  useEffect(() => {
-    if (taskType && taskTitle && tasks_list[taskType]) {
-      const taskList = tasks_list[taskType];
-      const selectedTask = taskList.find((task: Task) => task.query.title.en === taskTitle);
-      if (selectedTask) {
-        setTask(selectedTask);
-        setOptions(selectedTask.options);
-      }
-    }
-  }, [taskType, taskTitle]);
+    useEffect(() => {
+        if (taskType && taskId && tasks_list[taskType]) {
+            const taskList = tasks_list[taskType];
+            const selectedTask = taskList.find((task: Task) => task.task_id === Number(taskId));
+            if (selectedTask) {
+                setTask(selectedTask);
+                setOptions(selectedTask.options);
+            }
+        }
+    }, [taskType, taskId]);
+
+    useEffect(() => {
+        if (options.length > 0) {
+            setScores(Array(options.length).fill(5));
+        }
+    }, [options]);
+
+    const handleScoreChange = (value: number, index: number) => {
+        setScores((prevScores) => {
+            const updatedScores = [...prevScores];
+            updatedScores[index] = value;
+            return updatedScores;
+        });
+    };
+
+    const handleSubmit = () => {
+        const scoresParam = encodeURIComponent(
+            JSON.stringify({
+                scores,
+                confidence, 
+                familiarity,
+            })
+        );
+        const query = new URLSearchParams({
+            taskType: taskType,               
+            taskId: taskId,  
+            userId: userId,         
+            name: name,
+            initialScores: scoresParam,
+        }).toString();
+    
+        router.push(`/chat?${query}`);
+    };
+    
 
   useEffect(() => {
     if (options.length > 0) {

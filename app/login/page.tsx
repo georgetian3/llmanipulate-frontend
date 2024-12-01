@@ -1,24 +1,48 @@
-"use client";
+"use client"; 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../../styles/login_page.css";
-import { fetchUserData } from "../../backend services/backend";
 
 export default function LoginPage() {
     const [usercode, setUsercode] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    
+    async function fetchUserData(userId: string) {
+        const apiUrl = "http://127.0.0.1:8000/users"; 
+
+        try {
+            const response = await fetch(`${apiUrl}/${userId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+            });
+
+            if (response.ok) {
+                return await response.json(); 
+            } else if (response.status === 404) {
+                return null; 
+            } else {
+                throw new Error(`Unexpected server error: ${response.status}`);
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+            throw error;
+        }
+    }
 
     const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         if (!usercode.trim()) {
             alert("Please enter a Usercode.");
             return;
         }
 
-        setLoading(true); 
-        try {
+        setLoading(true);
+        try {      
             const userData = await fetchUserData(usercode); 
             if (!userData) {
                 alert("No matching User found. Please try again.");
@@ -29,18 +53,18 @@ export default function LoginPage() {
 
             const query = new URLSearchParams({
                 userId: usercode,
-                name: userData.name,
-                taskType: userData.taskType,
-                language: userData.language,
-                agentType: userData.agentType,
+                name: userData.demographics.name,
+                taskType: userData.task_type,
+                language: userData.demographics.lang,
+                agentType: userData.agent_type,
             }).toString();
 
-            router.push(`/tasks?${query}`); 
+            router.push(`/tasks?${query}`);
         } catch (error) {
             console.error("Error during login:", error);
             alert("An unexpected error occurred. Please try again.");
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
