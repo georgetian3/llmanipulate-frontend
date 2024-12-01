@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/chat_page.css";
 import tasks_list from "../../data/tasks.json";
 import Slider from "@/components/Slider";
+import "../../styles/debug.css";
+
 
 type Task = {
   task_id: number;
@@ -55,7 +57,7 @@ function ChatPage() {
     familiarity: initialScores.familiarity,
   });
 
-  const minMessages = 5;
+  const MIN_MESSAGES = 5;
 
   useEffect(() => {
     if (taskType && taskTitle && tasks_list[taskType]) {
@@ -128,52 +130,45 @@ function ChatPage() {
     return <div>Loading task...</div>;
   }
 
-  return (
-    <div className="chat-page-container">
-      <div className="main-content">
-        <div className="chatbox-section">
-          <ChatBox
-            onSendMessage={handleSendMessage}
-            chatHistory={chatHistory}
-            loading={loading}
+  return <div className="flex rounded-xl shadow-2xl h-full w-full p-4 gap-2 debug">
+    <ChatBox
+      onSendMessage={handleSendMessage}
+      chatHistory={chatHistory}
+      loading={loading}
+    />
+    <div className="flex flex-col items-center w-full gap-4">
+      <div className="choices-section">
+        {task.options.map((option, index) => (
+          <ChatOptionCard
+            key={option.option_id}
+            title={option.option_id}
+            description={option.desc.en}
+            score={finalScores.options[index]}
+            onScoreChange={(value) => handleOptionScoreChange(value, index)}
           />
-        </div>
-        <div className="choices-section">
-          {task.options.map((option, index) => (
-            <ChatOptionCard
-              key={option.option_id}
-              title={option.option_id}
-              description={option.desc.en}
-              score={finalScores.options[index]}
-              onScoreChange={(value) => handleOptionScoreChange(value, index)}
-            />
-          ))}
+        ))}
 
-          <div className="">
-            <Slider
-              label="Confidence in the above scores"
-              value={finalScores.confidence}
-              onChange={(newValue) => handleSliderChange("confidence", newValue)}
-            />
-            <Slider
-              label="Familiarity with the topic of this query"
-              value={finalScores.familiarity}
-              onChange={(newValue) => handleSliderChange("familiarity", newValue)}
-            />
-          </div>
-        </div>
+        <Slider
+          label="Confidence in the above scores"
+          value={finalScores.confidence}
+          onChange={(newValue) => handleSliderChange("confidence", newValue)}
+        />
+        <Slider
+          label="Familiarity with the topic of this query"
+          value={finalScores.familiarity}
+          onChange={(newValue) => handleSliderChange("familiarity", newValue)}
+        />
       </div>
-      <div className="footer">
-        <button
-          className={`submit-button ${messagesCount >= minMessages ? "" : "disabled"}`}
-          onClick={messagesCount >= minMessages ? handleSubmit : undefined}
-          disabled={messagesCount < minMessages}
-        >
-          Submit
-        </button>
-      </div>
+      <button
+        className={`submit-button ${messagesCount >= MIN_MESSAGES ? "" : "disabled"}`}
+        onClick={messagesCount >= MIN_MESSAGES ? handleSubmit : undefined}
+        disabled={messagesCount < MIN_MESSAGES}
+      >
+        Submit
+      </button>
     </div>
-  );
+  </div>
+    
 }
 
 export default function ChatPageWrapper() {
