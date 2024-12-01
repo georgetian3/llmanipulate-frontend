@@ -31,7 +31,7 @@ type Task = {
 
 type TaskType = "Financial" | "Emotional";
 
-export default function TasksPage() {
+export function TasksPage() {
     const searchParams = useSearchParams();
     const userId = searchParams.get("userId") || "";
     const name = searchParams.get("name") || "User";
@@ -43,6 +43,7 @@ export default function TasksPage() {
     useEffect(() => {
         console.log("Updated completedTasks state:", completedTasks);
     }, [completedTasks]);
+
     useEffect(() => {
         if (taskType && tasks_list[taskType]) {
             setTasks(tasks_list[taskType] || []);
@@ -74,12 +75,6 @@ export default function TasksPage() {
         return <div>Loading tasks...</div>;
 
     }
-  }, [taskType]);
-
-  if (loading) {
-    return <div>Loading tasks...</div>;
-  }
-
 
   return (
     <div className="tasks-container">

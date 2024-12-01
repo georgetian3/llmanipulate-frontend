@@ -32,7 +32,7 @@ type Task = {
 
 type TaskType = "Financial" | "Emotional";
 
-export default function ChoicePage() {
+export function ChoicePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -90,40 +90,6 @@ export default function ChoicePage() {
     
         router.push(`/chat?${query}`);
     };
-    
-
-  useEffect(() => {
-    if (options.length > 0) {
-      setScores(Array(options.length).fill(5));
-    }
-  }, [options]);
-
-  const handleScoreChange = (value: number, index: number) => {
-    setScores((prevScores) => {
-      const updatedScores = [...prevScores];
-      updatedScores[index] = value;
-      return updatedScores;
-    });
-  };
-
-  const handleSubmit = () => {
-    const scoresParam = encodeURIComponent(
-      JSON.stringify({
-        scores,
-        confidence,
-        familiarity,
-      })
-    );
-    const query = new URLSearchParams({
-      taskType: taskType,
-      taskTitle: taskTitle,
-      userId: userId,
-      name: name,
-      initialScores: scoresParam,
-    }).toString();
-
-    router.push(`/chat?${query}`);
-  };
 
 
   if (!task) {

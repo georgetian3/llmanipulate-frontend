@@ -1,10 +1,8 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, Suspense, useRef} from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ChatBox from "../../components/ChatBox";
 import ChatOptionCard from "../../components/ChatOptionCard";
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/chat_page.css";
 import tasks_list from "../../data/tasks.json";
 import Slider from "@/components/Slider";
@@ -47,7 +45,7 @@ type LLMResponse = {
     response: string;
 };
 
-export default function ChatPage() {
+export  function ChatPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const websocketRef = useRef<WebSocket | null>(null);
@@ -75,7 +73,7 @@ export default function ChatPage() {
         familiarity: initialScores.familiarity,
     });
 
-    const minMessages = 5;
+    const MIN_MESSAGES = 5;
 
     useEffect(() => {
         if (taskType && taskId && tasks_list[taskType]) {
@@ -239,12 +237,6 @@ export default function ChatPage() {
         }).toString();
         router.push(`/tasks?${query}`);
     };
-
-  const handleSendMessage = (userMessage: string) => {
-    if (userMessage.trim() === "") {
-      alert("Message cannot be blank");
-      return;
-    }
 
   if (!task) {
     return <div>Loading task...</div>;
