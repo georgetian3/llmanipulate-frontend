@@ -15,14 +15,7 @@
     gap: 10px;
 }
 
-/* Chatbox section */
-.chatbox-section {
-    flex: 1;
-    padding: 10px;
-    background-color: #ecf0ff;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
+
 
 /* Choices section */
 .choices-section {
@@ -34,17 +27,7 @@
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Footer */
-.footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    background-color: white;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    width: 100%;
 }
 
 /* Submit button */
@@ -92,6 +75,12 @@
     padding: 10px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+}
+/* Chatbox section */
+.chatbox-section {
+    background-color: #ecf0ff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .chatbox {

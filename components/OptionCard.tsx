@@ -22,13 +22,3 @@ export default function OptionCard({ title, description, score, onScoreChange }:
     </div>
   );
 }
-
-
-// background-color: #ebedf1;
-// border-radius: 12px;
-// box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-// padding: 20px;
-// display: flex;
-// flex-direction: column;
-// justify-content: space-between;
-// text-align: left;
