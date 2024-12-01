@@ -35,7 +35,7 @@ export default function TaskCard({
     };
 
     return (
-        <div className={`task-card ${isCompleted ? "completed" : ""}`}>
+        <div className={"task-card"}>
             <h2>{task.query.title.en}</h2>
             <p>{task.query.desc.en}</p>
             <button onClick={handleSelectTask} disabled={isCompleted}>
@@ -43,4 +43,5 @@ export default function TaskCard({
             </button>
         </div>
     );
+
 }

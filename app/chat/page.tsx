@@ -3,36 +3,37 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ChatBox from "../../components/ChatBox";
 import ChatOptionCard from "../../components/ChatOptionCard";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/chat_page.css";
 import tasks_list from "../../data/tasks.json";
+import Slider from "@/components/Slider";
+import "../../styles/debug.css";
+
 
 type Task = {
-    task_id: number;
-    query: {
-        title: {
-            en: string;
-            zh: string;
-        };
-        desc: {
-            en: string;
-            zh: string;
-        };
+  task_id: number;
+  query: {
+    title: {
+      en: string;
+      zh: string;
     };
-    options: {
-        option_id: string;
-        desc: {
-            en: string;
-            zh: string;
-        };
-        info: {};
-    }[];
-    hidden_incentive: string;
+    desc: {
+      en: string;
+      zh: string;
+    };
+  };
+  options: {
+    option_id: string;
+    desc: {
+      en: string;
+      zh: string;
+    };
+    info: {};
+  }[];
+  hidden_incentive: string;
 };
 
-type TasksList = {
-    Financial: Task[];
-    Emotional: Task[];
-};
 
 type TaskType = "Financial" | "Emotional";
 
@@ -239,71 +240,59 @@ export default function ChatPage() {
         router.push(`/tasks?${query}`);
     };
 
-    if (!task) {
-        return <div>Loading task...</div>;
+  const handleSendMessage = (userMessage: string) => {
+    if (userMessage.trim() === "") {
+      alert("Message cannot be blank");
+      return;
     }
 
-		return (
-			  <div className="chat-page-container">
-			  		<div className="main-content">
-			  				<div className="chatbox-section">
-			  						<ChatBox
-			  								onSendMessage={handleSendMessage}
-			  								chatHistory={chatHistory}
-			  								loading={loading}
-			  						/>
-			  				</div>
-			  				<div className="choices-section">
-			  						{task.options.map((option, index) => (
-			  								<ChatOptionCard
-			  										key={option.option_id}
-			  										title={option.option_id}
-			  										description={option.desc.en}
-			  										score={finalScores.options[index]}
-			  										onScoreChange={(value) => handleOptionScoreChange(value, index)}
-			  								/>
-			  						))}
-	  
-			  						<div className="additional-sliders">
-			  								<div className="slider-group">
-			  										<label>Confidence in the above scores</label>
-			  										<input
-			  												type="range"
-			  												min="1"
-			  												max="10"
-			  												step="1"
-			  												value={finalScores.confidence}
-			  												onChange={(e) => handleSliderChange("confidence", Number(e.target.value))}
-			  												className="option-slider"
-			  										/>
-			  										<p>Score: {finalScores.confidence}</p>
-			  								</div>
-	  
-			  								<div className="slider-group">
-			  										<label>Familiarity with the topic of this query</label>
-			  										<input
-			  												type="range"
-			  												min="1"
-			  												max="10"
-			  												step="1"
-			  												value={finalScores.familiarity}
-			  												onChange={(e) => handleSliderChange("familiarity", Number(e.target.value))}
-			  												className="option-slider"
-			  										/>
-			  										<p>Score: {finalScores.familiarity}</p>
-			  								</div>
-			  						</div>
-			  				</div>
-			  		</div>
-			  		<div className="footer">
-			  				<button
-			  						className={`submit-button ${messagesCount >= minMessages ? "" : "disabled"}`}
-			  						onClick={messagesCount >= minMessages ? handleSubmit : undefined}
-			  						disabled={messagesCount < minMessages}
-			  				>
-			  						Submit
-			  				</button>
-			  		</div>
-			  </div>
-	);
+  if (!task) {
+    return <div>Loading task...</div>;
+  }
+
+  return <div className="flex rounded-xl shadow-2xl h-full w-full p-4 gap-2 debug">
+    <ChatBox
+      onSendMessage={handleSendMessage}
+      chatHistory={chatHistory}
+      loading={loading}
+    />
+    <div className="flex flex-col items-center w-full gap-4">
+      <div className="choices-section">
+        {task.options.map((option, index) => (
+          <ChatOptionCard
+            key={option.option_id}
+            title={option.option_id}
+            description={option.desc.en}
+            score={finalScores.options[index]}
+            onScoreChange={(value) => handleOptionScoreChange(value, index)}
+          />
+        ))}
+
+        <Slider
+          label="Confidence in the above scores"
+          value={finalScores.confidence}
+          onChange={(newValue) => handleSliderChange("confidence", newValue)}
+        />
+        <Slider
+          label="Familiarity with the topic of this query"
+          value={finalScores.familiarity}
+          onChange={(newValue) => handleSliderChange("familiarity", newValue)}
+        />
+      </div>
+      <button
+        className={`submit-button ${messagesCount >= MIN_MESSAGES ? "" : "disabled"}`}
+        onClick={messagesCount >= MIN_MESSAGES ? handleSubmit : undefined}
+        disabled={messagesCount < MIN_MESSAGES}
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+    
+}
+
+export default function ChatPageWrapper() {
+  return <Suspense>
+    <ChatPage />
+  </Suspense>
 }

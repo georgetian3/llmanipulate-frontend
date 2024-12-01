@@ -1,37 +1,33 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import TaskCard from "../../components/TaskCard";
 import "../../styles/tasks_page.css";
 import tasks_list from "../../data/tasks.json";
 
 type Task = {
-    task_id: number;
-    query: {
-        title: {
-            en: string;
-            zh: string;
-        };
-        desc: {
-            en: string;
-            zh: string;
-        };
+  task_id: number;
+  query: {
+    title: {
+      en: string;
+      zh: string;
     };
-    options: {
-        option_id: string;
-        desc: {
-            en: string;
-            zh: string;
-        };
-        info: {};
-    }[];
-    hidden_incentive: string;
+    desc: {
+      en: string;
+      zh: string;
+    };
+  };
+  options: {
+    option_id: string;
+    desc: {
+      en: string;
+      zh: string;
+    };
+    info: {};
+  }[];
+  hidden_incentive: string;
 };
 
-type TasksList = {
-    Financial: Task[];
-    Emotional: Task[];
-};
 
 type TaskType = "Financial" | "Emotional";
 
@@ -76,24 +72,39 @@ export default function TasksPage() {
 
     if (loading) {
         return <div>Loading tasks...</div>;
-    }
 
-    return (
-        <div className="tasks-container">
-            <h1>Welcome, {name}</h1>
-            <h2>Select a Task</h2>
-            <div className="task-cards">
-                {tasks.map((task) => (
-                    <TaskCard
-                        key={task.task_id}
-                        task={task}
-                        taskType={taskType}
-                        userId={userId}
-                        name={name}
-                        isCompleted={completedTasks.includes(task.task_id)}
-                    />
-                ))}
-            </div>
-        </div>
-    );
+    }
+  }, [taskType]);
+
+  if (loading) {
+    return <div>Loading tasks...</div>;
+  }
+
+
+  return (
+    <div className="tasks-container">
+      <h1 className="font-bold text-left">
+        Welcome, {name}
+      </h1>
+      <h2>Select a Task</h2>
+      <div className="task-cards">
+        {tasks.map((task, index) => (
+          <TaskCard
+            key={index}
+            task={task}
+            taskType={taskType}
+            userId={userId}
+            name={name}
+            isCompleted={completedTasks.includes(task.task_id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function TasksPageWrapper() {
+  return <Suspense>
+      <TasksPage />
+  </Suspense>
 }
