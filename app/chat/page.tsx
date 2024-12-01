@@ -1,8 +1,8 @@
 "use client";
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import ChatBox from "../../components/ChatBox";
 import ChatOptionCard from "../../components/ChatOptionCard";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import "../../styles/chat_page.css";
 import tasks_list from "../../data/tasks.json";
 
@@ -25,7 +25,7 @@ type Task = {
             zh: string;
         };
         info: {};
-    }[]; 
+    }[];
     hidden_incentive: string;
 };
 
@@ -36,14 +36,27 @@ type TasksList = {
 
 type TaskType = "Financial" | "Emotional";
 
+type LLMInput = {
+    user_id: string;
+    task_id: string;
+    message: string;
+};
+type LLMResponse = {
+    error: string;
+    response: string;
+};
+
 export default function ChatPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const websocketRef = useRef<WebSocket | null>(null);
+    const [isWebSocketOpen, setIsWebSocketOpen] = useState(false);
+    const messageQueue = useRef<string[]>([]);
 
     const userId = searchParams.get("userId") || "";
     const name = searchParams.get("name") || "User";
     const taskType: TaskType = (searchParams.get("taskType") as TaskType) || "Financial";
-    const taskTitle = searchParams.get("taskTitle") || "";
+    const taskId = searchParams.get("taskId") || "";
 
     const [task, setTask] = useState<Task | null>(null);
     const [messagesCount, setMessagesCount] = useState(0);
@@ -51,20 +64,22 @@ export default function ChatPage() {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const initialScores = searchParams.get("initialScores") ? JSON.parse(decodeURIComponent(searchParams.get("initialScores")!)) : { scores: [], confidence: 5, familiarity: 5 };
+    const initialScores = searchParams.get("initialScores")
+        ? JSON.parse(decodeURIComponent(searchParams.get("initialScores")!))
+        : { scores: [], confidence: 5, familiarity: 5 };
 
     const [finalScores, setFinalScores] = useState({
         options: initialScores.scores,
-        confidence: initialScores.confidence, 
-        familiarity: initialScores.familiarity, 
+        confidence: initialScores.confidence,
+        familiarity: initialScores.familiarity,
     });
 
     const minMessages = 5;
 
     useEffect(() => {
-        if (taskType && taskTitle && tasks_list[taskType]) {
+        if (taskType && taskId && tasks_list[taskType]) {
             const taskList = tasks_list[taskType];
-            const selectedTask = taskList.find((task: Task) => task.query.title.en === taskTitle);
+            const selectedTask = taskList.find((task: Task) => task.task_id === Number(taskId));
             if (selectedTask) {
                 setTask(selectedTask);
                 setFinalScores((prev) => ({
@@ -72,7 +87,46 @@ export default function ChatPage() {
                 }));
             }
         }
-    }, [taskType, taskTitle]);
+    }, [taskType, taskId]);
+
+    const initializeWebSocket = () => {
+        const ws = new WebSocket("ws://127.0.0.1:8000/chat");
+
+        ws.onopen = () => {
+            console.log("WebSocket connection established.");
+            setIsWebSocketOpen(true);
+
+            while (messageQueue.current.length > 0) {
+                ws.send(messageQueue.current.shift()!);
+            }
+        };
+
+        ws.onclose = () => {
+            console.log("WebSocket connection closed.");
+            setIsWebSocketOpen(false);
+        };
+
+        ws.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            setIsWebSocketOpen(false);
+        };
+
+        ws.onmessage = (event) => {
+            const agentResponse = JSON.parse(event.data) as LLMResponse;
+            setChatHistory((prev) => {
+                const updatedHistory = [...prev];
+                updatedHistory[updatedHistory.length - 1] = {
+                    ...updatedHistory[updatedHistory.length - 1],
+                    agent: agentResponse.response,
+                };
+                return updatedHistory;
+            });
+
+            setLoading(false);
+        };
+
+        websocketRef.current = ws;
+    };
 
     const handleSendMessage = (userMessage: string) => {
         if (userMessage.trim() === "") {
@@ -80,22 +134,27 @@ export default function ChatPage() {
             return;
         }
 
+        if (!websocketRef.current) {
+            initializeWebSocket();
+        }
+
         setMessagesCount((prev) => prev + 1);
         setChatHistory((prev) => [...prev, { user: userMessage, agent: "" }]);
-
         setLoading(true);
-        setTimeout(() => {
-            const agentResponse = `Agent Response ${messagesCount + 1}`;
-            setChatHistory((prev) => {
-                const updatedHistory = [...prev];
-                updatedHistory[updatedHistory.length - 1] = {
-                    ...updatedHistory[updatedHistory.length - 1],
-                    agent: agentResponse,
-                };
-                return updatedHistory;
-            });
-            setLoading(false);
-        }, 100);
+
+        const messageData: LLMInput = {
+            user_id: userId,
+            task_id: taskId,
+            message: userMessage,
+        };
+
+        const messageString = JSON.stringify(messageData);
+
+        if (isWebSocketOpen && websocketRef.current?.readyState === WebSocket.OPEN) {
+            websocketRef.current.send(messageString);
+        } else {
+            messageQueue.current.push(messageString);
+        }
     };
 
     const handleOptionScoreChange = (value: number, index: number) => {
@@ -110,89 +169,141 @@ export default function ChatPage() {
     const handleSliderChange = (field: "confidence" | "familiarity", value: number) => {
         setFinalScores((prevScores) => ({
             ...prevScores,
-            [field]: value
+            [field]: value,
         }));
     };
 
-    const handleSubmit = () => {
+    const submitToBackend = async () => {
+        const apiUrl = "http://127.0.0.1:8000/responses";
+
+        type ChatHistoryDict = {
+            [key: number]: { user: string; agent: string };
+        };
+
+        const chatHistoryDict: ChatHistoryDict = chatHistory.reduce((acc, { user, agent }, index) => {
+            acc[index] = { user, agent };
+            return acc;
+        }, {} as ChatHistoryDict);
+
+        const requestBody = {
+            task_id: taskId,
+            initial_scores: initialScores,
+            conv_history: chatHistoryDict,
+            final_scores: finalScores,
+        };
+
+        try {
+            const response = await fetch(`${apiUrl}?user_id=${userId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (!response.ok) {
+                throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+            }
+
+            const responseData = await response.json();
+            console.log("API Response:", responseData);
+            return true;
+        } catch (error) {
+            console.error("Error during API call:", error);
+            return false;
+        }
+    };
+
+    const handleSubmit = async () => {
         console.log("Submitting the following data:");
-        console.log("Initial Scores:", initialScores)
+        console.log("Initial Scores:", initialScores);
         console.log("Chat History:", chatHistory);
         console.log("Final Scores:", finalScores);
-        
+
+        const isSuccess = await submitToBackend();
+        if (isSuccess) {
+            console.log("Data successfully submitted to the backend.");
+        } else {
+            console.log("Failed to submit data to the backend.");
+        }
+
+        websocketRef.current?.close();
+        websocketRef.current = null;
+
         const query = new URLSearchParams({
-            name: name, 
+            name: name,
             userId: userId,
             taskType: taskType,
         }).toString();
-        router.push(`/tasks?${query}`); 
+        router.push(`/tasks?${query}`);
     };
 
     if (!task) {
         return <div>Loading task...</div>;
     }
 
-    return (
-        <div className="chat-page-container">
-            <div className="main-content">
-                <div className="chatbox-section">
-                    <ChatBox
-                        onSendMessage={handleSendMessage}
-                        chatHistory={chatHistory}
-                        loading={loading}
-                    />
-                </div>
-                <div className="choices-section">
-                    {task.options.map((option, index) => (
-                        <ChatOptionCard
-                            key={option.option_id}
-                            title={option.option_id}
-                            description={option.desc.en}
-                            score={finalScores.options[index]}
-                            onScoreChange={(value) => handleOptionScoreChange(value, index)}
-                        />
-                    ))}
-
-                    <div className="additional-sliders">
-                        <div className="slider-group">
-                            <label>Confidence in the above scores</label>
-                            <input
-                                type="range"
-                                min="1"
-                                max="10"
-                                step="1"
-                                value={finalScores.confidence}
-                                onChange={(e) => handleSliderChange("confidence", Number(e.target.value))}
-                                className="option-slider"
-                            />
-                            <p>Score: {finalScores.confidence}</p>
-                        </div>
-
-                        <div className="slider-group">
-                            <label>Familiarity with the topic of this query</label>
-                            <input
-                                type="range"
-                                min="1"
-                                max="10"
-                                step="1"
-                                value={finalScores.familiarity}
-                                onChange={(e) => handleSliderChange("familiarity", Number(e.target.value))}
-                                className="option-slider"
-                            />
-                            <p>Score: {finalScores.familiarity}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="footer">
-                <button
-                    className={`submit-button ${messagesCount >= minMessages ? "" : "disabled"}`}
-                    onClick={messagesCount >= minMessages ? handleSubmit : undefined}
-                    disabled={messagesCount < minMessages}
-                >
-                    Submit
-                </button>
-            </div>
-        </div>
-    );
+		return (
+			  <div className="chat-page-container">
+			  		<div className="main-content">
+			  				<div className="chatbox-section">
+			  						<ChatBox
+			  								onSendMessage={handleSendMessage}
+			  								chatHistory={chatHistory}
+			  								loading={loading}
+			  						/>
+			  				</div>
+			  				<div className="choices-section">
+			  						{task.options.map((option, index) => (
+			  								<ChatOptionCard
+			  										key={option.option_id}
+			  										title={option.option_id}
+			  										description={option.desc.en}
+			  										score={finalScores.options[index]}
+			  										onScoreChange={(value) => handleOptionScoreChange(value, index)}
+			  								/>
+			  						))}
+	  
+			  						<div className="additional-sliders">
+			  								<div className="slider-group">
+			  										<label>Confidence in the above scores</label>
+			  										<input
+			  												type="range"
+			  												min="1"
+			  												max="10"
+			  												step="1"
+			  												value={finalScores.confidence}
+			  												onChange={(e) => handleSliderChange("confidence", Number(e.target.value))}
+			  												className="option-slider"
+			  										/>
+			  										<p>Score: {finalScores.confidence}</p>
+			  								</div>
+	  
+			  								<div className="slider-group">
+			  										<label>Familiarity with the topic of this query</label>
+			  										<input
+			  												type="range"
+			  												min="1"
+			  												max="10"
+			  												step="1"
+			  												value={finalScores.familiarity}
+			  												onChange={(e) => handleSliderChange("familiarity", Number(e.target.value))}
+			  												className="option-slider"
+			  										/>
+			  										<p>Score: {finalScores.familiarity}</p>
+			  								</div>
+			  						</div>
+			  				</div>
+			  		</div>
+			  		<div className="footer">
+			  				<button
+			  						className={`submit-button ${messagesCount >= minMessages ? "" : "disabled"}`}
+			  						onClick={messagesCount >= minMessages ? handleSubmit : undefined}
+			  						disabled={messagesCount < minMessages}
+			  				>
+			  						Submit
+			  				</button>
+			  		</div>
+			  </div>
+	);
 }

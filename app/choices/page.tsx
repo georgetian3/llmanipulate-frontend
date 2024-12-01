@@ -40,7 +40,7 @@ export default function ChoicePage() {
     const searchParams = useSearchParams();
 
     const taskType: TaskType = (searchParams.get("taskType") as TaskType) || "Financial";
-    const taskTitle = searchParams.get("taskTitle") || "";
+    const taskId = searchParams.get("taskId") || "";
     const userId = searchParams.get("userId") || "";
     const name = searchParams.get("name") || "User";
 
@@ -51,15 +51,15 @@ export default function ChoicePage() {
     const [familiarity, setFamiliarity] = useState(5);
 
     useEffect(() => {
-        if (taskType && taskTitle && tasks_list[taskType]) {
+        if (taskType && taskId && tasks_list[taskType]) {
             const taskList = tasks_list[taskType];
-            const selectedTask = taskList.find((task: Task) => task.query.title.en === taskTitle);
+            const selectedTask = taskList.find((task: Task) => task.task_id === Number(taskId));
             if (selectedTask) {
                 setTask(selectedTask);
                 setOptions(selectedTask.options);
             }
         }
-    }, [taskType, taskTitle]);
+    }, [taskType, taskId]);
 
     useEffect(() => {
         if (options.length > 0) {
@@ -85,7 +85,7 @@ export default function ChoicePage() {
         );
         const query = new URLSearchParams({
             taskType: taskType,               
-            taskTitle: taskTitle,  
+            taskId: taskId,  
             userId: userId,         
             name: name,
             initialScores: scoresParam,

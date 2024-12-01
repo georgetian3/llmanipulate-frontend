@@ -37,24 +37,42 @@ type TaskType = "Financial" | "Emotional";
 
 export default function TasksPage() {
     const searchParams = useSearchParams();
-    const userId = searchParams.get("userId") || "";  
+    const userId = searchParams.get("userId") || "";
     const name = searchParams.get("name") || "User";
     const taskType: TaskType = searchParams.get("taskType") as TaskType;
 
-    // console.log("userId from query params:", userId);
-
-    const [tasks, setTasks] = useState<Task[]>([]); 
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [completedTasks, setCompletedTasks] = useState<number[]>([]);
     const [loading, setLoading] = useState(true);
-
+    useEffect(() => {
+        console.log("Updated completedTasks state:", completedTasks);
+    }, [completedTasks]);
     useEffect(() => {
         if (taskType && tasks_list[taskType]) {
             setTasks(tasks_list[taskType] || []);
-            setLoading(false); 
         } else {
             setTasks([]);
-            setLoading(false);
         }
-    }, [taskType]);
+        const fetchCompletedTasks = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/responses_by_user?user_id=${userId}`, {
+                    method: "GET"
+                });
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    const taskIds = data.map((item: any) => Number(item.task_id));
+                    setCompletedTasks(taskIds);
+                }
+            } catch (error) {
+                console.error("Error fetching completed tasks:", error);
+            } finally {
+                setLoading(false);
+                console.log(completedTasks);
+            }
+        };
+
+        fetchCompletedTasks();
+    }, [taskType, userId]);
 
     if (loading) {
         return <div>Loading tasks...</div>;
@@ -65,13 +83,14 @@ export default function TasksPage() {
             <h1>Welcome, {name}</h1>
             <h2>Select a Task</h2>
             <div className="task-cards">
-                {tasks.map((task, index) => (
-                    <TaskCard 
-                        key={index} 
-                        task={task} 
-                        taskType={taskType} 
+                {tasks.map((task) => (
+                    <TaskCard
+                        key={task.task_id}
+                        task={task}
+                        taskType={taskType}
                         userId={userId}
                         name={name}
+                        isCompleted={completedTasks.includes(task.task_id)}
                     />
                 ))}
             </div>
