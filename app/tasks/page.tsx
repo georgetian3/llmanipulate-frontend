@@ -31,30 +31,50 @@ type Task = {
 
 type TaskType = "Financial" | "Emotional";
 
-function TasksPage() {
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("userId") || "";
-  const name = searchParams.get("name") || "User";
-  const taskType: TaskType = searchParams.get("taskType") as TaskType;
+export function TasksPage() {
+    const searchParams = useSearchParams();
+    const userId = searchParams.get("userId") || "";
+    const name = searchParams.get("name") || "User";
+    const taskType: TaskType = searchParams.get("taskType") as TaskType;
 
-  // console.log("userId from query params:", userId);
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [completedTasks, setCompletedTasks] = useState<number[]>([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        console.log("Updated completedTasks state:", completedTasks);
+    }, [completedTasks]);
 
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        if (taskType && tasks_list[taskType]) {
+            setTasks(tasks_list[taskType] || []);
+        } else {
+            setTasks([]);
+        }
+        const fetchCompletedTasks = async () => {
+            try {
+                const response = await fetch(`http://localhost:8000/responses_by_user?user_id=${userId}`, {
+                    method: "GET"
+                });
+                const data = await response.json();
+                if (Array.isArray(data)) {
+                    const taskIds = data.map((item: any) => Number(item.task_id));
+                    setCompletedTasks(taskIds);
+                }
+            } catch (error) {
+                console.error("Error fetching completed tasks:", error);
+            } finally {
+                setLoading(false);
+                console.log(completedTasks);
+            }
+        };
 
-  useEffect(() => {
-    if (taskType && tasks_list[taskType]) {
-      setTasks(tasks_list[taskType] || []);
-      setLoading(false);
-    } else {
-      setTasks([]);
-      setLoading(false);
+        fetchCompletedTasks();
+    }, [taskType, userId]);
+
+    if (loading) {
+        return <div>Loading tasks...</div>;
+
     }
-  }, [taskType]);
-
-  if (loading) {
-    return <div>Loading tasks...</div>;
-  }
 
   return (
     <div className="tasks-container">
@@ -70,6 +90,7 @@ function TasksPage() {
             taskType={taskType}
             userId={userId}
             name={name}
+            isCompleted={completedTasks.includes(task.task_id)}
           />
         ))}
       </div>
