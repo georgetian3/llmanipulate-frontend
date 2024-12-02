@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../../styles/login_page.css";
+import { apiRequest } from "../utils";
 
 export default function LoginPage() {
     const [usercode, setUsercode] = useState("");
@@ -9,17 +10,9 @@ export default function LoginPage() {
     const router = useRouter();
     
     async function fetchUserData(userId: string) {
-        const apiUrl = "http://127.0.0.1:8000/users"; 
 
         try {
-            const response = await fetch(`${apiUrl}/${userId}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            });
-
+            const response = await apiRequest(`/users/${userId}`, "GET")
             if (response.ok) {
                 return await response.json(); 
             } else if (response.status === 404) {
