@@ -13,7 +13,7 @@ module.exports = {
   async redirects() {
     return [
       {
-        source: "/main",
+        source: "/",
         destination: "/login",
         permanent: true, // Set to true for SEO-friendly 301 redirects
       },

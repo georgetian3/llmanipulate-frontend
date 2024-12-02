@@ -242,13 +242,17 @@ export  function ChatPage() {
     return <div>Loading task...</div>;
   }
 
-  return <div className="flex rounded-xl shadow-2xl h-full w-full p-4 gap-2 debug">
+
+  return <div className="chat-page-container">
+    <h1 className="chat-page-title">{task.query.title.en}</h1>
+    <h2 className="chat-page-desc">{task.query.desc.en}</h2>
+    <div className="chat-page-content-container">
     <ChatBox
       onSendMessage={handleSendMessage}
       chatHistory={chatHistory}
       loading={loading}
     />
-    <div className="flex flex-col items-center w-full gap-4">
+    <div className="choices-section-container">
       <div className="choices-section">
         {task.options.map((option, index) => (
           <ChatOptionCard
@@ -260,6 +264,9 @@ export  function ChatPage() {
           />
         ))}
 
+        
+      </div>
+      <div className="slider-group">
         <Slider
           label="Confidence in the above scores"
           value={finalScores.confidence}
@@ -270,7 +277,7 @@ export  function ChatPage() {
           value={finalScores.familiarity}
           onChange={(newValue) => handleSliderChange("familiarity", newValue)}
         />
-      </div>
+        </div>
       <button
         className={`submit-button ${messagesCount >= MIN_MESSAGES ? "" : "disabled"}`}
         onClick={messagesCount >= MIN_MESSAGES ? handleSubmit : undefined}
@@ -279,8 +286,8 @@ export  function ChatPage() {
         Submit
       </button>
     </div>
+    </div>
   </div>
-    
 }
 
 export default function ChatPageWrapper() {

@@ -14,7 +14,7 @@ const STEP = 1
 const RESET_CHARACTER = '\u21BA' // ↺
 
 function SliderRange({limit}: {limit: Number}) {
-  return <div className="text-neutral-400 debug">
+  return <div className="slider-range-limit">
     {limit.toString()}
   </div>
 }
@@ -36,9 +36,9 @@ export default function Slider({label, value, onChange}: SliderProps) {
     setInitialValue(value)
   }
 
-  return <div className="bg-white rounded-lg p-2">
-    <div className="flex justify-between">
-      <p className="text-[#6e7174]">{label}</p>
+  return <div className="slider">
+    <div className="slider-label">
+      <p className="slider-label-text">{label}</p>
       <div className="rounded-lg px-1 text-[#425675] bg-[#f3f5f7] border-neutral-700 border-3">
         <input
           type="number"
@@ -52,8 +52,8 @@ export default function Slider({label, value, onChange}: SliderProps) {
         </button>
       </div>
     </div>
-    <div className="flex content-center justify-center">
-      <SliderRange limit={MIN} />
+    <div className="slider-range">
+      <SliderRange limit={MIN}/>
       <style>{SLIDER_STYLE}</style>
       <input
         type="range"

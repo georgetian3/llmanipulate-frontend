@@ -13,7 +13,7 @@ type OptionCardProps = {
 function Accordion({text}: {text: string}) {
   const [expanded, setExpanded] = useState(false)
 
-  return <div className="bg-white rounded p-2">      
+  return <div className="chat-option-card-accordion">      
     <div onClick={() => setExpanded(!expanded)} className="flex justify-between items-center cursor-pointer">
       <div>
         See details
@@ -22,7 +22,7 @@ function Accordion({text}: {text: string}) {
         {expanded ? "▾" : "◂"}
       </div>
     </div>
-    {expanded && <div className="text-justify">
+    {expanded && <div className="chat-option-card-desc">
       {text}
     </div>}
   </div>
@@ -30,8 +30,8 @@ function Accordion({text}: {text: string}) {
 
 export default function ChatOptionCard({ title, description, score, onScoreChange }: OptionCardProps) {
   return (
-    <div className="space-y-4">
-      <h1>{title}</h1>
+    <div className="chat-option-card">
+      <h1>Option {title}</h1>
       <Accordion text={description} />
       <Slider
         label="Preference for this option"

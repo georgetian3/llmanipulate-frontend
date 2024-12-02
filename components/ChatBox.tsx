@@ -41,16 +41,17 @@ export default function ChatBox({ onSendMessage, chatHistory, loading }: ChatBox
   };
 
   const flattenedMessages = flattenChatHistory(chatHistory);
+  console.log(flattenedMessages);
 
-  return <div className="flex flex-col w-full h-full rounded-2xl shadow-2xl p-4 debug">
-    <div className="flex flex-col-reverse h-full overflow-y-scroll">
-      {flattenedMessages.map((_,  index) => (
-        <p key={index} className={"message " + ((flattenedMessages.length - index) % 2 ? "user-message" : "agent-message")}>
-          {flattenedMessages[flattenedMessages.length - index - 1]}
+  return <div className="chatbox">
+    <div className="chatbox-section">
+      {flattenedMessages.map((msg,  index) => (
+        <p key={index} className={"message " + (index % 2 ? "agent-message" : "user-message")}>
+          {msg}
         </p>
       ))}
     </div>
-    <div className="flex w-full">
+    <div className="chatinput-section">
       <input
         type="text"
         className="chat-input h-full"
@@ -61,7 +62,7 @@ export default function ChatBox({ onSendMessage, chatHistory, loading }: ChatBox
         disabled={loading}
       />
       <button
-        className={`bg-[#6558d3] rounded-md p-2 text-white h-full ${loading ? "bg-[#c3cef8] text-[#a0a0a0] cursor-not-allowed" : ""}`}
+        className="chatinput-button"
         onClick={handleSend}
         disabled={loading}
       >

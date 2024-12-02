@@ -98,8 +98,9 @@ export function ChoicePage() {
 
   return (
     <div className="initial-option-container">
-      <h1 className="page-title">Choose Your Preferences</h1>
-      <p className="instruction-text">Please rate each option based on your preference (1-10).</p>
+      <h1 className="initial-option-task-title">{task.query.title.en}</h1>
+      <h2 className="initial-option-task-desc" >{task.query.desc.en}</h2>
+      <p className="instruction-text">The following options show some ways to deal with this problem. Please read them carefully and make your preference score for each option. Please slide the slider to indicate your preference for each option.</p>
       <div className="initial-option-cards">
         {options.map((option, index) => (
           <OptionCard
@@ -112,6 +113,7 @@ export function ChoicePage() {
         ))}
       </div>
 
+      <div className="initial-option-sliders">
       <Slider
         label="Confidence in the above scores"
         value={confidence}
@@ -122,6 +124,7 @@ export function ChoicePage() {
         value={familiarity}
         onChange={(newValue) => setFamiliarity(newValue)}
       />
+      </div>
 
       <button onClick={handleSubmit} className="initial-option-submit">
         Submit Preferences

@@ -12,8 +12,10 @@ type OptionCardProps = {
 export default function OptionCard({ title, description, score, onScoreChange }: OptionCardProps) {
   return (
     <div className="option-card bg-[#ebedf1]">
-      <h2 className="option-card-title">{title}</h2>
-      <p className="option-card-description">{description}</p>
+      <div>
+        <h2 className="option-card-title">Option {title}</h2>
+        <p className="option-card-description">{description}</p>
+      </div>
       <Slider
         label="Preference for this option"
         value={score}

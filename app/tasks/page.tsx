@@ -81,7 +81,7 @@ export function TasksPage() {
       <h1 className="font-bold text-left">
         Welcome, {name}
       </h1>
-      <h2>Select a Task</h2>
+      <h2>Please select one of the following scenarios:</h2>
       <div className="task-cards">
         {tasks.map((task, index) => (
           <TaskCard

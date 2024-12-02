@@ -70,11 +70,11 @@ export default function LoginPage() {
 
     return (
         <div className="login-container">
-            <h1>Login</h1>
+            <h1>Please enter your passcode below</h1>
             <form onSubmit={handleLogin}>
                 <input
                     type="text"
-                    placeholder="Enter Usercode"
+                    // placeholder="Enter Usercode"
                     value={usercode}
                     onChange={(e) => setUsercode(e.target.value)}
                     className="login-input"

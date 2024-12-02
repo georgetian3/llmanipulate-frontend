@@ -26,15 +26,17 @@ body {
 }
 
 .tasks-container h1 {
-  margin-bottom: 30px;
   color: #2c3e50;
-  font-size: 30px;
+  margin: 10px 0;
+  font-size: 22px;
 }
 
 .tasks-container h2 {
-  margin-bottom: 30px;
-  color: #2c3e50;
+  color: #72808e;
+  padding-top: 20px;
+  padding-bottom: 20px;
   font-size: 18px;
+  font-weight: normal;
 }
 
 
@@ -59,6 +61,7 @@ body {
   box-sizing: border-box;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden; 
+  width: 33%;
 }
 
 .task-card:hover {
@@ -68,17 +71,24 @@ body {
 }
 
 .task-card h2 {
+  width: 100%;
+  color: #425675;
+  padding-top: 8px;
   font-size: 18px;
   font-weight: bold;
-  color: #425675;
-  margin-bottom: 8px;
+  text-align: left;
 }
 
 .task-card p {
   font-size: 16px;
   color: #707a91;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   min-height: 50px; 
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .task-card button {
