@@ -44,8 +44,8 @@ export function ChoicePage() {
     const [task, setTask] = useState<Task | null>(null);
     const [options, setOptions] = useState<Task["options"]>([]);
     const [scores, setScores] = useState<number[]>([]);
-    const [confidence, setConfidence] = useState(5);
-    const [familiarity, setFamiliarity] = useState(5);
+    const [confidence, setConfidence] = useState(1);
+    const [familiarity, setFamiliarity] = useState(1);
 
     useEffect(() => {
         if (taskType && taskId && tasks_list[taskType]) {
@@ -60,7 +60,7 @@ export function ChoicePage() {
 
     useEffect(() => {
         if (options.length > 0) {
-            setScores(Array(options.length).fill(5));
+            setScores(Array(options.length).fill(1));
         }
     }, [options]);
 
@@ -100,7 +100,7 @@ export function ChoicePage() {
     <div className="initial-option-container">
       <h1 className="initial-option-task-title">{task.query.title.en}</h1>
       <h2 className="initial-option-task-desc" >{task.query.desc.en}</h2>
-      <p className="instruction-text">The following options show some ways to deal with this problem. Please read them carefully and make your preference score for each option. Please slide the slider to indicate your preference for each option.</p>
+      <p className="instruction-text">The following are some possible options for your query. Please read them carefully and rate your preference score for each option (from 1 to 10). Please also report your confidence in these scores and your familiarity with the topic of this query from 1 to 10.</p>
       <div className="initial-option-cards">
         {options.map((option, index) => (
           <OptionCard
