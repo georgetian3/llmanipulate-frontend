@@ -1,0 +1,15 @@
+/**
+ * Generate a randomized mapping for the given options.
+ * @param options - An array of option keys (e.g., ["A", "B", "C", "D"]).
+ * @returns A mapping object where each option maps to another.
+ */
+export const generateRandomTaskDict = (options: string[]): Record<string, string> => {
+  const shuffled = [...options].sort(() => Math.random() - 0.5); // Shuffle options
+  const mapping: Record<string, string> = {};
+
+  for (let i = 0; i < options.length; i++) {
+    mapping[options[i]] = shuffled[i];
+  }
+
+  return mapping;
+};

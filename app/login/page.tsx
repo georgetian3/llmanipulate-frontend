@@ -2,24 +2,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../../styles/login_page.css";
+import { apiRequest } from "../utils";
+import { useStateContext } from "../context/StateContext";
+
 
 export default function LoginPage() {
     const [usercode, setUsercode] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    
+    const { setState } = useStateContext();
+
     async function fetchUserData(userId: string) {
-        const apiUrl = "http://127.0.0.1:8000/users"; 
 
         try {
-            const response = await fetch(`${apiUrl}/${userId}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-            });
-
+            const response = await apiRequest(`/users/${userId}`, "GET")
             if (response.ok) {
                 return await response.json(); 
             } else if (response.status === 404) {
@@ -51,15 +47,14 @@ export default function LoginPage() {
 
             console.log("User Data:", userData);
 
-            const query = new URLSearchParams({
-                userId: usercode,
-                name: userData.demographics.name,
+            setState({
+                initialScores: undefined, taskDict: undefined, taskId: "",
                 taskType: userData.task_type,
-                language: userData.demographics.lang,
-                agentType: userData.agent_type,
-            }).toString();
+                userId: usercode,
+                name: userData.demographics.name
+            });
 
-            router.push(`/tasks?${query}`);
+            router.push(`/tasks?`);
         } catch (error) {
             console.error("Error during login:", error);
             alert("An unexpected error occurred. Please try again.");

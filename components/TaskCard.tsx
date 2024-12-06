@@ -1,14 +1,15 @@
 "use client";
 import "../styles/tasks_page.css";
 import { useRouter } from "next/navigation";
+import { useStateContext } from "../app/context/StateContext"; // Import StateContext
 
 export default function TaskCard({
-    task,
-    taskType,
-    userId,
-    name,
-    isCompleted,
-}: {
+                                     task,
+                                     taskType,
+                                     userId,
+                                     name,
+                                     isCompleted,
+                                 }: {
     task: any;
     taskType: string;
     userId: string;
@@ -16,19 +17,23 @@ export default function TaskCard({
     isCompleted: boolean;
 }) {
     const router = useRouter();
+    const { setState } = useStateContext(); // Access setState from StateContext
 
     const handleSelectTask = () => {
-        if (isCompleted) return; 
+        if (isCompleted) return;
 
         if (userId) {
-            const query = new URLSearchParams({
+            // Update the global state with task information
+            setState((prev) => ({
+                ...prev,
                 taskType,
-                taskId: task.task_id,
+                taskId: task.task_id.toString(),
                 userId,
                 name,
-            }).toString();
+            }));
 
-            router.push(`/choices?${query}`);
+            // Navigate to the choices page
+            router.push("/choices");
         } else {
             console.error("userId is missing.");
         }
@@ -43,5 +48,4 @@ export default function TaskCard({
             </button>
         </div>
     );
-
 }

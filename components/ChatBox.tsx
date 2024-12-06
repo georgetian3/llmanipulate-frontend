@@ -5,23 +5,16 @@ import { useState } from "react";
 
 type ChatBoxProps = {
   onSendMessage: (userMessage: string) => void;
-  chatHistory: { user: string; agent: string }[];
+  chatHistory: { role: string; message: string }[];
   loading: boolean;
 };
 
 export default function ChatBox({ onSendMessage, chatHistory, loading }: ChatBoxProps) {
+  console.log(chatHistory, "chatHistory");
 
   const [input, setInput] = useState("");
 
-  const flattenChatHistory = (history: { user: string; agent: string }[]) => {
-    const flattenedMessages: string[] = [];
 
-    history.forEach((pair) => {
-      flattenedMessages.push(pair.user, pair.agent);
-    });
-
-    return flattenedMessages;
-  };
 
   const handleSend = () => {
     if (input.trim() && !loading) {
@@ -40,31 +33,30 @@ export default function ChatBox({ onSendMessage, chatHistory, loading }: ChatBox
     }
   };
 
-  const flattenedMessages = flattenChatHistory(chatHistory);
-  console.log(flattenedMessages);
-
   return <div className="chatbox">
     <div className="chatbox-section">
-      {flattenedMessages.map((msg,  index) => (
-        <p key={index} className={"message " + (index % 2 ? "agent-message" : "user-message")}>
-          {msg}
-        </p>
+      {chatHistory.map((entry, index) => (
+
+          <p key={index} className={"message " + `${entry.role}-message `}
+          >
+            {entry.message}
+          </p>
       ))}
     </div>
     <div className="chatinput-section">
       <input
-        type="text"
-        className="chat-input h-full"
-        value={input}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyPress}
-        placeholder="Type your message..."
-        disabled={loading}
+          type="text"
+          className="chat-input h-full"
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
+          placeholder="Type your message..."
+          disabled={loading}
       />
       <button
-        className="chatinput-button"
-        onClick={handleSend}
-        disabled={loading}
+          className="chatinput-button"
+          onClick={handleSend}
+          disabled={loading}
       >
         Send
       </button>
