@@ -3,12 +3,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import "../../styles/login_page.css";
 import { apiRequest } from "../utils";
+import { useStateContext } from "../context/StateContext";
+
 
 export default function LoginPage() {
     const [usercode, setUsercode] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    
+    const { setState } = useStateContext();
+
     async function fetchUserData(userId: string) {
 
         try {
@@ -44,15 +47,14 @@ export default function LoginPage() {
 
             console.log("User Data:", userData);
 
-            const query = new URLSearchParams({
-                userId: usercode,
-                name: userData.demographics.name,
+            setState({
+                initialScores: undefined, taskDict: undefined, taskId: "",
                 taskType: userData.task_type,
-                language: userData.demographics.lang,
-                agentType: userData.agent_type,
-            }).toString();
+                userId: usercode,
+                name: userData.demographics.name
+            });
 
-            router.push(`/tasks?${query}`);
+            router.push(`/tasks?`);
         } catch (error) {
             console.error("Error during login:", error);
             alert("An unexpected error occurred. Please try again.");
