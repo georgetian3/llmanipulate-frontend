@@ -39,7 +39,7 @@ export default function LoginPage() {
 
         setLoading(true);
         try {      
-            const userData = await fetchUserData(usercode); 
+            const userData = await fetchUserData(usercode.trim()); 
             if (!userData) {
                 alert("No matching User found. Please try again.");
                 return;
@@ -50,7 +50,7 @@ export default function LoginPage() {
             setState({
                 initialScores: undefined, taskDict: undefined, taskId: "",
                 taskType: userData.task_type,
-                userId: usercode,
+                userId: usercode.trim(),
                 name: userData.demographics.name
             });
 
