@@ -109,7 +109,7 @@ export function ChatPage() {
       return;
     }
     console.log("Received User message:", userMessage);
-    setChatHistory((prev) => [...prev, { role: "user", message: userMessage }]);
+    setChatHistory((prev) => [...prev, { role: "user", message: userMessage, agent_data: [] }]);
     setLoading(true);
 
     const messageData = {
