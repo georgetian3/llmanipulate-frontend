@@ -32,17 +32,25 @@ type Task = {
 };
 
 export function TasksPage() {
-  const { state } = useStateContext(); // Get global state
+  const { state, setState } = useStateContext(); // Use setState for global updates
   const { userId, name, taskType } = state;
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Log completed tasks when they are updated
+  // Restore global state from localStorage on component mount
   useEffect(() => {
-    console.log("Updated completedTasks state:", completedTasks);
-  }, [completedTasks]);
+    const savedState = localStorage.getItem("state");
+    if (savedState) {
+      setState((prev) => ({ ...prev, ...JSON.parse(savedState) }));
+    }
+  }, [setState]);
+
+  // Persist global state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("state", JSON.stringify(state));
+  }, [state]);
 
   // Fetch tasks and completed tasks
   useEffect(() => {
@@ -54,13 +62,10 @@ export function TasksPage() {
 
     const fetchCompletedTasks = async () => {
       try {
-        console.log("Fetching completed tasks for ", userId);
         const response = await apiRequest(`/responses_by_user?user_id=${userId}`, "GET");
         const data = await response.json();
         if (Array.isArray(data)) {
-          const taskIds = data.map((item: any) => Number(item.task_name));
-          console.log("Fetched completed tasks:", taskIds);
-          setCompletedTasks(taskIds);
+          setCompletedTasks(data.map((item) => Number(item.task_name)));
         }
       } catch (error) {
         console.error("Error fetching completed tasks:", error);
@@ -69,23 +74,22 @@ export function TasksPage() {
       }
     };
 
-    fetchCompletedTasks();
+    if (userId) {
+      fetchCompletedTasks();
+    }
   }, [taskType, userId]);
 
   // Navigate to the final page when all tasks are completed
   useEffect(() => {
     if (tasks.length > 0 && completedTasks.length === tasks.length) {
-      console.log("All tasks completed. Navigating to the final page.");
-      router.push("/final"); // Adjust the route as needed
+      router.push("/final");
     }
   }, [tasks, completedTasks, router]);
 
-  // Loading state
   if (loading) {
     return <div>Loading tasks...</div>;
   }
 
-  // Render tasks
   return (
       <div className="tasks-container">
         <h1 className="font-bold text-left">Welcome, {name}</h1>
@@ -106,7 +110,6 @@ export function TasksPage() {
   );
 }
 
-// Wrapper component for Suspense support
 export default function TasksPageWrapper() {
   return (
       <Suspense>

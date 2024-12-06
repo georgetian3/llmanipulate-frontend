@@ -205,6 +205,7 @@ export function ChatPage() {
     }
   };
 
+
   if (!task) {
     return <div>Loading task...</div>;
   }

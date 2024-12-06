@@ -5,102 +5,88 @@ import { useRouter } from "next/navigation";
 import "../../styles/choices_page.css";
 import OptionCard from "../../components/OptionCard";
 import tasks_list from "../../data/tasks.json";
-import Slider from "@/components/Slider";
+import Slider from "../../components/Slider";
 import { useStateContext } from "../context/StateContext";
 
-type Task = {
-    task_id: number;
-    query: {
-        title: {
-            en: string;
-            zh: string;
-        };
-        desc: {
-            en: string;
-            zh: string;
-        };
-    };
-    options: {
-        option_id: string;
-        desc: {
-            en: string;
-            zh: string;
-        };
-        info: {};
-    }[];
-    hidden_incentive: string;
-};
-
-// Function to generate a randomized taskDict
 const generateRandomTaskDict = (options: string[]): Record<string, string> => {
     const shuffled = [...options].sort(() => Math.random() - 0.5);
     const mapping: Record<string, string> = {};
-    for (let i = 0; i < options.length; i++) {
-        mapping[options[i]] = shuffled[i];
-    }
+    options.forEach((option, i) => {
+        mapping[option] = shuffled[i];
+    });
     return mapping;
 };
 
 export function ChoicePage() {
     const router = useRouter();
-    const { state, setState } = useStateContext(); // Use the global state
-    const { taskType, taskId } = state;
+    const { state, setState } = useStateContext();
+    const { taskType, taskId, taskDict } = state;
 
-    const [task, setTask] = useState<Task | null>(null);
-    const [taskDict, setTaskDict] = useState<Record<string, string>>({});
-    const [options, setOptions] = useState<Task["options"]>([]);
-    const [scores, setScores] = useState<number[]>([]);
+    const [task, setTask] = useState(null);
+    const [options, setOptions] = useState([]);
+    const [scores, setScores] = useState([]);
     const [confidence, setConfidence] = useState(1);
     const [familiarity, setFamiliarity] = useState(1);
+    const [loading, setLoading] = useState(true); // Loading state for restoration
 
-    // Load task data from tasks_list and generate taskDict
+    // Restore state on refresh
+    useEffect(() => {
+        const savedState = localStorage.getItem("state");
+        if (savedState) {
+            setState((prev) => ({
+                ...prev,
+                ...JSON.parse(savedState),
+            }));
+        }
+        setLoading(false); // Mark restoration as complete
+    }, [setState]);
+
+    // Load task data and initialize taskDict
     useEffect(() => {
         if (taskType && taskId && tasks_list[taskType]) {
             const taskList = tasks_list[taskType];
-            const selectedTask = taskList.find((task: Task) => task.task_id === Number(taskId));
+            const selectedTask = taskList.find((t) => t.task_id === Number(taskId));
             if (selectedTask) {
                 setTask(selectedTask);
                 setOptions(selectedTask.options);
 
-                // Generate the taskDict using the option IDs
-                const optionIds = selectedTask.options.map((option) => option.option_id);
-                const randomTaskDict = generateRandomTaskDict(optionIds);
-                setTaskDict(randomTaskDict);
-
-                // Save the mapping in the global state
-                setState((prev) => ({
-                    ...prev,
-                    taskDict: randomTaskDict,
-                }));
+                if (!taskDict || Object.keys(taskDict).length === 0) {
+                    const optionIds = selectedTask.options.map((o) => o.option_id);
+                    const randomDict = generateRandomTaskDict(optionIds);
+                    setState((prev) => ({
+                        ...prev,
+                        taskDict: randomDict,
+                    }));
+                }
             }
+        } else if (!loading) {
+            router.push("/tasks"); // Redirect if taskType or taskId is missing
         }
-    }, [taskType, taskId]);
+    }, [taskType, taskId, taskDict, setState, loading, router]);
 
-    // Initialize scores array
+    // Initialize scores
     useEffect(() => {
         if (options.length > 0) {
             setScores(Array(options.length).fill(1));
         }
     }, [options]);
 
-    const handleScoreChange = (value: number, index: number) => {
-        setScores((prevScores) => {
-            const updatedScores = [...prevScores];
-            updatedScores[index] = value;
-            return updatedScores;
+    const handleScoreChange = (value, index) => {
+        setScores((prev) => {
+            const updated = [...prev];
+            updated[index] = value;
+            return updated;
         });
     };
 
     const handleSubmit = () => {
-        // Remap scores to original order before saving
         const remappedScores = Object.entries(taskDict)
             .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
             .map(([, value]) => {
-                const originalIndex = options.findIndex((option) => option.option_id === value);
+                const originalIndex = options.findIndex((o) => o.option_id === value);
                 return scores[originalIndex];
             });
 
-        // Update global state with initial scores
         setState((prev) => ({
             ...prev,
             initialScores: {
@@ -110,15 +96,17 @@ export function ChoicePage() {
             },
         }));
 
-        // Navigate to the chat page
         router.push("/chat");
     };
+
+    if (loading) {
+        return <div>Loading...</div>; // Show a general loading state during restoration
+    }
 
     if (!task) {
         return <div>Loading task...</div>;
     }
 
-    // Map the randomized options to the correct descriptions
     const remappedOptions = options.map((option) => ({
         ...option,
         desc: options.find((o) => o.option_id === taskDict[option.option_id])?.desc || option.desc,
