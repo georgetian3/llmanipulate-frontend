@@ -220,7 +220,7 @@ export function ChatPage() {
         <h1 className="chat-page-title">{task.query.title.en}</h1>
         <h2 className="chat-page-desc">{task.query.desc.en}</h2>
         <div className="chat-page-content-container">
-          <ChatBox onSendMessage={handleSendMessage} chatHistory={chatHistory} />
+          <ChatBox onSendMessage={handleSendMessage} chatHistory={chatHistory} loading={loading}/>
           <div className="choices-section-container">
             <div className="choices-section">
               {remappedOptions.map((option, index) => (
