@@ -48,10 +48,12 @@ export default function LoginPage() {
             console.log("User Data:", userData);
 
             setState({
-                initialScores: undefined, taskDict: undefined, taskId: "",
+                initialScores: { scores: [], confidence: 0, familiarity: 0 },
+                taskDict: {},
+                taskId: "",
                 taskType: userData.task_type,
                 userId: usercode.trim(),
-                name: userData.demographics.name
+                name: userData.demographics.name,
             });
 
             router.push(`/tasks?`);

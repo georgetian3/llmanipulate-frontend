@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState,useCallback } from "react";
 import TaskCard from "../../components/TaskCard";
 import "../../styles/tasks_page.css";
 import tasks_list from "../../data/tasks.json";
@@ -54,30 +54,32 @@ function TasksPage() {
 
   // Fetch tasks and completed tasks
   useEffect(() => {
-    if (taskType && tasks_list[taskType]) {
-      setTasks(tasks_list[taskType] || []);
+    if (taskType && tasks_list[taskType as keyof typeof tasks_list]) {
+      setTasks(tasks_list[taskType as keyof typeof tasks_list] || []);
     } else {
       setTasks([]);
     }
+  }, [taskType]);
 
-    const fetchCompletedTasks = async () => {
-      try {
-        const response = await apiRequest(`/responses_by_user?user_id=${userId}`, "GET");
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setCompletedTasks(data.map((item) => Number(item.task_name)));
-        }
-      } catch (error) {
-        console.error("Error fetching completed tasks:", error);
-      } finally {
-        setLoading(false);
+  const fetchCompletedTasks = useCallback(async () => {
+    try {
+      const response = await apiRequest(`/responses_by_user?user_id=${userId}`, "GET");
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setCompletedTasks(data.map((item) => Number(item.task_name)));
       }
-    };
+    } catch (error) {
+      console.error("Error fetching completed tasks:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]); // Memoriza a função com base em `userId`
 
+  useEffect(() => {
     if (userId) {
       fetchCompletedTasks();
     }
-  }, [taskType, userId]);
+  }, [taskType, userId, fetchCompletedTasks]);
 
   // Navigate to the final page when all tasks are completed
   useEffect(() => {

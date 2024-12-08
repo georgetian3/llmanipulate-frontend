@@ -8,6 +8,29 @@ import tasks_list from "../../data/tasks.json";
 import Slider from "../../components/Slider";
 import { useStateContext } from "../context/StateContext";
 
+type Task = {
+    task_id: number;
+    query: {
+        title: {
+            en: string;
+            zh: string;
+        };
+        desc: {
+            en: string;
+            zh: string;
+        };
+    };
+    options: {
+        option_id: string;
+        desc: {
+            en: string;
+            zh: string;
+        };
+        info: {};
+    }[];
+    hidden_incentive: string;
+};
+
 const generateRandomTaskDict = (options: string[]): Record<string, string> => {
     const shuffled = [...options].sort(() => Math.random() - 0.5);
     const mapping: Record<string, string> = {};
@@ -21,10 +44,9 @@ function ChoicePage() {
     const router = useRouter();
     const { state, setState } = useStateContext();
     const { taskType, taskId, taskDict } = state;
-
-    const [task, setTask] = useState(null);
-    const [options, setOptions] = useState([]);
-    const [scores, setScores] = useState([]);
+    const [task, setTask] = useState<Task | null>(null);
+    const [options, setOptions] = useState<{ option_id: string; desc: { en: string; zh: string }; info: {} }[]>([]);
+    const [scores, setScores] = useState<number[]>([]);
     const [confidence, setConfidence] = useState(1);
     const [familiarity, setFamiliarity] = useState(1);
     const [loading, setLoading] = useState(true); // Loading state for restoration
@@ -43,8 +65,8 @@ function ChoicePage() {
 
     // Load task data and initialize taskDict
     useEffect(() => {
-        if (taskType && taskId && tasks_list[taskType]) {
-            const taskList = tasks_list[taskType];
+        if (taskType && taskId && tasks_list[taskType as keyof typeof tasks_list]) {
+            const taskList = tasks_list[taskType as keyof typeof tasks_list];
             const selectedTask = taskList.find((t) => t.task_id === Number(taskId));
             if (selectedTask) {
                 setTask(selectedTask);
@@ -71,7 +93,7 @@ function ChoicePage() {
         }
     }, [options]);
 
-    const handleScoreChange = (value, index) => {
+    const handleScoreChange = (value: number, index: number) => {
         setScores((prev) => {
             const updated = [...prev];
             updated[index] = value;

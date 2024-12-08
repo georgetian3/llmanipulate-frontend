@@ -13,7 +13,7 @@ const MAX = 10
 const STEP = 1
 const RESET_CHARACTER = '\u21BA' // ↺
 
-function SliderRange({limit}: {limit: Number}) {
+function SliderRange({limit}: {limit: number}) {
   return <div className="slider-range-limit">
     {limit.toString()}
   </div>

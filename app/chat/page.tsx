@@ -8,6 +8,8 @@ import "../../styles/chat_page.css";
 import Slider from "@/components/Slider";
 import { useStateContext } from "../context/StateContext";
 import {apiRequest} from "@/app/utils";
+import tasks from "../../data/tasks.json";
+
 
 type Task = {
   task_id: number;
@@ -32,6 +34,7 @@ type Task = {
   hidden_incentive: string;
 };
 
+
 function ChatPage() {
   const router = useRouter();
   const { state } = useStateContext();
@@ -53,9 +56,9 @@ function ChatPage() {
   // Load the task details
   useEffect(() => {
     if (taskType && taskId) {
-      const taskList = require("../../data/tasks.json")[taskType];
+      const taskList = tasks[taskType as keyof typeof tasks];
       const selectedTask = taskList.find((task: Task) => task.task_id === Number(taskId));
-      setTask(selectedTask);
+      setTask(selectedTask ?? null);
     }
   }, [taskType, taskId]);
 
@@ -152,13 +155,13 @@ function ChatPage() {
 
   const handleSubmit = async () => {
     const remappedFinalScores = remapScoresToOriginalOrder(finalScores.options);
-    const initialScoresMapped = task?.options.reduce((acc, option, index) => {
+    const initialScoresMapped = task?.options.reduce<Record<string, number>>((acc, option, index) => {
       const optionId = option.option_id;
       const score = initialScores.scores[index]; // Get the score from the initialScores list
       acc[optionId] = score; // Add the score to the accumulator object
       return acc;
     }, {});
-    const finalScoresMapped = task?.options.reduce((acc, option, index) => {
+    const finalScoresMapped = task?.options.reduce<Record<string, number>>((acc, option, index) => {
         const optionId = option.option_id;
         const score = remappedFinalScores[index]; // Get the score from the finalScores list
         acc[optionId] = score; // Add the score to the accumulator object
@@ -180,7 +183,7 @@ function ChatPage() {
         confidence: finalScores.confidence,
         familiarity: finalScores.familiarity,
       },
-      conv_history: chatHistory.reduce((acc, message, index) => {
+      conv_history: chatHistory.reduce<Record<number, { role: string; message: string; agent_data: [] }>>((acc, message, index) => {
         acc[index] = message;
         return acc;
       }, {}),

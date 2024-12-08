@@ -7,8 +7,8 @@ interface AppState {
     taskId: string;
     userId: string;
     name: string;
-    initialScores: any;
-    taskDict: Record<string, string>;
+    initialScores: { scores: number[]; confidence: number; familiarity: number };
+    taskDict: Record<string, string> ;
 }
 
 interface StateContextProps {
@@ -21,7 +21,7 @@ const defaultState: AppState = {
     taskId: "",
     userId: "",
     name: "",
-    initialScores: null,
+    initialScores: { scores: [], confidence: 1, familiarity: 1 },
     taskDict: {},
 };
 
