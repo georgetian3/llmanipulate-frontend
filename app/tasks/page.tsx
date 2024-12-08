@@ -31,7 +31,7 @@ type Task = {
   hidden_incentive: string;
 };
 
-export function TasksPage() {
+function TasksPage() {
   const { state, setState } = useStateContext(); // Use setState for global updates
   const { userId, name, taskType } = state;
   const router = useRouter();

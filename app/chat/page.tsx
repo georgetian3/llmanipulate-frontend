@@ -32,7 +32,7 @@ type Task = {
   hidden_incentive: string;
 };
 
-export function ChatPage() {
+function ChatPage() {
   const router = useRouter();
   const { state } = useStateContext();
   const { taskType, taskId, userId, initialScores, taskDict } = state;
@@ -62,7 +62,7 @@ export function ChatPage() {
   // Initialize WebSocket
   useEffect(() => {
     const initializeWebSocket = () => {
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/chat`);
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}`);
 
       ws.onopen = () => {
         console.log("WebSocket connection established.");

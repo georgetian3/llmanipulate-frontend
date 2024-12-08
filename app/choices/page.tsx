@@ -17,7 +17,7 @@ const generateRandomTaskDict = (options: string[]): Record<string, string> => {
     return mapping;
 };
 
-export function ChoicePage() {
+function ChoicePage() {
     const router = useRouter();
     const { state, setState } = useStateContext();
     const { taskType, taskId, taskDict } = state;
