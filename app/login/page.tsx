@@ -13,7 +13,6 @@ export default function LoginPage() {
     const { setState } = useStateContext();
 
     async function fetchUserData(userId: string) {
-
         try {
             const response = await apiRequest(`/users/${userId}`, "GET")
             if (response.ok) {
