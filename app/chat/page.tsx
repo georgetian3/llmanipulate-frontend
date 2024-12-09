@@ -75,6 +75,7 @@ function ChatPage() {
       };
 
       ws.onmessage = (event) => {
+        console.log(JSON.stringify(event))
         const data = JSON.parse(event.data);
         if (data.response.trim() === "") {
           alert("Agent Message cannot be blank");
