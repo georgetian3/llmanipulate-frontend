@@ -46,17 +46,17 @@ export default function LoginPage() {
 
             console.log("User Data:", userData);
             const state = {
-                taskType: "",
+                taskType: userData.task_type,
                 taskId: "",
                 userId: usercode.trim(),
                 name: userData.demographics.name,
-                initialScores: { scores: [], confidence: 0, familiarity: 0 },
+                initialScores: { scores: [], confidence: 1, familiarity: 1},
                 taskDict: {},
             };
 
-            setState(state);
             if (localStorage.getItem("state"))
                 localStorage.removeItem("state");
+            setState(state);
 
 
             router.push(`/tasks?`);
