@@ -55,7 +55,8 @@ export default function LoginPage() {
             };
 
             setState(state);
-            localStorage.setItem("state", JSON.stringify(state));
+            if (localStorage.getItem("state"))
+                localStorage.removeItem("state");
 
 
             router.push(`/tasks?`);
