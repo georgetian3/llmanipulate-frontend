@@ -75,14 +75,11 @@ function ChatPage() {
       };
 
       ws.onmessage = (event) => {
-        console.log(JSON.stringify(event))
         const data = JSON.parse(event.data);
         if (data.response.trim() === "") {
           alert("Agent Message cannot be blank");
           return;
         }
-        console.log("Received message from agent:", data.response);
-        console.log("Received data from agent:", data);
         setChatHistory((prev) => [...prev, { role: "agent", message: data.response, agent_data: data.agent_data }]);
         setLoading(false);
       };
@@ -112,7 +109,6 @@ function ChatPage() {
       alert("Message cannot be blank");
       return;
     }
-    console.log("Received User message:", userMessage);
     setChatHistory((prev) => [...prev, { role: "user", message: userMessage, agent_data: [] }]);
     setLoading(true);
 
@@ -191,10 +187,8 @@ function ChatPage() {
     };
 
 
-    console.log("Request Body Sent to Backend:", requestBody);
 
     try {
-      console.log("Request Body Sent to Backend:", requestBody);
 
       const response = await apiRequest(`/submit_response`, "POST", requestBody);
       if (!response.ok) {
@@ -202,7 +196,6 @@ function ChatPage() {
         console.error("API Error Response:", errorText);
         throw new Error(`API Error: ${response.status}`);
       }
-      console.log("Data submitted successfully.,", response);
       router.push("/tasks");
     } catch (error) {
       console.error("Error during submission:", error);

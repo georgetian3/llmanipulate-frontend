@@ -44,7 +44,6 @@ export default function LoginPage() {
                 return;
             }
 
-            console.log("User Data:", userData);
             const state = {
                 taskType: "",
                 taskId: "",
