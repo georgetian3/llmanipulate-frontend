@@ -1,5 +1,5 @@
 "use client"; 
-import { useState } from "react";
+import {useState} from "react";
 import { useRouter } from "next/navigation";
 import "../../styles/login_page.css";
 import { apiRequest } from "../utils";
@@ -45,15 +45,18 @@ export default function LoginPage() {
             }
 
             console.log("User Data:", userData);
-
-            setState({
-                initialScores: { scores: [], confidence: 0, familiarity: 0 },
-                taskDict: {},
+            const state = {
+                taskType: "",
                 taskId: "",
-                taskType: userData.task_type,
                 userId: usercode.trim(),
                 name: userData.demographics.name,
-            });
+                initialScores: { scores: [], confidence: 0, familiarity: 0 },
+                taskDict: {},
+            };
+
+            setState(state);
+            localStorage.setItem("state", JSON.stringify(state));
+
 
             router.push(`/tasks?`);
         } catch (error) {
