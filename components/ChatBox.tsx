@@ -10,10 +10,8 @@ type ChatBoxProps = {
 };
 
 export default function ChatBox({ onSendMessage, chatHistory, loading }: ChatBoxProps) {
-  console.log(chatHistory, "chatHistory");
 
   const [input, setInput] = useState("");
-
 
 
   const handleSend = () => {
