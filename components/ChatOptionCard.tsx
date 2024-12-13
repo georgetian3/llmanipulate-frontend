@@ -31,7 +31,7 @@ function Accordion({text}: {text: string}) {
 export default function ChatOptionCard({ title, description, score, onScoreChange }: OptionCardProps) {
   return (
     <div className="chat-option-card">
-      <h1>Option {title}</h1>
+      <h1>{title}</h1>
       <Accordion text={description} />
       <Slider
         label="Preference for this option"

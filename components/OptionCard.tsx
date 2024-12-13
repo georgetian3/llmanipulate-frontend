@@ -13,7 +13,7 @@ export default function OptionCard({ title, description, score, onScoreChange }:
   return (
     <div className="option-card bg-[#ebedf1]">
       <div>
-        <h2 className="option-card-title">Option {title}</h2>
+        <h2 className="option-card-title">{title}</h2>
         <p className="option-card-description">{description}</p>
       </div>
       <Slider

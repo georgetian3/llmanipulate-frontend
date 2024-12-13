@@ -40,7 +40,7 @@ function ChatPage() {
 
   const websocketRef = useRef<WebSocket | null>(null);
   const messageQueue = useRef<string[]>([]);
-  const MIN_MESSAGES = 0;
+  const MIN_MESSAGES = 20;
   const optionLabels = useMemo(() => ["A", "B", "C", "D"], []);
 
 
@@ -96,7 +96,7 @@ function ChatPage() {
       };
 
       ws.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        console.log("WebSocket error:", error);
       };
 
       websocketRef.current = ws;
@@ -129,7 +129,6 @@ function ChatPage() {
 
     if (websocketRef.current?.readyState === WebSocket.OPEN) {
       websocketRef.current.send(messageString);
-      console.log("Sent message:", messageString);
     } else {
       messageQueue.current.push(messageString);
     }
