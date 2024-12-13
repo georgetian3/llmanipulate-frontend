@@ -83,10 +83,16 @@ function TasksPage() {
 
   // Navigate to the final page when all tasks are completed
   useEffect(() => {
-    if (tasks.length > 0 && completedTasks.length === tasks.length) {
+    const requiredTaskIds = [1, 2, 3]; // Required task IDs
+
+    const allRequiredTasksCompleted = requiredTaskIds.every((taskId) =>
+        completedTasks.includes(taskId)
+    );
+
+    if (allRequiredTasksCompleted) {
       router.push("/final");
     }
-  }, [tasks, completedTasks, router]);
+  }, [completedTasks, router]);
 
   if (loading) {
     return <div>Loading tasks...</div>;

@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 import {useState} from "react";
 import { useRouter } from "next/navigation";
 import "../../styles/login_page.css";
@@ -16,9 +16,9 @@ export default function LoginPage() {
         try {
             const response = await apiRequest(`/users/${userId}`, "GET")
             if (response.ok) {
-                return await response.json(); 
+                return await response.json();
             } else if (response.status === 404) {
-                return null; 
+                return null;
             } else {
                 throw new Error(`Unexpected server error: ${response.status}`);
             }
@@ -37,8 +37,8 @@ export default function LoginPage() {
         }
 
         setLoading(true);
-        try {      
-            const userData = await fetchUserData(usercode.trim()); 
+        try {
+            const userData = await fetchUserData(usercode.trim());
             if (!userData) {
                 alert("No matching User found. Please try again.");
                 return;
@@ -49,8 +49,8 @@ export default function LoginPage() {
                 taskId: "",
                 userId: usercode.trim(),
                 name: userData.demographics.name,
-                initialScores: { scores: [], confidence: 1, familiarity: 1},
-                taskDict: {},
+                initialScores: { A:1,B:1,C:1,D:1, confidence: 1, familiarity: 1 },
+                options: [],
             };
 
             if (localStorage.getItem("state"))
