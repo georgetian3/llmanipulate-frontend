@@ -4,7 +4,6 @@ import { StoreProvider } from "./StoreProvider";
 import { Nav } from "./components/Nav";
 
 import "./styles/globals.css";
-import styles from "./styles/layout.module.css";
 
 interface Props {
   readonly children: ReactNode;
@@ -15,7 +14,7 @@ export default function RootLayout({ children }: Props) {
     <StoreProvider>
       <html lang="en">
         <body>
-          <section className={styles.container}>
+          {/* <section className={styles.container}>
             <Nav />
 
             <header className={styles.header}>
@@ -26,10 +25,10 @@ export default function RootLayout({ children }: Props) {
                 width={100}
                 height={100}
               />
-            </header>
+            </header> */}
 
-            <main className={styles.main}>{children}</main>
-
+            {children}
+{/* 
             <footer className={styles.footer}>
               <span>Learn </span>
               <a
@@ -77,7 +76,7 @@ export default function RootLayout({ children }: Props) {
                 Reselect
               </a>
             </footer>
-          </section>
+          </section> */}
         </body>
       </html>
     </StoreProvider>
