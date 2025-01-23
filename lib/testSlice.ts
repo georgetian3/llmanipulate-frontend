@@ -105,11 +105,12 @@ export const testSlice = createAppSlice({
     selectLoading: (state) => state.loginLoading,
     selectWarning: (state) => state.loginWarning,
     selectSave: (state) => state.loginSave,
+    selectUser: (state) => state.user,
   }
 })
 
 export const { setUser } = testSlice.actions
-export const { selectLoading, selectWarning, selectSave } = testSlice.selectors
+export const { selectLoading, selectWarning, selectSave, selectUser } = testSlice.selectors
 
 // // If you are not using async thunks you can use the standalone `createSlice`.
 // export const counterSlice = createAppSlice({

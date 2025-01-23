@@ -19,7 +19,6 @@ function clearUserPassword() {
   localStorage.removeItem(user_id_key)
 }
 
-
 export default function LoginPage() {
   const router = useRouter()
   const [password, setPassword] = useState('')
