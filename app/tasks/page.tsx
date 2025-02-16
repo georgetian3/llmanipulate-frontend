@@ -1,127 +1,130 @@
-"use client";
+// "use client";
 
-import { Suspense, useEffect, useState,useCallback } from "react";
-import TaskCard from "../../components/TaskCard";
-import "../../styles/tasks_page.css";
-import tasks_list from "../../data/tasks.json";
-import { apiRequest } from "../utils";
-import { useStateContext } from "../context/StateContext";
-import { useRouter } from "next/navigation";
+import { Suspense } from "react";
 
-type Task = {
-  task_id: number;
-  query: {
-    title: {
-      en: string;
-      zh: string;
-    };
-    desc: {
-      en: string;
-      zh: string;
-    };
-  };
-  options: {
-    option_id: string;
-    desc: {
-      en: string;
-      zh: string;
-    };
-    info: {};
-  }[];
-  hidden_incentive: string;
-};
+// import { Suspense, useEffect, useState, useCallback } from "react";
+// import TaskCard from "../../components/TaskCard";
+// import "../../styles/tasks_page.css";
+// import tasks_list from "../../data/tasks.json";
+// import { apiRequest } from "../utils";
+// import { useStateContext } from "../context/StateContext";
+// import { useRouter } from "next/navigation";
 
-function TasksPage() {
-  const { state, setState } = useStateContext(); // Use setState for global updates
-  const { userId, name, taskType } = state;
-  const router = useRouter();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [completedTasks, setCompletedTasks] = useState<number[]>([]);
-  const [loading, setLoading] = useState(true);
+// type Task = {
+//   task_id: number;
+//   query: {
+//     title: {
+//       en: string;
+//       zh: string;
+//     };
+//     desc: {
+//       en: string;
+//       zh: string;
+//     };
+//   };
+//   options: {
+//     option_id: string;
+//     desc: {
+//       en: string;
+//       zh: string;
+//     };
+//     info: {};
+//   }[];
+//   hidden_incentive: string;
+// };
 
-  // Restore global state from localStorage on component mount
-  useEffect(() => {
-    const savedState = localStorage.getItem("state");
-    if (savedState) {
-      setState((prev) => ({ ...prev, ...JSON.parse(savedState) }));
-    }
-  }, [setState]);
+// function TasksPage() {
+//   const { state, setState } = useStateContext(); // Use setState for global updates
+//   const { userId, name, taskType } = state;
+//   const router = useRouter();
+//   const [tasks, setTasks] = useState<Task[]>([]);
+//   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
+//   const [loading, setLoading] = useState(true);
 
-  // Persist global state to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("state", JSON.stringify(state));
-  }, [state]);
+//   // Restore global state from localStorage on component mount
+//   useEffect(() => {
+//     const savedState = localStorage.getItem("state");
+//     if (savedState) {
+//       setState((prev) => ({ ...prev, ...JSON.parse(savedState) }));
+//     }
+//   }, [setState]);
 
-  // Fetch tasks and completed tasks
-  useEffect(() => {
-    if (taskType && tasks_list[taskType as keyof typeof tasks_list]) {
-      setTasks(tasks_list[taskType as keyof typeof tasks_list] || []);
-    } else {
-      setTasks([]);
-    }
-  }, [taskType]);
+//   // Persist global state to localStorage whenever it changes
+//   useEffect(() => {
+//     localStorage.setItem("state", JSON.stringify(state));
+//   }, [state]);
 
-  const fetchCompletedTasks = useCallback(async () => {
-    try {
-      const response = await apiRequest(`/responses_by_user?user_id=${userId}`, "GET");
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setCompletedTasks(data.map((item) => Number(item.task_name)));
-      }
-    } catch (error) {
-      console.error("Error fetching completed tasks:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]); // Memoriza a função com base em `userId`
+//   // Fetch tasks and completed tasks
+//   useEffect(() => {
+//     if (taskType && tasks_list[taskType as keyof typeof tasks_list]) {
+//       setTasks(tasks_list[taskType as keyof typeof tasks_list] || []);
+//     } else {
+//       setTasks([]);
+//     }
+//   }, [taskType]);
 
-  useEffect(() => {
-    if (userId) {
-      fetchCompletedTasks();
-    }
-  }, [taskType, userId, fetchCompletedTasks]);
+//   const fetchCompletedTasks = useCallback(async () => {
+//     try {
+//       const response = await apiRequest(`/responses_by_user?user_id=${userId}`, "GET");
+//       const data = await response.json();
+//       if (Array.isArray(data)) {
+//         setCompletedTasks(data.map((item) => Number(item.task_name)));
+//       }
+//     } catch (error) {
+//       console.error("Error fetching completed tasks:", error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   }, [userId]); // Memoriza a função com base em `userId`
 
-  // Navigate to the final page when all tasks are completed
-  useEffect(() => {
-    const requiredTaskIds = [1, 2, 3]; // Required task IDs
+//   useEffect(() => {
+//     if (userId) {
+//       fetchCompletedTasks();
+//     }
+//   }, [taskType, userId, fetchCompletedTasks]);
 
-    const allRequiredTasksCompleted = requiredTaskIds.every((taskId) =>
-        completedTasks.includes(taskId)
-    );
+//   // Navigate to the final page when all tasks are completed
+//   useEffect(() => {
+//     const requiredTaskIds = [1, 2, 3]; // Required task IDs
 
-    if (allRequiredTasksCompleted) {
-      router.push("/final");
-    }
-  }, [completedTasks, router]);
+//     const allRequiredTasksCompleted = requiredTaskIds.every((taskId) =>
+//       completedTasks.includes(taskId)
+//     );
 
-  if (loading) {
-    return <div>Loading tasks...</div>;
-  }
+//     if (allRequiredTasksCompleted) {
+//       router.push("/final");
+//     }
+//   }, [completedTasks, router]);
 
-  return (
-      <div className="tasks-container">
-        <h1 className="font-bold text-left">Welcome, {name}</h1>
-        <h2>Please select one of the following scenarios:</h2>
-        <div className="task-cards">
-          {tasks.map((task, index) => (
-              <TaskCard
-                  key={index}
-                  task={task}
-                  taskType={taskType}
-                  userId={userId}
-                  name={name}
-                  isCompleted={completedTasks.includes(task.task_id)}
-              />
-          ))}
-        </div>
-      </div>
-  );
-}
+//   if (loading) {
+//     return <div>Loading tasks...</div>;
+//   }
+
+//   return (
+//     <div className="tasks-container">
+//       <h1 className="font-bold text-left">Welcome, {name}</h1>
+//       <h2>Please select one of the following scenarios:</h2>
+//       <div className="task-cards">
+//         {tasks.map((task, index) => (
+//           <TaskCard
+//             key={index}
+//             task={task}
+//             taskType={taskType}
+//             userId={userId}
+//             name={name}
+//             isCompleted={completedTasks.includes(task.task_id)}
+//           />
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
 
 export default function TasksPageWrapper() {
   return (
-      <Suspense>
-        <TasksPage />
-      </Suspense>
+    <Suspense>
+      {/* <TasksPage /> */}
+      <></>
+    </Suspense>
   );
 }

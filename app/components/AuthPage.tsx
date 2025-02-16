@@ -7,7 +7,7 @@ export default function AuthPage({children}: {children: ReactNode}) {
     const user = useAppSelector(selectUser);
     const router = useRouter()
     if (user === null) {
-        router.replace()
+        // router.replace()
     }
     
     return <>{children}</>
