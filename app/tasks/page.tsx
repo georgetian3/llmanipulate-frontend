@@ -1,5 +1,7 @@
 // "use client";
 
+import { Suspense } from "react";
+
 // import { Suspense, useEffect, useState, useCallback } from "react";
 // import TaskCard from "../../components/TaskCard";
 // import "../../styles/tasks_page.css";
@@ -118,10 +120,11 @@
 //   );
 // }
 
-// export default function TasksPageWrapper() {
-//   return (
-//     <Suspense>
-//       <TasksPage />
-//     </Suspense>
-//   );
-// }
+export default function TasksPageWrapper() {
+  return (
+    <Suspense>
+      {/* <TasksPage /> */}
+      <></>
+    </Suspense>
+  );
+}

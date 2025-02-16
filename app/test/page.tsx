@@ -101,3 +101,7 @@
 //     {taskConfig && taskConfig.pages.map((page, index) => <TaskPageUI key={index} taskPage={page} hidden={currentPageIndex != index} />)}
 //   </div>
 // }
+
+export default function TestPage() {
+  return <></>
+}
