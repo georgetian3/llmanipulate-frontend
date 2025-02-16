@@ -5,6 +5,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
+import { HeroUIProvider } from '@heroui/react'
 
 interface Props {
   readonly children: ReactNode;
@@ -27,5 +28,9 @@ export const StoreProvider = ({ children }: Props) => {
     }
   }, []);
 
-  return <Provider store={storeRef.current}>{children}</Provider>;
+  return <Provider store={storeRef.current}>
+    <HeroUIProvider>
+      {children}
+    </HeroUIProvider>
+  </Provider>
 };
