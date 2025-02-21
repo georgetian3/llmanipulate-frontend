@@ -2,6 +2,9 @@ import { ResponseContext, RequestContext, HttpFile, HttpInfo } from '../http/htt
 import { Configuration} from '../configuration'
 import { Observable, of, from } from '../rxjsStub';
 import {mergeMap, map} from  '../rxjsStub';
+import { Chat } from '../models/Chat';
+import { ChatHistory } from '../models/ChatHistory';
+import { ChatMessage } from '../models/ChatMessage';
 import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
 import { ErrorResponse } from '../models/ErrorResponse';
@@ -10,6 +13,7 @@ import { HTTPValidationError } from '../models/HTTPValidationError';
 import { MultiChoice } from '../models/MultiChoice';
 import { NewResponse } from '../models/NewResponse';
 import { NewUser } from '../models/NewUser';
+import { Participant } from '../models/Participant';
 import { Response } from '../models/Response';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
@@ -19,6 +23,55 @@ import { Translations } from '../models/Translations';
 import { User } from '../models/User';
 import { ValidationError } from '../models/ValidationError';
 import { ValidationErrorLocInner } from '../models/ValidationErrorLocInner';
+
+import { ChatApiRequestFactory, ChatApiResponseProcessor} from "../apis/ChatApi";
+export class ObservableChatApi {
+    private requestFactory: ChatApiRequestFactory;
+    private responseProcessor: ChatApiResponseProcessor;
+    private configuration: Configuration;
+
+    public constructor(
+        configuration: Configuration,
+        requestFactory?: ChatApiRequestFactory,
+        responseProcessor?: ChatApiResponseProcessor
+    ) {
+        this.configuration = configuration;
+        this.requestFactory = requestFactory || new ChatApiRequestFactory(configuration);
+        this.responseProcessor = responseProcessor || new ChatApiResponseProcessor();
+    }
+
+    /**
+     * Get Chat
+     * @param id
+     */
+    public getChatWithHttpInfo(id: string, _options?: Configuration): Observable<HttpInfo<ChatHistory>> {
+        const requestContextPromise = this.requestFactory.getChat(id, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (const middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (const middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getChatWithHttpInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Get Chat
+     * @param id
+     */
+    public getChat(id: string, _options?: Configuration): Observable<ChatHistory> {
+        return this.getChatWithHttpInfo(id, _options).pipe(map((apiResponse: HttpInfo<ChatHistory>) => apiResponse.data));
+    }
+
+}
 
 import { DefaultApiRequestFactory, DefaultApiResponseProcessor} from "../apis/DefaultApi";
 export class ObservableDefaultApi {

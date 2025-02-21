@@ -10,8 +10,10 @@
  * Do not edit the class manually.
  */
 
+import { Chat } from '../models/Chat';
 import { FreeText } from '../models/FreeText';
 import { MultiChoice } from '../models/MultiChoice';
+import { Participant } from '../models/Participant';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { Translations } from '../models/Translations';
@@ -27,9 +29,13 @@ export class ComponentGroupComponentsInner {
     */
     'shuffle'?: boolean;
     'type'?: ComponentGroupComponentsInnerTypeEnum;
+    'minChoices'?: number;
+    'maxChoices'?: number;
     'steps': number;
     'labels'?: Array<Translations>;
     'regex'?: string;
+    'participants'?: Array<Participant>;
+    'order'?: Array<string>;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -73,6 +79,18 @@ export class ComponentGroupComponentsInner {
             "format": ""
         },
         {
+            "name": "minChoices",
+            "baseName": "min_choices",
+            "type": "number",
+            "format": ""
+        },
+        {
+            "name": "maxChoices",
+            "baseName": "max_choices",
+            "type": "number",
+            "format": ""
+        },
+        {
             "name": "steps",
             "baseName": "steps",
             "type": "number",
@@ -89,6 +107,18 @@ export class ComponentGroupComponentsInner {
             "baseName": "regex",
             "type": "string",
             "format": ""
+        },
+        {
+            "name": "participants",
+            "baseName": "participants",
+            "type": "Array<Participant>",
+            "format": ""
+        },
+        {
+            "name": "order",
+            "baseName": "order",
+            "type": "Array<string>",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
@@ -103,6 +133,7 @@ export enum ComponentGroupComponentsInnerTypeEnum {
     SingleChoice = 'single_choice',
     MultiChoice = 'multi_choice',
     Slider = 'slider',
-    FreeText = 'free_text'
+    FreeText = 'free_text',
+    Chat = 'chat'
 }
 

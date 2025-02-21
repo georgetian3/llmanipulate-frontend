@@ -1,10 +1,11 @@
 .gitattributes
 .gitignore
-.openapi-generator-ignore
+ChatApi.md
 DefaultApi.md
 README.md
 TasksApi.md
 UsersApi.md
+apis/ChatApi.ts
 apis/DefaultApi.ts
 apis/TasksApi.ts
 apis/UsersApi.ts
@@ -17,6 +18,9 @@ http/http.ts
 http/isomorphic-fetch.ts
 index.ts
 middleware.ts
+models/Chat.ts
+models/ChatHistory.ts
+models/ChatMessage.ts
 models/ComponentGroup.ts
 models/ComponentGroupComponentsInner.ts
 models/ErrorResponse.ts
@@ -26,6 +30,7 @@ models/MultiChoice.ts
 models/NewResponse.ts
 models/NewUser.ts
 models/ObjectSerializer.ts
+models/Participant.ts
 models/Response.ts
 models/SingleChoice.ts
 models/Slider.ts
