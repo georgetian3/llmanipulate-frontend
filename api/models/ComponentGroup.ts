@@ -15,6 +15,10 @@ import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class ComponentGroup {
+    /**
+    * The number of columns used to display the children of this component
+    */
+    'columns'?: number;
     'label'?: Translations | null;
     'components': Array<ComponentGroupComponentsInner>;
 
@@ -23,6 +27,12 @@ export class ComponentGroup {
     static readonly mapping: {[index: string]: string} | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
+        {
+            "name": "columns",
+            "baseName": "columns",
+            "type": "number",
+            "format": ""
+        },
         {
             "name": "label",
             "baseName": "label",
