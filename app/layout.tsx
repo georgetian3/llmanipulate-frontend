@@ -1,28 +1,23 @@
-import { useState, type ReactNode } from "react";
-import { StoreProvider } from "./StoreProvider";
-
 import "./styles/globals.css";
-import { Viewport } from "next";
-import { Navbar } from "@/components/navbar";
+import { Metadata, Viewport } from "next";
 import clsx from "clsx";
+
+
+import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
+import { Navbar } from "@/components/navbar";
+import { Providers } from "./providers";
 
-interface Props {
-  readonly children: ReactNode;
-}
-
-// export default function RootLayout({ children }: Props) {
-//   const [dark, setDark] = useState(false)
-//   return <html className={dark ? "dark" : "light"}>
-//     <body>
-//         <nav>
-//           <button onClick={() => setDark(!dark)}>Light/Dark</button>
-//         </nav>
-//         {children}
-//     </body>
-//   </html>
-// }
-
+export const metadata: Metadata = {
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
 
 export const viewport: Viewport = {
   themeColor: [
@@ -45,16 +40,14 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <StoreProvider>
-
+        <Providers themeProps={{ attribute: "class", defaultTheme: "dark" }}>
           <div className="h-screen">
             <Navbar />
             <main className="container h-[calc(100vh-4rem)] mx-auto">
               {children}
             </main>
           </div>
-        </StoreProvider>
-
+        </Providers>
       </body>
     </html>
   );
