@@ -1,3 +1,6 @@
+export * from '../models/Chat';
+export * from '../models/ChatHistory';
+export * from '../models/ChatMessage';
 export * from '../models/ComponentGroup';
 export * from '../models/ComponentGroupComponentsInner';
 export * from '../models/ErrorResponse';
@@ -6,6 +9,7 @@ export * from '../models/HTTPValidationError';
 export * from '../models/MultiChoice';
 export * from '../models/NewResponse';
 export * from '../models/NewUser';
+export * from '../models/Participant';
 export * from '../models/Response';
 export * from '../models/SingleChoice';
 export * from '../models/Slider';
@@ -16,14 +20,18 @@ export * from '../models/User';
 export * from '../models/ValidationError';
 export * from '../models/ValidationErrorLocInner';
 
+import { Chat   , ChatTypeEnum     } from '../models/Chat';
+import { ChatHistory } from '../models/ChatHistory';
+import { ChatMessage } from '../models/ChatMessage';
 import { ComponentGroup } from '../models/ComponentGroup';
-import { ComponentGroupComponentsInner     , ComponentGroupComponentsInnerTypeEnum      } from '../models/ComponentGroupComponentsInner';
+import { ComponentGroupComponentsInner     , ComponentGroupComponentsInnerTypeEnum          } from '../models/ComponentGroupComponentsInner';
 import { ErrorResponse } from '../models/ErrorResponse';
 import { FreeText   , FreeTextTypeEnum    } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
-import { MultiChoice     , MultiChoiceTypeEnum   } from '../models/MultiChoice';
+import { MultiChoice     , MultiChoiceTypeEnum     } from '../models/MultiChoice';
 import { NewResponse } from '../models/NewResponse';
 import { NewUser } from '../models/NewUser';
+import { Participant } from '../models/Participant';
 import { Response } from '../models/Response';
 import { SingleChoice     , SingleChoiceTypeEnum   } from '../models/SingleChoice';
 import { Slider   , SliderTypeEnum     } from '../models/Slider';
@@ -47,6 +55,7 @@ let primitives = [
                  ];
 
 let enumsMap: Set<string> = new Set<string>([
+    "ChatTypeEnum",
     "ComponentGroupComponentsInnerTypeEnum",
     "FreeTextTypeEnum",
     "MultiChoiceTypeEnum",
@@ -55,6 +64,9 @@ let enumsMap: Set<string> = new Set<string>([
 ]);
 
 let typeMap: {[index: string]: any} = {
+    "Chat": Chat,
+    "ChatHistory": ChatHistory,
+    "ChatMessage": ChatMessage,
     "ComponentGroup": ComponentGroup,
     "ComponentGroupComponentsInner": ComponentGroupComponentsInner,
     "ErrorResponse": ErrorResponse,
@@ -63,6 +75,7 @@ let typeMap: {[index: string]: any} = {
     "MultiChoice": MultiChoice,
     "NewResponse": NewResponse,
     "NewUser": NewUser,
+    "Participant": Participant,
     "Response": Response,
     "SingleChoice": SingleChoice,
     "Slider": Slider,

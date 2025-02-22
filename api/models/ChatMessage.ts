@@ -10,16 +10,13 @@
  * Do not edit the class manually.
  */
 
-import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
-export class Slider {
+export class ChatMessage {
     'id': string;
-    'label': Translations | null;
-    'optional'?: boolean;
-    'type'?: SliderTypeEnum;
-    'steps': number;
-    'labels'?: Array<Translations> | null;
+    'sender': string;
+    'message': string;
+    'timestamp': Date;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -33,45 +30,28 @@ export class Slider {
             "format": ""
         },
         {
-            "name": "label",
-            "baseName": "label",
-            "type": "Translations",
+            "name": "sender",
+            "baseName": "sender",
+            "type": "string",
             "format": ""
         },
         {
-            "name": "optional",
-            "baseName": "optional",
-            "type": "boolean",
+            "name": "message",
+            "baseName": "message",
+            "type": "string",
             "format": ""
         },
         {
-            "name": "type",
-            "baseName": "type",
-            "type": "SliderTypeEnum",
-            "format": ""
-        },
-        {
-            "name": "steps",
-            "baseName": "steps",
-            "type": "number",
-            "format": ""
-        },
-        {
-            "name": "labels",
-            "baseName": "labels",
-            "type": "Array<Translations>",
-            "format": ""
+            "name": "timestamp",
+            "baseName": "timestamp",
+            "type": "Date",
+            "format": "date-time"
         }    ];
 
     static getAttributeTypeMap() {
-        return Slider.attributeTypeMap;
+        return ChatMessage.attributeTypeMap;
     }
 
     public constructor() {
     }
 }
-
-export enum SliderTypeEnum {
-    Slider = 'slider'
-}
-

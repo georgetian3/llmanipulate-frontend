@@ -15,7 +15,7 @@ import { HttpFile } from '../http/http';
 
 export class FreeText {
     'id': string;
-    'label': Translations;
+    'label': Translations | null;
     'optional'?: boolean;
     'type'?: FreeTextTypeEnum;
     'regex'?: string | null;

@@ -10,17 +10,12 @@
  * Do not edit the class manually.
  */
 
-import { ComponentGroup } from '../models/ComponentGroup';
-import { Translations } from '../models/Translations';
+import { ChatMessage } from '../models/ChatMessage';
 import { HttpFile } from '../http/http';
 
-export class TaskPage {
-    /**
-    * The number of columns used to display the component groups
-    */
-    'columns'?: number;
-    'label'?: Translations | null;
-    'componentGroups': Array<ComponentGroup>;
+export class ChatHistory {
+    'id': string;
+    'messages': Array<ChatMessage>;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -28,26 +23,20 @@ export class TaskPage {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "columns",
-            "baseName": "columns",
-            "type": "number",
+            "name": "id",
+            "baseName": "id",
+            "type": "string",
             "format": ""
         },
         {
-            "name": "label",
-            "baseName": "label",
-            "type": "Translations",
-            "format": ""
-        },
-        {
-            "name": "componentGroups",
-            "baseName": "component_groups",
-            "type": "Array<ComponentGroup>",
+            "name": "messages",
+            "baseName": "messages",
+            "type": "Array<ChatMessage>",
             "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return TaskPage.attributeTypeMap;
+        return ChatHistory.attributeTypeMap;
     }
 
     public constructor() {

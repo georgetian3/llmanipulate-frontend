@@ -10,19 +10,17 @@
  * Do not edit the class manually.
  */
 
+import { Participant } from '../models/Participant';
 import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
-export class SingleChoice {
+export class Chat {
     'id': string;
-    'label': Translations | null;
+    'label'?: Translations | null;
     'optional'?: boolean;
-    'choices': Array<Translations>;
-    /**
-    * If `true`, choices are displayed in a random order to the user
-    */
-    'shuffle'?: boolean;
-    'type'?: SingleChoiceTypeEnum;
+    'type'?: ChatTypeEnum;
+    'participants'?: Array<Participant>;
+    'order'?: Array<string> | null;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -48,33 +46,33 @@ export class SingleChoice {
             "format": ""
         },
         {
-            "name": "choices",
-            "baseName": "choices",
-            "type": "Array<Translations>",
-            "format": ""
-        },
-        {
-            "name": "shuffle",
-            "baseName": "shuffle",
-            "type": "boolean",
-            "format": ""
-        },
-        {
             "name": "type",
             "baseName": "type",
-            "type": "SingleChoiceTypeEnum",
+            "type": "ChatTypeEnum",
+            "format": ""
+        },
+        {
+            "name": "participants",
+            "baseName": "participants",
+            "type": "Array<Participant>",
+            "format": ""
+        },
+        {
+            "name": "order",
+            "baseName": "order",
+            "type": "Array<string>",
             "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return SingleChoice.attributeTypeMap;
+        return Chat.attributeTypeMap;
     }
 
     public constructor() {
     }
 }
 
-export enum SingleChoiceTypeEnum {
-    SingleChoice = 'single_choice'
+export enum ChatTypeEnum {
+    Chat = 'chat'
 }
 

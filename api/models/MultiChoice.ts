@@ -15,7 +15,7 @@ import { HttpFile } from '../http/http';
 
 export class MultiChoice {
     'id': string;
-    'label': Translations;
+    'label': Translations | null;
     'optional'?: boolean;
     'choices': Array<Translations>;
     /**
@@ -23,6 +23,8 @@ export class MultiChoice {
     */
     'shuffle'?: boolean;
     'type'?: MultiChoiceTypeEnum;
+    'minChoices'?: number;
+    'maxChoices'?: number;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -63,6 +65,18 @@ export class MultiChoice {
             "name": "type",
             "baseName": "type",
             "type": "MultiChoiceTypeEnum",
+            "format": ""
+        },
+        {
+            "name": "minChoices",
+            "baseName": "min_choices",
+            "type": "number",
+            "format": ""
+        },
+        {
+            "name": "maxChoices",
+            "baseName": "max_choices",
+            "type": "number",
             "format": ""
         }    ];
 

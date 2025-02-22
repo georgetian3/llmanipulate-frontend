@@ -1,6 +1,9 @@
 import { ResponseContext, RequestContext, HttpFile, HttpInfo } from '../http/http';
 import { Configuration} from '../configuration'
 
+import { Chat } from '../models/Chat';
+import { ChatHistory } from '../models/ChatHistory';
+import { ChatMessage } from '../models/ChatMessage';
 import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
 import { ErrorResponse } from '../models/ErrorResponse';
@@ -9,6 +12,7 @@ import { HTTPValidationError } from '../models/HTTPValidationError';
 import { MultiChoice } from '../models/MultiChoice';
 import { NewResponse } from '../models/NewResponse';
 import { NewUser } from '../models/NewUser';
+import { Participant } from '../models/Participant';
 import { Response } from '../models/Response';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
@@ -18,6 +22,43 @@ import { Translations } from '../models/Translations';
 import { User } from '../models/User';
 import { ValidationError } from '../models/ValidationError';
 import { ValidationErrorLocInner } from '../models/ValidationErrorLocInner';
+import { ObservableChatApi } from './ObservableAPI';
+
+import { ChatApiRequestFactory, ChatApiResponseProcessor} from "../apis/ChatApi";
+export class PromiseChatApi {
+    private api: ObservableChatApi
+
+    public constructor(
+        configuration: Configuration,
+        requestFactory?: ChatApiRequestFactory,
+        responseProcessor?: ChatApiResponseProcessor
+    ) {
+        this.api = new ObservableChatApi(configuration, requestFactory, responseProcessor);
+    }
+
+    /**
+     * Get Chat
+     * @param id
+     */
+    public getChatWithHttpInfo(id: string, _options?: Configuration): Promise<HttpInfo<ChatHistory>> {
+        const result = this.api.getChatWithHttpInfo(id, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get Chat
+     * @param id
+     */
+    public getChat(id: string, _options?: Configuration): Promise<ChatHistory> {
+        const result = this.api.getChat(id, _options);
+        return result.toPromise();
+    }
+
+
+}
+
+
+
 import { ObservableDefaultApi } from './ObservableAPI';
 
 import { DefaultApiRequestFactory, DefaultApiResponseProcessor} from "../apis/DefaultApi";

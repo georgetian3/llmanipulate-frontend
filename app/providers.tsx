@@ -2,16 +2,18 @@
 import type { AppStore } from "@/lib/store";
 import { makeStore } from "@/lib/store";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { HeroUIProvider } from '@heroui/react'
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+import type { ThemeProviderProps } from "next-themes";
 
-interface Props {
-  readonly children: ReactNode;
+export interface ProvidersProps {
+  children: React.ReactNode;
+  themeProps?: ThemeProviderProps;
 }
 
-export const StoreProvider = ({ children }: Props) => {
+export const Providers = ({ children, themeProps }: ProvidersProps) => {
   const storeRef = useRef<AppStore | null>(null);
 
   if (!storeRef.current) {
@@ -30,7 +32,9 @@ export const StoreProvider = ({ children }: Props) => {
 
   return <Provider store={storeRef.current}>
     <HeroUIProvider>
-      {children}
+      <NextThemesProvider {...themeProps}>
+        {children}
+      </NextThemesProvider>
     </HeroUIProvider>
   </Provider>
 };
