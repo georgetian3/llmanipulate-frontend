@@ -1,8 +1,8 @@
 import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 
 
-import { MultiChoice } from "@/api";
 import { getTranslation } from "./utils";
+import { MultiChoice } from "@/api/models/MultiChoice";
 
 interface MultiChoiceProps {
   config: MultiChoice;

@@ -10,12 +10,13 @@
  * Do not edit the class manually.
  */
 
+import { Id } from '../models/Id';
 import { Participant } from '../models/Participant';
 import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class Chat {
-    'id': string;
+    'id': Id;
     'label'?: Translations | null;
     'optional'?: boolean;
     'type'?: ChatTypeEnum;
@@ -30,7 +31,7 @@ export class Chat {
         {
             "name": "id",
             "baseName": "id",
-            "type": "string",
+            "type": "Id",
             "format": ""
         },
         {
@@ -61,7 +62,7 @@ export class Chat {
             "name": "order",
             "baseName": "order",
             "type": "Array<string>",
-            "format": ""
+            "format": "uuid4"
         }    ];
 
     static getAttributeTypeMap() {

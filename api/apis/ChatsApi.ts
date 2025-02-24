@@ -8,13 +8,13 @@ import {canConsumeForm, isCodeInRange} from '../util';
 import {SecurityAuthentication} from '../auth/auth';
 
 
-import { ChatHistory } from '../models/ChatHistory';
+import { ChatHistoryRead } from '../models/ChatHistoryRead';
 import { HTTPValidationError } from '../models/HTTPValidationError';
 
 /**
  * no description
  */
-export class ChatApiRequestFactory extends BaseAPIRequestFactory {
+export class ChatsApiRequestFactory extends BaseAPIRequestFactory {
 
     /**
      * Get Chat
@@ -25,12 +25,12 @@ export class ChatApiRequestFactory extends BaseAPIRequestFactory {
 
         // verify required parameter 'id' is not null or undefined
         if (id === null || id === undefined) {
-            throw new RequiredError("ChatApi", "getChat", "id");
+            throw new RequiredError("ChatsApi", "getChat", "id");
         }
 
 
         // Path Params
-        const localVarPath = '/chat/{id}'
+        const localVarPath = '/chats/{id}'
             .replace('{' + 'id' + '}', encodeURIComponent(String(id)));
 
         // Make Request Context
@@ -49,7 +49,7 @@ export class ChatApiRequestFactory extends BaseAPIRequestFactory {
 
 }
 
-export class ChatApiResponseProcessor {
+export class ChatsApiResponseProcessor {
 
     /**
      * Unwraps the actual response sent by the server from the response context and deserializes the response content
@@ -58,13 +58,13 @@ export class ChatApiResponseProcessor {
      * @params response Response returned by the server for a request to getChat
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async getChatWithHttpInfo(response: ResponseContext): Promise<HttpInfo<ChatHistory >> {
+     public async getChatWithHttpInfo(response: ResponseContext): Promise<HttpInfo<ChatHistoryRead >> {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: ChatHistory = ObjectSerializer.deserialize(
+            const body: ChatHistoryRead = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ChatHistory", ""
-            ) as ChatHistory;
+                "ChatHistoryRead", ""
+            ) as ChatHistoryRead;
             return new HttpInfo(response.httpStatusCode, response.headers, response.body, body);
         }
         if (isCodeInRange("422", response.httpStatusCode)) {
@@ -77,10 +77,10 @@ export class ChatApiResponseProcessor {
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: ChatHistory = ObjectSerializer.deserialize(
+            const body: ChatHistoryRead = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "ChatHistory", ""
-            ) as ChatHistory;
+                "ChatHistoryRead", ""
+            ) as ChatHistoryRead;
             return new HttpInfo(response.httpStatusCode, response.headers, response.body, body);
         }
 

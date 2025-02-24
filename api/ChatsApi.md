@@ -1,27 +1,27 @@
-# .ChatApi
+# .ChatsApi
 
 All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**getChat**](ChatApi.md#getChat) | **GET** /chat/{id} | Get Chat
+[**getChat**](ChatsApi.md#getChat) | **GET** /chats/{id} | Get Chat
 
 
 # **getChat**
-> ChatHistory getChat()
+> ChatHistoryRead getChat()
 
 
 ### Example
 
 
 ```typescript
-import { createConfiguration, ChatApi } from '';
-import type { ChatApiGetChatRequest } from '';
+import { createConfiguration, ChatsApi } from '';
+import type { ChatsApiGetChatRequest } from '';
 
 const configuration = createConfiguration();
-const apiInstance = new ChatApi(configuration);
+const apiInstance = new ChatsApi(configuration);
 
-const request: ChatApiGetChatRequest = {
+const request: ChatsApiGetChatRequest = {
   
   id: "id_example",
 };
@@ -40,7 +40,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-**ChatHistory**
+**ChatHistoryRead**
 
 ### Authorization
 

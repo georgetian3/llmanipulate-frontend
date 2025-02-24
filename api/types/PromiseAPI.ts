@@ -1,56 +1,180 @@
 import { ResponseContext, RequestContext, HttpFile, HttpInfo } from '../http/http';
 import { Configuration} from '../configuration'
 
+import { BearerResponse } from '../models/BearerResponse';
+import { BodyResetForgotPasswordAuthForgotPasswordPost } from '../models/BodyResetForgotPasswordAuthForgotPasswordPost';
+import { BodyResetResetPasswordAuthResetPasswordPost } from '../models/BodyResetResetPasswordAuthResetPasswordPost';
+import { BodyVerifyRequestTokenAuthRequestVerifyTokenPost } from '../models/BodyVerifyRequestTokenAuthRequestVerifyTokenPost';
+import { BodyVerifyVerifyAuthVerifyPost } from '../models/BodyVerifyVerifyAuthVerifyPost';
 import { Chat } from '../models/Chat';
-import { ChatHistory } from '../models/ChatHistory';
-import { ChatMessage } from '../models/ChatMessage';
+import { ChatHistoryRead } from '../models/ChatHistoryRead';
+import { ChatMessageRead } from '../models/ChatMessageRead';
 import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
-import { ErrorResponse } from '../models/ErrorResponse';
+import { Detail } from '../models/Detail';
+import { ErrorModel } from '../models/ErrorModel';
 import { FreeText } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
+import { Id } from '../models/Id';
 import { MultiChoice } from '../models/MultiChoice';
-import { NewResponse } from '../models/NewResponse';
-import { NewUser } from '../models/NewUser';
 import { Participant } from '../models/Participant';
-import { Response } from '../models/Response';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
 import { TaskPage } from '../models/TaskPage';
+import { TaskResponse } from '../models/TaskResponse';
 import { Translations } from '../models/Translations';
 import { User } from '../models/User';
+import { UserCreate } from '../models/UserCreate';
+import { UserRead } from '../models/UserRead';
+import { UserUpdate } from '../models/UserUpdate';
 import { ValidationError } from '../models/ValidationError';
 import { ValidationErrorLocInner } from '../models/ValidationErrorLocInner';
-import { ObservableChatApi } from './ObservableAPI';
+import { ObservableAuthApi } from './ObservableAPI';
 
-import { ChatApiRequestFactory, ChatApiResponseProcessor} from "../apis/ChatApi";
-export class PromiseChatApi {
-    private api: ObservableChatApi
+import { AuthApiRequestFactory, AuthApiResponseProcessor} from "../apis/AuthApi";
+export class PromiseAuthApi {
+    private api: ObservableAuthApi
 
     public constructor(
         configuration: Configuration,
-        requestFactory?: ChatApiRequestFactory,
-        responseProcessor?: ChatApiResponseProcessor
+        requestFactory?: AuthApiRequestFactory,
+        responseProcessor?: AuthApiResponseProcessor
     ) {
-        this.api = new ObservableChatApi(configuration, requestFactory, responseProcessor);
+        this.api = new ObservableAuthApi(configuration, requestFactory, responseProcessor);
     }
 
     /**
-     * Get Chat
-     * @param id
+     * Auth:Auth.Login
+     * @param username
+     * @param password
+     * @param [grantType]
+     * @param [scope]
+     * @param [clientId]
+     * @param [clientSecret]
      */
-    public getChatWithHttpInfo(id: string, _options?: Configuration): Promise<HttpInfo<ChatHistory>> {
-        const result = this.api.getChatWithHttpInfo(id, _options);
+    public authAuthLoginWithHttpInfo(username: string, password: string, grantType?: string, scope?: string, clientId?: string, clientSecret?: string, _options?: Configuration): Promise<HttpInfo<BearerResponse>> {
+        const result = this.api.authAuthLoginWithHttpInfo(username, password, grantType, scope, clientId, clientSecret, _options);
         return result.toPromise();
     }
 
     /**
-     * Get Chat
-     * @param id
+     * Auth:Auth.Login
+     * @param username
+     * @param password
+     * @param [grantType]
+     * @param [scope]
+     * @param [clientId]
+     * @param [clientSecret]
      */
-    public getChat(id: string, _options?: Configuration): Promise<ChatHistory> {
-        const result = this.api.getChat(id, _options);
+    public authAuthLogin(username: string, password: string, grantType?: string, scope?: string, clientId?: string, clientSecret?: string, _options?: Configuration): Promise<BearerResponse> {
+        const result = this.api.authAuthLogin(username, password, grantType, scope, clientId, clientSecret, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Auth:Auth.Logout
+     */
+    public authAuthLogoutWithHttpInfo(_options?: Configuration): Promise<HttpInfo<any>> {
+        const result = this.api.authAuthLogoutWithHttpInfo(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Auth:Auth.Logout
+     */
+    public authAuthLogout(_options?: Configuration): Promise<any> {
+        const result = this.api.authAuthLogout(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Register:Register
+     * @param userCreate
+     */
+    public registerRegisterWithHttpInfo(userCreate: UserCreate, _options?: Configuration): Promise<HttpInfo<UserRead>> {
+        const result = this.api.registerRegisterWithHttpInfo(userCreate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Register:Register
+     * @param userCreate
+     */
+    public registerRegister(userCreate: UserCreate, _options?: Configuration): Promise<UserRead> {
+        const result = this.api.registerRegister(userCreate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Reset:Forgot Password
+     * @param bodyResetForgotPasswordAuthForgotPasswordPost
+     */
+    public resetForgotPasswordWithHttpInfo(bodyResetForgotPasswordAuthForgotPasswordPost: BodyResetForgotPasswordAuthForgotPasswordPost, _options?: Configuration): Promise<HttpInfo<any>> {
+        const result = this.api.resetForgotPasswordWithHttpInfo(bodyResetForgotPasswordAuthForgotPasswordPost, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Reset:Forgot Password
+     * @param bodyResetForgotPasswordAuthForgotPasswordPost
+     */
+    public resetForgotPassword(bodyResetForgotPasswordAuthForgotPasswordPost: BodyResetForgotPasswordAuthForgotPasswordPost, _options?: Configuration): Promise<any> {
+        const result = this.api.resetForgotPassword(bodyResetForgotPasswordAuthForgotPasswordPost, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Reset:Reset Password
+     * @param bodyResetResetPasswordAuthResetPasswordPost
+     */
+    public resetResetPasswordWithHttpInfo(bodyResetResetPasswordAuthResetPasswordPost: BodyResetResetPasswordAuthResetPasswordPost, _options?: Configuration): Promise<HttpInfo<any>> {
+        const result = this.api.resetResetPasswordWithHttpInfo(bodyResetResetPasswordAuthResetPasswordPost, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Reset:Reset Password
+     * @param bodyResetResetPasswordAuthResetPasswordPost
+     */
+    public resetResetPassword(bodyResetResetPasswordAuthResetPasswordPost: BodyResetResetPasswordAuthResetPasswordPost, _options?: Configuration): Promise<any> {
+        const result = this.api.resetResetPassword(bodyResetResetPasswordAuthResetPasswordPost, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Verify:Request-Token
+     * @param bodyVerifyRequestTokenAuthRequestVerifyTokenPost
+     */
+    public verifyRequestTokenWithHttpInfo(bodyVerifyRequestTokenAuthRequestVerifyTokenPost: BodyVerifyRequestTokenAuthRequestVerifyTokenPost, _options?: Configuration): Promise<HttpInfo<any>> {
+        const result = this.api.verifyRequestTokenWithHttpInfo(bodyVerifyRequestTokenAuthRequestVerifyTokenPost, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Verify:Request-Token
+     * @param bodyVerifyRequestTokenAuthRequestVerifyTokenPost
+     */
+    public verifyRequestToken(bodyVerifyRequestTokenAuthRequestVerifyTokenPost: BodyVerifyRequestTokenAuthRequestVerifyTokenPost, _options?: Configuration): Promise<any> {
+        const result = this.api.verifyRequestToken(bodyVerifyRequestTokenAuthRequestVerifyTokenPost, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Verify:Verify
+     * @param bodyVerifyVerifyAuthVerifyPost
+     */
+    public verifyVerifyWithHttpInfo(bodyVerifyVerifyAuthVerifyPost: BodyVerifyVerifyAuthVerifyPost, _options?: Configuration): Promise<HttpInfo<UserRead>> {
+        const result = this.api.verifyVerifyWithHttpInfo(bodyVerifyVerifyAuthVerifyPost, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Verify:Verify
+     * @param bodyVerifyVerifyAuthVerifyPost
+     */
+    public verifyVerify(bodyVerifyVerifyAuthVerifyPost: BodyVerifyVerifyAuthVerifyPost, _options?: Configuration): Promise<UserRead> {
+        const result = this.api.verifyVerify(bodyVerifyVerifyAuthVerifyPost, _options);
         return result.toPromise();
     }
 
@@ -59,87 +183,35 @@ export class PromiseChatApi {
 
 
 
-import { ObservableDefaultApi } from './ObservableAPI';
+import { ObservableChatsApi } from './ObservableAPI';
 
-import { DefaultApiRequestFactory, DefaultApiResponseProcessor} from "../apis/DefaultApi";
-export class PromiseDefaultApi {
-    private api: ObservableDefaultApi
+import { ChatsApiRequestFactory, ChatsApiResponseProcessor} from "../apis/ChatsApi";
+export class PromiseChatsApi {
+    private api: ObservableChatsApi
 
     public constructor(
         configuration: Configuration,
-        requestFactory?: DefaultApiRequestFactory,
-        responseProcessor?: DefaultApiResponseProcessor
+        requestFactory?: ChatsApiRequestFactory,
+        responseProcessor?: ChatsApiResponseProcessor
     ) {
-        this.api = new ObservableDefaultApi(configuration, requestFactory, responseProcessor);
+        this.api = new ObservableChatsApi(configuration, requestFactory, responseProcessor);
     }
 
     /**
-     * Create Response
-     * @param newResponse
+     * Get Chat
+     * @param id
      */
-    public createResponseWithHttpInfo(newResponse: NewResponse, _options?: Configuration): Promise<HttpInfo<Response>> {
-        const result = this.api.createResponseWithHttpInfo(newResponse, _options);
+    public getChatWithHttpInfo(id: string, _options?: Configuration): Promise<HttpInfo<ChatHistoryRead>> {
+        const result = this.api.getChatWithHttpInfo(id, _options);
         return result.toPromise();
     }
 
     /**
-     * Create Response
-     * @param newResponse
+     * Get Chat
+     * @param id
      */
-    public createResponse(newResponse: NewResponse, _options?: Configuration): Promise<Response> {
-        const result = this.api.createResponse(newResponse, _options);
-        return result.toPromise();
-    }
-
-    /**
-     * Get Responses
-     * @param userId
-     */
-    public getResponsesWithHttpInfo(userId: string, _options?: Configuration): Promise<HttpInfo<any>> {
-        const result = this.api.getResponsesWithHttpInfo(userId, _options);
-        return result.toPromise();
-    }
-
-    /**
-     * Get Responses
-     * @param userId
-     */
-    public getResponses(userId: string, _options?: Configuration): Promise<any> {
-        const result = this.api.getResponses(userId, _options);
-        return result.toPromise();
-    }
-
-    /**
-     * Get Responses By User
-     * @param userId
-     */
-    public getResponsesByUserWithHttpInfo(userId: string, _options?: Configuration): Promise<HttpInfo<any>> {
-        const result = this.api.getResponsesByUserWithHttpInfo(userId, _options);
-        return result.toPromise();
-    }
-
-    /**
-     * Get Responses By User
-     * @param userId
-     */
-    public getResponsesByUser(userId: string, _options?: Configuration): Promise<any> {
-        const result = this.api.getResponsesByUser(userId, _options);
-        return result.toPromise();
-    }
-
-    /**
-     * Root
-     */
-    public rootWithHttpInfo(_options?: Configuration): Promise<HttpInfo<any>> {
-        const result = this.api.rootWithHttpInfo(_options);
-        return result.toPromise();
-    }
-
-    /**
-     * Root
-     */
-    public root(_options?: Configuration): Promise<any> {
-        const result = this.api.root(_options);
+    public getChat(id: string, _options?: Configuration): Promise<ChatHistoryRead> {
+        const result = this.api.getChat(id, _options);
         return result.toPromise();
     }
 
@@ -202,58 +274,52 @@ export class PromiseUsersApi {
     /**
      * Creates a new non-admin user. Requires an admin\'s user_id for authentication.
      * Create User
-     * @param userId
-     * @param newUser
+     * @param userCreate
      */
-    public createUserWithHttpInfo(userId: string, newUser: NewUser, _options?: Configuration): Promise<HttpInfo<User>> {
-        const result = this.api.createUserWithHttpInfo(userId, newUser, _options);
+    public createUserWithHttpInfo(userCreate: UserCreate, _options?: Configuration): Promise<HttpInfo<User>> {
+        const result = this.api.createUserWithHttpInfo(userCreate, _options);
         return result.toPromise();
     }
 
     /**
      * Creates a new non-admin user. Requires an admin\'s user_id for authentication.
      * Create User
-     * @param userId
-     * @param newUser
+     * @param userCreate
      */
-    public createUser(userId: string, newUser: NewUser, _options?: Configuration): Promise<User> {
-        const result = this.api.createUser(userId, newUser, _options);
+    public createUser(userCreate: UserCreate, _options?: Configuration): Promise<User> {
+        const result = this.api.createUser(userCreate, _options);
         return result.toPromise();
     }
 
     /**
      * Get All Users
-     * @param userId
      */
-    public getAllUsersWithHttpInfo(userId: string, _options?: Configuration): Promise<HttpInfo<Array<User>>> {
-        const result = this.api.getAllUsersWithHttpInfo(userId, _options);
+    public getAllUsersWithHttpInfo(_options?: Configuration): Promise<HttpInfo<Array<User>>> {
+        const result = this.api.getAllUsersWithHttpInfo(_options);
         return result.toPromise();
     }
 
     /**
      * Get All Users
-     * @param userId
      */
-    public getAllUsers(userId: string, _options?: Configuration): Promise<Array<User>> {
-        const result = this.api.getAllUsers(userId, _options);
+    public getAllUsers(_options?: Configuration): Promise<Array<User>> {
+        const result = this.api.getAllUsers(_options);
         return result.toPromise();
     }
 
     /**
      * Get All Users Responses
-     * @param userId
      */
-    public getAllUsersResponsesWithHttpInfo(userId: string, _options?: Configuration): Promise<HttpInfo<any>> {
-        const result = this.api.getAllUsersResponsesWithHttpInfo(userId, _options);
+    public getAllUsersResponsesWithHttpInfo(_options?: Configuration): Promise<HttpInfo<Array<TaskResponse>>> {
+        const result = this.api.getAllUsersResponsesWithHttpInfo(_options);
         return result.toPromise();
     }
 
     /**
      * Get All Users Responses
-     * @param userId
      */
-    public getAllUsersResponses(userId: string, _options?: Configuration): Promise<any> {
-        const result = this.api.getAllUsersResponses(userId, _options);
+    public getAllUsersResponses(_options?: Configuration): Promise<Array<TaskResponse>> {
+        const result = this.api.getAllUsersResponses(_options);
         return result.toPromise();
     }
 
@@ -272,6 +338,96 @@ export class PromiseUsersApi {
      */
     public getUser(userId: string, _options?: Configuration): Promise<User> {
         const result = this.api.getUser(userId, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Current User
+     */
+    public usersCurrentUserWithHttpInfo(_options?: Configuration): Promise<HttpInfo<UserRead>> {
+        const result = this.api.usersCurrentUserWithHttpInfo(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Current User
+     */
+    public usersCurrentUser(_options?: Configuration): Promise<UserRead> {
+        const result = this.api.usersCurrentUser(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Delete User
+     * @param id
+     */
+    public usersDeleteUserWithHttpInfo(id: string, _options?: Configuration): Promise<HttpInfo<void>> {
+        const result = this.api.usersDeleteUserWithHttpInfo(id, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Delete User
+     * @param id
+     */
+    public usersDeleteUser(id: string, _options?: Configuration): Promise<void> {
+        const result = this.api.usersDeleteUser(id, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Patch Current User
+     * @param userUpdate
+     */
+    public usersPatchCurrentUserWithHttpInfo(userUpdate: UserUpdate, _options?: Configuration): Promise<HttpInfo<UserRead>> {
+        const result = this.api.usersPatchCurrentUserWithHttpInfo(userUpdate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Patch Current User
+     * @param userUpdate
+     */
+    public usersPatchCurrentUser(userUpdate: UserUpdate, _options?: Configuration): Promise<UserRead> {
+        const result = this.api.usersPatchCurrentUser(userUpdate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Patch User
+     * @param id
+     * @param userUpdate
+     */
+    public usersPatchUserWithHttpInfo(id: string, userUpdate: UserUpdate, _options?: Configuration): Promise<HttpInfo<UserRead>> {
+        const result = this.api.usersPatchUserWithHttpInfo(id, userUpdate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:Patch User
+     * @param id
+     * @param userUpdate
+     */
+    public usersPatchUser(id: string, userUpdate: UserUpdate, _options?: Configuration): Promise<UserRead> {
+        const result = this.api.usersPatchUser(id, userUpdate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:User
+     * @param id
+     */
+    public usersUserWithHttpInfo(id: string, _options?: Configuration): Promise<HttpInfo<UserRead>> {
+        const result = this.api.usersUserWithHttpInfo(id, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Users:User
+     * @param id
+     */
+    public usersUser(id: string, _options?: Configuration): Promise<UserRead> {
+        const result = this.api.usersUser(id, _options);
         return result.toPromise();
     }
 

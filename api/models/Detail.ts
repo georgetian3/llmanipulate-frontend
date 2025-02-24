@@ -12,23 +12,17 @@
 
 import { HttpFile } from '../http/http';
 
-export class ChatHistory {
-    'id'?: string;
+export class Detail {
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly mapping: {[index: string]: string} | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
-        {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
-            "format": "uuid4"
-        }    ];
+    ];
 
     static getAttributeTypeMap() {
-        return ChatHistory.attributeTypeMap;
+        return Detail.attributeTypeMap;
     }
 
     public constructor() {

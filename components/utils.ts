@@ -1,7 +1,7 @@
-import { Translations } from "@/api";
+import { Translations } from "@/api/models/Translations";
 
 export function getTranslation(
-  translations?: Translations,
+  translations?: Translations | null,
   language?: string,
 ): string {
   if (!translations) {

@@ -12,17 +12,12 @@
 
 import { HttpFile } from '../http/http';
 
-export class User {
-    'id'?: string;
-    'email': string;
-    'hashedPassword': string;
-    'isActive'?: boolean;
-    'isSuperuser'?: boolean;
-    'isVerified'?: boolean;
-    'demographics'?: any;
-    'personality'?: any;
-    'agentType'?: number;
-    'taskType'?: number;
+export class UserUpdate {
+    'password'?: string | null;
+    'email'?: string | null;
+    'isActive'?: boolean | null;
+    'isSuperuser'?: boolean | null;
+    'isVerified'?: boolean | null;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -30,22 +25,16 @@ export class User {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
+            "name": "password",
+            "baseName": "password",
             "type": "string",
-            "format": "uuid4"
+            "format": ""
         },
         {
             "name": "email",
             "baseName": "email",
             "type": "string",
             "format": "email"
-        },
-        {
-            "name": "hashedPassword",
-            "baseName": "hashed_password",
-            "type": "string",
-            "format": ""
         },
         {
             "name": "isActive",
@@ -64,34 +53,10 @@ export class User {
             "baseName": "is_verified",
             "type": "boolean",
             "format": ""
-        },
-        {
-            "name": "demographics",
-            "baseName": "demographics",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "personality",
-            "baseName": "personality",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "agentType",
-            "baseName": "agent_type",
-            "type": "number",
-            "format": ""
-        },
-        {
-            "name": "taskType",
-            "baseName": "task_type",
-            "type": "number",
-            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return User.attributeTypeMap;
+        return UserUpdate.attributeTypeMap;
     }
 
     public constructor() {
