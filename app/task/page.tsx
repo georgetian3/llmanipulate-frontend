@@ -25,10 +25,10 @@ import {
 import { SingleChoiceUI } from "@/components/single-choice";
 import { MultiChoiceUI } from "@/components/multi-choice";
 import FreeTextUI from "@/components/free-text";
-import getTranslation from "@/components/utils";
 import Markdown from "@/components/markdown";
 import { LeftIcon, RightIcon } from "@/components/icons";
 import ChatUI from "@/components/chat";
+import { getTranslation } from "@/components/utils";
 
 interface ComponentProps {
   config: ComponentGroupComponentsInner;
