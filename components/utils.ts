@@ -1,7 +1,7 @@
 import { Translations } from "@/api";
 
-export default function getTranslation(
-  translations?: Translations | null,
+export function getTranslation(
+  translations?: Translations,
   language?: string,
 ): string {
   if (!translations) {
@@ -9,7 +9,6 @@ export default function getTranslation(
   }
   if (Object.keys(translations.languages).length == 0) {
     console.error("Empty translation", translations);
-
     return "";
   }
   const languages = (translations.languages as Record<string, string>) ?? {};
@@ -22,4 +21,11 @@ export default function getTranslation(
   }
 
   return Object.values(languages)[0];
+}
+
+export function shuffle(list: any[]) {
+  for (let i = list.length - 1; i >= 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
 }

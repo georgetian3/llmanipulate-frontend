@@ -1,9 +1,9 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import getTranslation from "./utils";
 
 import { Translations } from "@/api";
+import { getTranslation } from "./utils";
 
 interface MarkdownProps {
   text?: string;

@@ -1,8 +1,8 @@
 import { Radio, RadioGroup } from "@heroui/radio";
 
-import getTranslation from "./utils";
 
 import { SingleChoice } from "@/api";
+import { getTranslation } from "./utils";
 
 interface SingleChoiceProps {
   config: SingleChoice;
