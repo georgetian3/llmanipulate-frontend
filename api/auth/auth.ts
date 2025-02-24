@@ -21,9 +21,30 @@ export interface TokenProvider {
   getToken(): Promise<string> | string;
 }
 
+/**
+ * Applies oauth2 authentication to the request context.
+ */
+export class OAuth2PasswordBearerAuthentication implements SecurityAuthentication {
+    /**
+     * Configures OAuth2 with the necessary properties
+     *
+     * @param accessToken: The access token to be used for every request
+     */
+    public constructor(private accessToken: string) {}
+
+    public getName(): string {
+        return "OAuth2PasswordBearer";
+    }
+
+    public applySecurityAuthentication(context: RequestContext) {
+        context.setHeaderParam("Authorization", "Bearer " + this.accessToken);
+    }
+}
+
 
 export type AuthMethods = {
     "default"?: SecurityAuthentication,
+    "OAuth2PasswordBearer"?: SecurityAuthentication
 }
 
 export type ApiKeyConfiguration = string;
@@ -34,6 +55,7 @@ export type HttpSignatureConfiguration = unknown; // TODO: Implement
 
 export type AuthMethodsConfiguration = {
     "default"?: SecurityAuthentication,
+    "OAuth2PasswordBearer"?: OAuth2Configuration
 }
 
 /**
@@ -47,6 +69,12 @@ export function configureAuthMethods(config: AuthMethodsConfiguration | undefine
         return authMethods;
     }
     authMethods["default"] = config["default"]
+
+    if (config["OAuth2PasswordBearer"]) {
+        authMethods["OAuth2PasswordBearer"] = new OAuth2PasswordBearerAuthentication(
+            config["OAuth2PasswordBearer"]["accessToken"]
+        );
+    }
 
     return authMethods;
 }

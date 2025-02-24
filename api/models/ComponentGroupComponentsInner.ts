@@ -12,6 +12,7 @@
 
 import { Chat } from '../models/Chat';
 import { FreeText } from '../models/FreeText';
+import { Id } from '../models/Id';
 import { MultiChoice } from '../models/MultiChoice';
 import { Participant } from '../models/Participant';
 import { SingleChoice } from '../models/SingleChoice';
@@ -20,7 +21,7 @@ import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class ComponentGroupComponentsInner {
-    'id': string;
+    'id': Id;
     'label': Translations;
     'optional'?: boolean;
     'choices': Array<Translations>;
@@ -45,7 +46,7 @@ export class ComponentGroupComponentsInner {
         {
             "name": "id",
             "baseName": "id",
-            "type": "string",
+            "type": "Id",
             "format": ""
         },
         {
@@ -118,7 +119,7 @@ export class ComponentGroupComponentsInner {
             "name": "order",
             "baseName": "order",
             "type": "Array<string>",
-            "format": ""
+            "format": "uuid4"
         }    ];
 
     static getAttributeTypeMap() {

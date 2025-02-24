@@ -12,12 +12,9 @@
 
 import { HttpFile } from '../http/http';
 
-export class ChatMessage {
-    'id'?: string;
-    'sender': string;
-    'message': string;
-    'timestamp': Date;
-    'chat': string;
+export class BodyResetResetPasswordAuthResetPasswordPost {
+    'token': string;
+    'password': string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -25,38 +22,20 @@ export class ChatMessage {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
-            "format": "uuid4"
-        },
-        {
-            "name": "sender",
-            "baseName": "sender",
-            "type": "string",
-            "format": "uuid4"
-        },
-        {
-            "name": "message",
-            "baseName": "message",
+            "name": "token",
+            "baseName": "token",
             "type": "string",
             "format": ""
         },
         {
-            "name": "timestamp",
-            "baseName": "timestamp",
-            "type": "Date",
-            "format": "date-time"
-        },
-        {
-            "name": "chat",
-            "baseName": "chat",
+            "name": "password",
+            "baseName": "password",
             "type": "string",
-            "format": "uuid4"
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return ChatMessage.attributeTypeMap;
+        return BodyResetResetPasswordAuthResetPasswordPost.attributeTypeMap;
     }
 
     public constructor() {

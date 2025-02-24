@@ -12,12 +12,9 @@
 
 import { HttpFile } from '../http/http';
 
-export class ChatMessage {
-    'id'?: string;
-    'sender': string;
-    'message': string;
-    'timestamp': Date;
-    'chat': string;
+export class BearerResponse {
+    'accessToken': string;
+    'tokenType': string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -25,38 +22,20 @@ export class ChatMessage {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
-            "format": "uuid4"
-        },
-        {
-            "name": "sender",
-            "baseName": "sender",
-            "type": "string",
-            "format": "uuid4"
-        },
-        {
-            "name": "message",
-            "baseName": "message",
+            "name": "accessToken",
+            "baseName": "access_token",
             "type": "string",
             "format": ""
         },
         {
-            "name": "timestamp",
-            "baseName": "timestamp",
-            "type": "Date",
-            "format": "date-time"
-        },
-        {
-            "name": "chat",
-            "baseName": "chat",
+            "name": "tokenType",
+            "baseName": "token_type",
             "type": "string",
-            "format": "uuid4"
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return ChatMessage.attributeTypeMap;
+        return BearerResponse.attributeTypeMap;
     }
 
     public constructor() {

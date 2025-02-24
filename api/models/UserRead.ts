@@ -12,13 +12,12 @@
 
 import { HttpFile } from '../http/http';
 
-export class Response {
-    'taskName': string;
-    'initialScores'?: any;
-    'convHistory'?: any;
-    'finalScores'?: any;
-    'userId': string;
-    'timeCreated': Date;
+export class UserRead {
+    'id': string;
+    'email': string;
+    'isActive'?: boolean;
+    'isSuperuser'?: boolean;
+    'isVerified'?: boolean;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -26,44 +25,38 @@ export class Response {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "taskName",
-            "baseName": "task_name",
+            "name": "id",
+            "baseName": "id",
             "type": "string",
-            "format": ""
+            "format": "uuid"
         },
         {
-            "name": "initialScores",
-            "baseName": "initial_scores",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "convHistory",
-            "baseName": "conv_history",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "finalScores",
-            "baseName": "final_scores",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "userId",
-            "baseName": "user_id",
+            "name": "email",
+            "baseName": "email",
             "type": "string",
+            "format": "email"
+        },
+        {
+            "name": "isActive",
+            "baseName": "is_active",
+            "type": "boolean",
             "format": ""
         },
         {
-            "name": "timeCreated",
-            "baseName": "time_created",
-            "type": "Date",
-            "format": "date-time"
+            "name": "isSuperuser",
+            "baseName": "is_superuser",
+            "type": "boolean",
+            "format": ""
+        },
+        {
+            "name": "isVerified",
+            "baseName": "is_verified",
+            "type": "boolean",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return Response.attributeTypeMap;
+        return UserRead.attributeTypeMap;
     }
 
     public constructor() {

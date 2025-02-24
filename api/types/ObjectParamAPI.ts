@@ -1,53 +1,278 @@
 import { ResponseContext, RequestContext, HttpFile, HttpInfo } from '../http/http';
 import { Configuration} from '../configuration'
 
+import { BearerResponse } from '../models/BearerResponse';
+import { BodyResetForgotPasswordAuthForgotPasswordPost } from '../models/BodyResetForgotPasswordAuthForgotPasswordPost';
+import { BodyResetResetPasswordAuthResetPasswordPost } from '../models/BodyResetResetPasswordAuthResetPasswordPost';
+import { BodyVerifyRequestTokenAuthRequestVerifyTokenPost } from '../models/BodyVerifyRequestTokenAuthRequestVerifyTokenPost';
+import { BodyVerifyVerifyAuthVerifyPost } from '../models/BodyVerifyVerifyAuthVerifyPost';
 import { Chat } from '../models/Chat';
-import { ChatHistory } from '../models/ChatHistory';
-import { ChatMessage } from '../models/ChatMessage';
+import { ChatHistoryRead } from '../models/ChatHistoryRead';
+import { ChatMessageRead } from '../models/ChatMessageRead';
 import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
-import { ErrorResponse } from '../models/ErrorResponse';
+import { Detail } from '../models/Detail';
+import { ErrorModel } from '../models/ErrorModel';
 import { FreeText } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
+import { Id } from '../models/Id';
 import { MultiChoice } from '../models/MultiChoice';
-import { NewResponse } from '../models/NewResponse';
-import { NewUser } from '../models/NewUser';
 import { Participant } from '../models/Participant';
-import { Response } from '../models/Response';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
 import { TaskPage } from '../models/TaskPage';
+import { TaskResponse } from '../models/TaskResponse';
 import { Translations } from '../models/Translations';
 import { User } from '../models/User';
+import { UserCreate } from '../models/UserCreate';
+import { UserRead } from '../models/UserRead';
+import { UserUpdate } from '../models/UserUpdate';
 import { ValidationError } from '../models/ValidationError';
 import { ValidationErrorLocInner } from '../models/ValidationErrorLocInner';
 
-import { ObservableChatApi } from "./ObservableAPI";
-import { ChatApiRequestFactory, ChatApiResponseProcessor} from "../apis/ChatApi";
+import { ObservableAuthApi } from "./ObservableAPI";
+import { AuthApiRequestFactory, AuthApiResponseProcessor} from "../apis/AuthApi";
 
-export interface ChatApiGetChatRequest {
+export interface AuthApiAuthAuthLoginRequest {
     /**
      * 
      * Defaults to: undefined
      * @type string
-     * @memberof ChatApigetChat
+     * @memberof AuthApiauthAuthLogin
+     */
+    username: string
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof AuthApiauthAuthLogin
+     */
+    password: string
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof AuthApiauthAuthLogin
+     */
+    grantType?: string
+    /**
+     * 
+     * Defaults to: &#39;&#39;
+     * @type string
+     * @memberof AuthApiauthAuthLogin
+     */
+    scope?: string
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof AuthApiauthAuthLogin
+     */
+    clientId?: string
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof AuthApiauthAuthLogin
+     */
+    clientSecret?: string
+}
+
+export interface AuthApiAuthAuthLogoutRequest {
+}
+
+export interface AuthApiRegisterRegisterRequest {
+    /**
+     * 
+     * @type UserCreate
+     * @memberof AuthApiregisterRegister
+     */
+    userCreate: UserCreate
+}
+
+export interface AuthApiResetForgotPasswordRequest {
+    /**
+     * 
+     * @type BodyResetForgotPasswordAuthForgotPasswordPost
+     * @memberof AuthApiresetForgotPassword
+     */
+    bodyResetForgotPasswordAuthForgotPasswordPost: BodyResetForgotPasswordAuthForgotPasswordPost
+}
+
+export interface AuthApiResetResetPasswordRequest {
+    /**
+     * 
+     * @type BodyResetResetPasswordAuthResetPasswordPost
+     * @memberof AuthApiresetResetPassword
+     */
+    bodyResetResetPasswordAuthResetPasswordPost: BodyResetResetPasswordAuthResetPasswordPost
+}
+
+export interface AuthApiVerifyRequestTokenRequest {
+    /**
+     * 
+     * @type BodyVerifyRequestTokenAuthRequestVerifyTokenPost
+     * @memberof AuthApiverifyRequestToken
+     */
+    bodyVerifyRequestTokenAuthRequestVerifyTokenPost: BodyVerifyRequestTokenAuthRequestVerifyTokenPost
+}
+
+export interface AuthApiVerifyVerifyRequest {
+    /**
+     * 
+     * @type BodyVerifyVerifyAuthVerifyPost
+     * @memberof AuthApiverifyVerify
+     */
+    bodyVerifyVerifyAuthVerifyPost: BodyVerifyVerifyAuthVerifyPost
+}
+
+export class ObjectAuthApi {
+    private api: ObservableAuthApi
+
+    public constructor(configuration: Configuration, requestFactory?: AuthApiRequestFactory, responseProcessor?: AuthApiResponseProcessor) {
+        this.api = new ObservableAuthApi(configuration, requestFactory, responseProcessor);
+    }
+
+    /**
+     * Auth:Auth.Login
+     * @param param the request object
+     */
+    public authAuthLoginWithHttpInfo(param: AuthApiAuthAuthLoginRequest, options?: Configuration): Promise<HttpInfo<BearerResponse>> {
+        return this.api.authAuthLoginWithHttpInfo(param.username, param.password, param.grantType, param.scope, param.clientId, param.clientSecret,  options).toPromise();
+    }
+
+    /**
+     * Auth:Auth.Login
+     * @param param the request object
+     */
+    public authAuthLogin(param: AuthApiAuthAuthLoginRequest, options?: Configuration): Promise<BearerResponse> {
+        return this.api.authAuthLogin(param.username, param.password, param.grantType, param.scope, param.clientId, param.clientSecret,  options).toPromise();
+    }
+
+    /**
+     * Auth:Auth.Logout
+     * @param param the request object
+     */
+    public authAuthLogoutWithHttpInfo(param: AuthApiAuthAuthLogoutRequest = {}, options?: Configuration): Promise<HttpInfo<any>> {
+        return this.api.authAuthLogoutWithHttpInfo( options).toPromise();
+    }
+
+    /**
+     * Auth:Auth.Logout
+     * @param param the request object
+     */
+    public authAuthLogout(param: AuthApiAuthAuthLogoutRequest = {}, options?: Configuration): Promise<any> {
+        return this.api.authAuthLogout( options).toPromise();
+    }
+
+    /**
+     * Register:Register
+     * @param param the request object
+     */
+    public registerRegisterWithHttpInfo(param: AuthApiRegisterRegisterRequest, options?: Configuration): Promise<HttpInfo<UserRead>> {
+        return this.api.registerRegisterWithHttpInfo(param.userCreate,  options).toPromise();
+    }
+
+    /**
+     * Register:Register
+     * @param param the request object
+     */
+    public registerRegister(param: AuthApiRegisterRegisterRequest, options?: Configuration): Promise<UserRead> {
+        return this.api.registerRegister(param.userCreate,  options).toPromise();
+    }
+
+    /**
+     * Reset:Forgot Password
+     * @param param the request object
+     */
+    public resetForgotPasswordWithHttpInfo(param: AuthApiResetForgotPasswordRequest, options?: Configuration): Promise<HttpInfo<any>> {
+        return this.api.resetForgotPasswordWithHttpInfo(param.bodyResetForgotPasswordAuthForgotPasswordPost,  options).toPromise();
+    }
+
+    /**
+     * Reset:Forgot Password
+     * @param param the request object
+     */
+    public resetForgotPassword(param: AuthApiResetForgotPasswordRequest, options?: Configuration): Promise<any> {
+        return this.api.resetForgotPassword(param.bodyResetForgotPasswordAuthForgotPasswordPost,  options).toPromise();
+    }
+
+    /**
+     * Reset:Reset Password
+     * @param param the request object
+     */
+    public resetResetPasswordWithHttpInfo(param: AuthApiResetResetPasswordRequest, options?: Configuration): Promise<HttpInfo<any>> {
+        return this.api.resetResetPasswordWithHttpInfo(param.bodyResetResetPasswordAuthResetPasswordPost,  options).toPromise();
+    }
+
+    /**
+     * Reset:Reset Password
+     * @param param the request object
+     */
+    public resetResetPassword(param: AuthApiResetResetPasswordRequest, options?: Configuration): Promise<any> {
+        return this.api.resetResetPassword(param.bodyResetResetPasswordAuthResetPasswordPost,  options).toPromise();
+    }
+
+    /**
+     * Verify:Request-Token
+     * @param param the request object
+     */
+    public verifyRequestTokenWithHttpInfo(param: AuthApiVerifyRequestTokenRequest, options?: Configuration): Promise<HttpInfo<any>> {
+        return this.api.verifyRequestTokenWithHttpInfo(param.bodyVerifyRequestTokenAuthRequestVerifyTokenPost,  options).toPromise();
+    }
+
+    /**
+     * Verify:Request-Token
+     * @param param the request object
+     */
+    public verifyRequestToken(param: AuthApiVerifyRequestTokenRequest, options?: Configuration): Promise<any> {
+        return this.api.verifyRequestToken(param.bodyVerifyRequestTokenAuthRequestVerifyTokenPost,  options).toPromise();
+    }
+
+    /**
+     * Verify:Verify
+     * @param param the request object
+     */
+    public verifyVerifyWithHttpInfo(param: AuthApiVerifyVerifyRequest, options?: Configuration): Promise<HttpInfo<UserRead>> {
+        return this.api.verifyVerifyWithHttpInfo(param.bodyVerifyVerifyAuthVerifyPost,  options).toPromise();
+    }
+
+    /**
+     * Verify:Verify
+     * @param param the request object
+     */
+    public verifyVerify(param: AuthApiVerifyVerifyRequest, options?: Configuration): Promise<UserRead> {
+        return this.api.verifyVerify(param.bodyVerifyVerifyAuthVerifyPost,  options).toPromise();
+    }
+
+}
+
+import { ObservableChatsApi } from "./ObservableAPI";
+import { ChatsApiRequestFactory, ChatsApiResponseProcessor} from "../apis/ChatsApi";
+
+export interface ChatsApiGetChatRequest {
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof ChatsApigetChat
      */
     id: string
 }
 
-export class ObjectChatApi {
-    private api: ObservableChatApi
+export class ObjectChatsApi {
+    private api: ObservableChatsApi
 
-    public constructor(configuration: Configuration, requestFactory?: ChatApiRequestFactory, responseProcessor?: ChatApiResponseProcessor) {
-        this.api = new ObservableChatApi(configuration, requestFactory, responseProcessor);
+    public constructor(configuration: Configuration, requestFactory?: ChatsApiRequestFactory, responseProcessor?: ChatsApiResponseProcessor) {
+        this.api = new ObservableChatsApi(configuration, requestFactory, responseProcessor);
     }
 
     /**
      * Get Chat
      * @param param the request object
      */
-    public getChatWithHttpInfo(param: ChatApiGetChatRequest, options?: Configuration): Promise<HttpInfo<ChatHistory>> {
+    public getChatWithHttpInfo(param: ChatsApiGetChatRequest, options?: Configuration): Promise<HttpInfo<ChatHistoryRead>> {
         return this.api.getChatWithHttpInfo(param.id,  options).toPromise();
     }
 
@@ -55,116 +280,8 @@ export class ObjectChatApi {
      * Get Chat
      * @param param the request object
      */
-    public getChat(param: ChatApiGetChatRequest, options?: Configuration): Promise<ChatHistory> {
+    public getChat(param: ChatsApiGetChatRequest, options?: Configuration): Promise<ChatHistoryRead> {
         return this.api.getChat(param.id,  options).toPromise();
-    }
-
-}
-
-import { ObservableDefaultApi } from "./ObservableAPI";
-import { DefaultApiRequestFactory, DefaultApiResponseProcessor} from "../apis/DefaultApi";
-
-export interface DefaultApiCreateResponseRequest {
-    /**
-     * 
-     * @type NewResponse
-     * @memberof DefaultApicreateResponse
-     */
-    newResponse: NewResponse
-}
-
-export interface DefaultApiGetResponsesRequest {
-    /**
-     * 
-     * Defaults to: undefined
-     * @type string
-     * @memberof DefaultApigetResponses
-     */
-    userId: string
-}
-
-export interface DefaultApiGetResponsesByUserRequest {
-    /**
-     * 
-     * Defaults to: undefined
-     * @type string
-     * @memberof DefaultApigetResponsesByUser
-     */
-    userId: string
-}
-
-export interface DefaultApiRootRequest {
-}
-
-export class ObjectDefaultApi {
-    private api: ObservableDefaultApi
-
-    public constructor(configuration: Configuration, requestFactory?: DefaultApiRequestFactory, responseProcessor?: DefaultApiResponseProcessor) {
-        this.api = new ObservableDefaultApi(configuration, requestFactory, responseProcessor);
-    }
-
-    /**
-     * Create Response
-     * @param param the request object
-     */
-    public createResponseWithHttpInfo(param: DefaultApiCreateResponseRequest, options?: Configuration): Promise<HttpInfo<Response>> {
-        return this.api.createResponseWithHttpInfo(param.newResponse,  options).toPromise();
-    }
-
-    /**
-     * Create Response
-     * @param param the request object
-     */
-    public createResponse(param: DefaultApiCreateResponseRequest, options?: Configuration): Promise<Response> {
-        return this.api.createResponse(param.newResponse,  options).toPromise();
-    }
-
-    /**
-     * Get Responses
-     * @param param the request object
-     */
-    public getResponsesWithHttpInfo(param: DefaultApiGetResponsesRequest, options?: Configuration): Promise<HttpInfo<any>> {
-        return this.api.getResponsesWithHttpInfo(param.userId,  options).toPromise();
-    }
-
-    /**
-     * Get Responses
-     * @param param the request object
-     */
-    public getResponses(param: DefaultApiGetResponsesRequest, options?: Configuration): Promise<any> {
-        return this.api.getResponses(param.userId,  options).toPromise();
-    }
-
-    /**
-     * Get Responses By User
-     * @param param the request object
-     */
-    public getResponsesByUserWithHttpInfo(param: DefaultApiGetResponsesByUserRequest, options?: Configuration): Promise<HttpInfo<any>> {
-        return this.api.getResponsesByUserWithHttpInfo(param.userId,  options).toPromise();
-    }
-
-    /**
-     * Get Responses By User
-     * @param param the request object
-     */
-    public getResponsesByUser(param: DefaultApiGetResponsesByUserRequest, options?: Configuration): Promise<any> {
-        return this.api.getResponsesByUser(param.userId,  options).toPromise();
-    }
-
-    /**
-     * Root
-     * @param param the request object
-     */
-    public rootWithHttpInfo(param: DefaultApiRootRequest = {}, options?: Configuration): Promise<HttpInfo<any>> {
-        return this.api.rootWithHttpInfo( options).toPromise();
-    }
-
-    /**
-     * Root
-     * @param param the request object
-     */
-    public root(param: DefaultApiRootRequest = {}, options?: Configuration): Promise<any> {
-        return this.api.root( options).toPromise();
     }
 
 }
@@ -213,37 +330,16 @@ import { UsersApiRequestFactory, UsersApiResponseProcessor} from "../apis/UsersA
 export interface UsersApiCreateUserRequest {
     /**
      * 
-     * Defaults to: undefined
-     * @type string
+     * @type UserCreate
      * @memberof UsersApicreateUser
      */
-    userId: string
-    /**
-     * 
-     * @type NewUser
-     * @memberof UsersApicreateUser
-     */
-    newUser: NewUser
+    userCreate: UserCreate
 }
 
 export interface UsersApiGetAllUsersRequest {
-    /**
-     * 
-     * Defaults to: undefined
-     * @type string
-     * @memberof UsersApigetAllUsers
-     */
-    userId: string
 }
 
 export interface UsersApiGetAllUsersResponsesRequest {
-    /**
-     * 
-     * Defaults to: undefined
-     * @type string
-     * @memberof UsersApigetAllUsersResponses
-     */
-    userId: string
 }
 
 export interface UsersApiGetUserRequest {
@@ -254,6 +350,54 @@ export interface UsersApiGetUserRequest {
      * @memberof UsersApigetUser
      */
     userId: string
+}
+
+export interface UsersApiUsersCurrentUserRequest {
+}
+
+export interface UsersApiUsersDeleteUserRequest {
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof UsersApiusersDeleteUser
+     */
+    id: string
+}
+
+export interface UsersApiUsersPatchCurrentUserRequest {
+    /**
+     * 
+     * @type UserUpdate
+     * @memberof UsersApiusersPatchCurrentUser
+     */
+    userUpdate: UserUpdate
+}
+
+export interface UsersApiUsersPatchUserRequest {
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof UsersApiusersPatchUser
+     */
+    id: string
+    /**
+     * 
+     * @type UserUpdate
+     * @memberof UsersApiusersPatchUser
+     */
+    userUpdate: UserUpdate
+}
+
+export interface UsersApiUsersUserRequest {
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof UsersApiusersUser
+     */
+    id: string
 }
 
 export class ObjectUsersApi {
@@ -269,7 +413,7 @@ export class ObjectUsersApi {
      * @param param the request object
      */
     public createUserWithHttpInfo(param: UsersApiCreateUserRequest, options?: Configuration): Promise<HttpInfo<User>> {
-        return this.api.createUserWithHttpInfo(param.userId, param.newUser,  options).toPromise();
+        return this.api.createUserWithHttpInfo(param.userCreate,  options).toPromise();
     }
 
     /**
@@ -278,39 +422,39 @@ export class ObjectUsersApi {
      * @param param the request object
      */
     public createUser(param: UsersApiCreateUserRequest, options?: Configuration): Promise<User> {
-        return this.api.createUser(param.userId, param.newUser,  options).toPromise();
+        return this.api.createUser(param.userCreate,  options).toPromise();
     }
 
     /**
      * Get All Users
      * @param param the request object
      */
-    public getAllUsersWithHttpInfo(param: UsersApiGetAllUsersRequest, options?: Configuration): Promise<HttpInfo<Array<User>>> {
-        return this.api.getAllUsersWithHttpInfo(param.userId,  options).toPromise();
+    public getAllUsersWithHttpInfo(param: UsersApiGetAllUsersRequest = {}, options?: Configuration): Promise<HttpInfo<Array<User>>> {
+        return this.api.getAllUsersWithHttpInfo( options).toPromise();
     }
 
     /**
      * Get All Users
      * @param param the request object
      */
-    public getAllUsers(param: UsersApiGetAllUsersRequest, options?: Configuration): Promise<Array<User>> {
-        return this.api.getAllUsers(param.userId,  options).toPromise();
+    public getAllUsers(param: UsersApiGetAllUsersRequest = {}, options?: Configuration): Promise<Array<User>> {
+        return this.api.getAllUsers( options).toPromise();
     }
 
     /**
      * Get All Users Responses
      * @param param the request object
      */
-    public getAllUsersResponsesWithHttpInfo(param: UsersApiGetAllUsersResponsesRequest, options?: Configuration): Promise<HttpInfo<any>> {
-        return this.api.getAllUsersResponsesWithHttpInfo(param.userId,  options).toPromise();
+    public getAllUsersResponsesWithHttpInfo(param: UsersApiGetAllUsersResponsesRequest = {}, options?: Configuration): Promise<HttpInfo<Array<TaskResponse>>> {
+        return this.api.getAllUsersResponsesWithHttpInfo( options).toPromise();
     }
 
     /**
      * Get All Users Responses
      * @param param the request object
      */
-    public getAllUsersResponses(param: UsersApiGetAllUsersResponsesRequest, options?: Configuration): Promise<any> {
-        return this.api.getAllUsersResponses(param.userId,  options).toPromise();
+    public getAllUsersResponses(param: UsersApiGetAllUsersResponsesRequest = {}, options?: Configuration): Promise<Array<TaskResponse>> {
+        return this.api.getAllUsersResponses( options).toPromise();
     }
 
     /**
@@ -327,6 +471,86 @@ export class ObjectUsersApi {
      */
     public getUser(param: UsersApiGetUserRequest, options?: Configuration): Promise<User> {
         return this.api.getUser(param.userId,  options).toPromise();
+    }
+
+    /**
+     * Users:Current User
+     * @param param the request object
+     */
+    public usersCurrentUserWithHttpInfo(param: UsersApiUsersCurrentUserRequest = {}, options?: Configuration): Promise<HttpInfo<UserRead>> {
+        return this.api.usersCurrentUserWithHttpInfo( options).toPromise();
+    }
+
+    /**
+     * Users:Current User
+     * @param param the request object
+     */
+    public usersCurrentUser(param: UsersApiUsersCurrentUserRequest = {}, options?: Configuration): Promise<UserRead> {
+        return this.api.usersCurrentUser( options).toPromise();
+    }
+
+    /**
+     * Users:Delete User
+     * @param param the request object
+     */
+    public usersDeleteUserWithHttpInfo(param: UsersApiUsersDeleteUserRequest, options?: Configuration): Promise<HttpInfo<void>> {
+        return this.api.usersDeleteUserWithHttpInfo(param.id,  options).toPromise();
+    }
+
+    /**
+     * Users:Delete User
+     * @param param the request object
+     */
+    public usersDeleteUser(param: UsersApiUsersDeleteUserRequest, options?: Configuration): Promise<void> {
+        return this.api.usersDeleteUser(param.id,  options).toPromise();
+    }
+
+    /**
+     * Users:Patch Current User
+     * @param param the request object
+     */
+    public usersPatchCurrentUserWithHttpInfo(param: UsersApiUsersPatchCurrentUserRequest, options?: Configuration): Promise<HttpInfo<UserRead>> {
+        return this.api.usersPatchCurrentUserWithHttpInfo(param.userUpdate,  options).toPromise();
+    }
+
+    /**
+     * Users:Patch Current User
+     * @param param the request object
+     */
+    public usersPatchCurrentUser(param: UsersApiUsersPatchCurrentUserRequest, options?: Configuration): Promise<UserRead> {
+        return this.api.usersPatchCurrentUser(param.userUpdate,  options).toPromise();
+    }
+
+    /**
+     * Users:Patch User
+     * @param param the request object
+     */
+    public usersPatchUserWithHttpInfo(param: UsersApiUsersPatchUserRequest, options?: Configuration): Promise<HttpInfo<UserRead>> {
+        return this.api.usersPatchUserWithHttpInfo(param.id, param.userUpdate,  options).toPromise();
+    }
+
+    /**
+     * Users:Patch User
+     * @param param the request object
+     */
+    public usersPatchUser(param: UsersApiUsersPatchUserRequest, options?: Configuration): Promise<UserRead> {
+        return this.api.usersPatchUser(param.id, param.userUpdate,  options).toPromise();
+    }
+
+    /**
+     * Users:User
+     * @param param the request object
+     */
+    public usersUserWithHttpInfo(param: UsersApiUsersUserRequest, options?: Configuration): Promise<HttpInfo<UserRead>> {
+        return this.api.usersUserWithHttpInfo(param.id,  options).toPromise();
+    }
+
+    /**
+     * Users:User
+     * @param param the request object
+     */
+    public usersUser(param: UsersApiUsersUserRequest, options?: Configuration): Promise<UserRead> {
+        return this.api.usersUser(param.id,  options).toPromise();
     }
 
 }

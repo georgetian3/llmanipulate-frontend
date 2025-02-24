@@ -12,23 +12,17 @@
 
 import { HttpFile } from '../http/http';
 
-export class ErrorResponse {
-    'detail': string;
+export class Id {
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly mapping: {[index: string]: string} | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
-        {
-            "name": "detail",
-            "baseName": "detail",
-            "type": "string",
-            "format": ""
-        }    ];
+    ];
 
     static getAttributeTypeMap() {
-        return ErrorResponse.attributeTypeMap;
+        return Id.attributeTypeMap;
     }
 
     public constructor() {

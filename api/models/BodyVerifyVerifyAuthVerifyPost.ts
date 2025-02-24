@@ -12,8 +12,8 @@
 
 import { HttpFile } from '../http/http';
 
-export class ChatHistory {
-    'id'?: string;
+export class BodyVerifyVerifyAuthVerifyPost {
+    'token': string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -21,14 +21,14 @@ export class ChatHistory {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
+            "name": "token",
+            "baseName": "token",
             "type": "string",
-            "format": "uuid4"
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return ChatHistory.attributeTypeMap;
+        return BodyVerifyVerifyAuthVerifyPost.attributeTypeMap;
     }
 
     public constructor() {

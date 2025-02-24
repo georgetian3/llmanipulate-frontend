@@ -12,12 +12,12 @@
 
 import { HttpFile } from '../http/http';
 
-export class NewUser {
-    'demographics'?: any;
-    'personality'?: any;
-    'agentType'?: number;
-    'taskType'?: number;
-    'id': string;
+export class UserCreate {
+    'email': string;
+    'password': string;
+    'isActive'?: boolean | null;
+    'isSuperuser'?: boolean | null;
+    'isVerified'?: boolean | null;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -25,38 +25,38 @@ export class NewUser {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "demographics",
-            "baseName": "demographics",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "personality",
-            "baseName": "personality",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "agentType",
-            "baseName": "agent_type",
-            "type": "number",
-            "format": ""
-        },
-        {
-            "name": "taskType",
-            "baseName": "task_type",
-            "type": "number",
-            "format": ""
-        },
-        {
-            "name": "id",
-            "baseName": "id",
+            "name": "email",
+            "baseName": "email",
             "type": "string",
+            "format": "email"
+        },
+        {
+            "name": "password",
+            "baseName": "password",
+            "type": "string",
+            "format": ""
+        },
+        {
+            "name": "isActive",
+            "baseName": "is_active",
+            "type": "boolean",
+            "format": ""
+        },
+        {
+            "name": "isSuperuser",
+            "baseName": "is_superuser",
+            "type": "boolean",
+            "format": ""
+        },
+        {
+            "name": "isVerified",
+            "baseName": "is_verified",
+            "type": "boolean",
             "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return NewUser.attributeTypeMap;
+        return UserCreate.attributeTypeMap;
     }
 
     public constructor() {

@@ -10,11 +10,12 @@
  * Do not edit the class manually.
  */
 
+import { Id } from '../models/Id';
 import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class SingleChoice {
-    'id': string;
+    'id': Id;
     'label': Translations | null;
     'optional'?: boolean;
     'choices': Array<Translations>;
@@ -32,7 +33,7 @@ export class SingleChoice {
         {
             "name": "id",
             "baseName": "id",
-            "type": "string",
+            "type": "Id",
             "format": ""
         },
         {

@@ -10,10 +10,11 @@
  * Do not edit the class manually.
  */
 
+import { Detail } from '../models/Detail';
 import { HttpFile } from '../http/http';
 
-export class ChatHistory {
-    'id'?: string;
+export class ErrorModel {
+    'detail': Detail;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -21,14 +22,14 @@ export class ChatHistory {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
-            "format": "uuid4"
+            "name": "detail",
+            "baseName": "detail",
+            "type": "Detail",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return ChatHistory.attributeTypeMap;
+        return ErrorModel.attributeTypeMap;
     }
 
     public constructor() {

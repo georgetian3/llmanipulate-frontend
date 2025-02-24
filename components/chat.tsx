@@ -5,30 +5,30 @@ import { useEffect, useRef, useState } from "react";
 
 import {
   Chat,
-  ChatApi,
-  ChatHistory,
+  ChatHistoryRead,
+  ChatsApi,
   createConfiguration,
   ServerConfiguration,
 } from "@/api";
 
-interface FreeTextProps {
+interface ChatProps {
   config: Chat;
 }
 
-const chatApi = new ChatApi(
+const chatsApi = new ChatsApi(
   createConfiguration({
     baseServer: new ServerConfiguration("http://localhost:8000", {}),
   }),
 );
 
-export default function ChatUI({ config }: FreeTextProps) {
-  const [chatHistory, setChatHistory] = useState<ChatHistory>();
+export default function ChatUI({ config }: ChatProps) {
+  const [chatHistory, setChatHistory] = useState<ChatHistoryRead>();
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
-  const userId = "1";
+  const userId = "1aafee69-bd72-4e7c-b7c0-4898581aaf59";
   const [draft, setDraft] = useState("");
 
   function sendMessage() {
-    const newChatHistory = { ...chatHistory } as ChatHistory;
+    const newChatHistory = { ...chatHistory } as ChatHistoryRead;
 
     newChatHistory.messages.push({
       id: "1",
@@ -42,9 +42,9 @@ export default function ChatUI({ config }: FreeTextProps) {
   }
 
   useEffect(() => {
-    chatApi
+    chatsApi
       .getChat("test")
-      .then((chatHistory: ChatHistory) => {
+      .then((chatHistory: ChatHistoryRead) => {
         setChatHistory(chatHistory);
       })
       .catch((reason) => console.log("Error getting task config", reason));

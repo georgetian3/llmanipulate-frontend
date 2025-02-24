@@ -1,44 +1,60 @@
+export * from '../models/BearerResponse';
+export * from '../models/BodyResetForgotPasswordAuthForgotPasswordPost';
+export * from '../models/BodyResetResetPasswordAuthResetPasswordPost';
+export * from '../models/BodyVerifyRequestTokenAuthRequestVerifyTokenPost';
+export * from '../models/BodyVerifyVerifyAuthVerifyPost';
 export * from '../models/Chat';
-export * from '../models/ChatHistory';
-export * from '../models/ChatMessage';
+export * from '../models/ChatHistoryRead';
+export * from '../models/ChatMessageRead';
 export * from '../models/ComponentGroup';
 export * from '../models/ComponentGroupComponentsInner';
-export * from '../models/ErrorResponse';
+export * from '../models/Detail';
+export * from '../models/ErrorModel';
 export * from '../models/FreeText';
 export * from '../models/HTTPValidationError';
+export * from '../models/Id';
 export * from '../models/MultiChoice';
-export * from '../models/NewResponse';
-export * from '../models/NewUser';
 export * from '../models/Participant';
-export * from '../models/Response';
 export * from '../models/SingleChoice';
 export * from '../models/Slider';
 export * from '../models/TaskConfig';
 export * from '../models/TaskPage';
+export * from '../models/TaskResponse';
 export * from '../models/Translations';
 export * from '../models/User';
+export * from '../models/UserCreate';
+export * from '../models/UserRead';
+export * from '../models/UserUpdate';
 export * from '../models/ValidationError';
 export * from '../models/ValidationErrorLocInner';
 
+import { BearerResponse } from '../models/BearerResponse';
+import { BodyResetForgotPasswordAuthForgotPasswordPost } from '../models/BodyResetForgotPasswordAuthForgotPasswordPost';
+import { BodyResetResetPasswordAuthResetPasswordPost } from '../models/BodyResetResetPasswordAuthResetPasswordPost';
+import { BodyVerifyRequestTokenAuthRequestVerifyTokenPost } from '../models/BodyVerifyRequestTokenAuthRequestVerifyTokenPost';
+import { BodyVerifyVerifyAuthVerifyPost } from '../models/BodyVerifyVerifyAuthVerifyPost';
 import { Chat   , ChatTypeEnum     } from '../models/Chat';
-import { ChatHistory } from '../models/ChatHistory';
-import { ChatMessage } from '../models/ChatMessage';
+import { ChatHistoryRead } from '../models/ChatHistoryRead';
+import { ChatMessageRead } from '../models/ChatMessageRead';
 import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner     , ComponentGroupComponentsInnerTypeEnum          } from '../models/ComponentGroupComponentsInner';
-import { ErrorResponse } from '../models/ErrorResponse';
+import { Detail } from '../models/Detail';
+import { ErrorModel } from '../models/ErrorModel';
 import { FreeText   , FreeTextTypeEnum    } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
+import { Id } from '../models/Id';
 import { MultiChoice     , MultiChoiceTypeEnum     } from '../models/MultiChoice';
-import { NewResponse } from '../models/NewResponse';
-import { NewUser } from '../models/NewUser';
 import { Participant } from '../models/Participant';
-import { Response } from '../models/Response';
 import { SingleChoice     , SingleChoiceTypeEnum   } from '../models/SingleChoice';
 import { Slider   , SliderTypeEnum     } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
 import { TaskPage } from '../models/TaskPage';
+import { TaskResponse } from '../models/TaskResponse';
 import { Translations } from '../models/Translations';
 import { User } from '../models/User';
+import { UserCreate } from '../models/UserCreate';
+import { UserRead } from '../models/UserRead';
+import { UserUpdate } from '../models/UserUpdate';
 import { ValidationError } from '../models/ValidationError';
 import { ValidationErrorLocInner } from '../models/ValidationErrorLocInner';
 
@@ -64,25 +80,33 @@ let enumsMap: Set<string> = new Set<string>([
 ]);
 
 let typeMap: {[index: string]: any} = {
+    "BearerResponse": BearerResponse,
+    "BodyResetForgotPasswordAuthForgotPasswordPost": BodyResetForgotPasswordAuthForgotPasswordPost,
+    "BodyResetResetPasswordAuthResetPasswordPost": BodyResetResetPasswordAuthResetPasswordPost,
+    "BodyVerifyRequestTokenAuthRequestVerifyTokenPost": BodyVerifyRequestTokenAuthRequestVerifyTokenPost,
+    "BodyVerifyVerifyAuthVerifyPost": BodyVerifyVerifyAuthVerifyPost,
     "Chat": Chat,
-    "ChatHistory": ChatHistory,
-    "ChatMessage": ChatMessage,
+    "ChatHistoryRead": ChatHistoryRead,
+    "ChatMessageRead": ChatMessageRead,
     "ComponentGroup": ComponentGroup,
     "ComponentGroupComponentsInner": ComponentGroupComponentsInner,
-    "ErrorResponse": ErrorResponse,
+    "Detail": Detail,
+    "ErrorModel": ErrorModel,
     "FreeText": FreeText,
     "HTTPValidationError": HTTPValidationError,
+    "Id": Id,
     "MultiChoice": MultiChoice,
-    "NewResponse": NewResponse,
-    "NewUser": NewUser,
     "Participant": Participant,
-    "Response": Response,
     "SingleChoice": SingleChoice,
     "Slider": Slider,
     "TaskConfig": TaskConfig,
     "TaskPage": TaskPage,
+    "TaskResponse": TaskResponse,
     "Translations": Translations,
     "User": User,
+    "UserCreate": UserCreate,
+    "UserRead": UserRead,
+    "UserUpdate": UserUpdate,
     "ValidationError": ValidationError,
     "ValidationErrorLocInner": ValidationErrorLocInner,
 }

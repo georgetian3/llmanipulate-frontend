@@ -7,21 +7,7 @@ import { Button } from "@heroui/button";
 import { Textarea } from "@heroui/input";
 
 import SliderUI from "@/components/slider";
-import {
-  Chat,
-  ComponentGroup,
-  ComponentGroupComponentsInner,
-  ComponentGroupComponentsInnerTypeEnum,
-  createConfiguration,
-  FreeText,
-  MultiChoice,
-  ServerConfiguration,
-  SingleChoice,
-  Slider,
-  TaskConfig,
-  TaskPage,
-  TasksApi,
-} from "@/api";
+
 import { SingleChoiceUI } from "@/components/single-choice";
 import { MultiChoiceUI } from "@/components/multi-choice";
 import FreeTextUI from "@/components/free-text";
@@ -29,6 +15,7 @@ import Markdown from "@/components/markdown";
 import { LeftIcon, RightIcon } from "@/components/icons";
 import ChatUI from "@/components/chat";
 import { getTranslation } from "@/components/utils";
+import { Chat, ComponentGroup, ComponentGroupComponentsInner, ComponentGroupComponentsInnerTypeEnum, createConfiguration, FreeText, MultiChoice, ServerConfiguration, SingleChoice, Slider, TaskConfig, TaskPage, TasksApi } from "@/api";
 
 interface ComponentProps {
   config: ComponentGroupComponentsInner;
@@ -64,20 +51,13 @@ function ComponentUI({ config }: ComponentProps) {
 function ComponentGroupUI({ config }: { config: ComponentGroup }) {
   const colClass = `grid-cols-${config.columns ?? 1}`
 
-  const body = <div className={`grid ${colClass} gap-4`}>
-    {config.components.map((component, index) => (
-      <ComponentUI key={index} config={component} />
-    ))}
-  </div>
-
-
   if (config.components.length <= 1) {
     return (
       <div className="flex flex-col gap-4">
         {config.label && <div className="flex v-full justify-center">
           {getTranslation(config.label)}
         </div>}
-        {body}
+        {<ComponentUI config={config.components[0]} />}
       </div>
     )
   }
@@ -88,7 +68,13 @@ function ComponentGroupUI({ config }: { config: ComponentGroup }) {
           {getTranslation(config.label)}
         </CardHeader>
       )}
-      <CardBody>{body}</CardBody>
+      <CardBody>
+        <div className={`grid ${colClass} gap-4`}>
+          {config.components.map((component, index) => (
+            <ComponentUI key={index} config={component} />
+          ))}
+        </div>
+      </CardBody>
     </Card>
   );
 }

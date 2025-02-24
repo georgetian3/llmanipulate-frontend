@@ -12,12 +12,11 @@
 
 import { HttpFile } from '../http/http';
 
-export class NewResponse {
-    'taskName': string;
-    'initialScores'?: any;
-    'convHistory'?: any;
-    'finalScores'?: any;
-    'userId': string;
+export class ChatMessageRead {
+    'id'?: string;
+    'sender': string;
+    'message': string;
+    'timestamp': Date;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -25,38 +24,32 @@ export class NewResponse {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "taskName",
-            "baseName": "task_name",
+            "name": "id",
+            "baseName": "id",
+            "type": "string",
+            "format": "uuid4"
+        },
+        {
+            "name": "sender",
+            "baseName": "sender",
+            "type": "string",
+            "format": "uuid4"
+        },
+        {
+            "name": "message",
+            "baseName": "message",
             "type": "string",
             "format": ""
         },
         {
-            "name": "initialScores",
-            "baseName": "initial_scores",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "convHistory",
-            "baseName": "conv_history",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "finalScores",
-            "baseName": "final_scores",
-            "type": "any",
-            "format": ""
-        },
-        {
-            "name": "userId",
-            "baseName": "user_id",
-            "type": "string",
-            "format": ""
+            "name": "timestamp",
+            "baseName": "timestamp",
+            "type": "Date",
+            "format": "date-time"
         }    ];
 
     static getAttributeTypeMap() {
-        return NewResponse.attributeTypeMap;
+        return ChatMessageRead.attributeTypeMap;
     }
 
     public constructor() {

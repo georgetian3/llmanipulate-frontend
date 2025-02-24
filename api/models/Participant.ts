@@ -25,7 +25,7 @@ export class Participant {
             "name": "id",
             "baseName": "id",
             "type": "string",
-            "format": ""
+            "format": "uuid4"
         },
         {
             "name": "name",
