@@ -11,7 +11,7 @@
  */
 
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
-import { Translations } from '../models/Translations';
+import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { HttpFile } from '../http/http';
 
 export class ComponentGroup {
@@ -19,7 +19,7 @@ export class ComponentGroup {
     * The number of columns used to display the children of this component
     */
     'columns'?: number;
-    'label'?: Translations | null;
+    'label'?: RootModelUnionTranslationsStr | null;
     'components': Array<ComponentGroupComponentsInner>;
 
     static readonly discriminator: string | undefined = undefined;
@@ -36,7 +36,7 @@ export class ComponentGroup {
         {
             "name": "label",
             "baseName": "label",
-            "type": "Translations",
+            "type": "RootModelUnionTranslationsStr",
             "format": ""
         },
         {

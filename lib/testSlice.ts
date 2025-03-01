@@ -1,18 +1,6 @@
 import { createAppSlice } from '@/lib/createAppSlice';
-import type { AppThunk } from '@/lib/store';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { useAppDispatch } from './hooks';
 
-
-// export interface CounterSliceState {
-//   value: number;
-//   status: 'idle' | 'loading' | 'failed';
-// }
-
-// const initialState: CounterSliceState = {
-//   value: 0,
-//   status: 'idle',
-// };
 
 
 export async function apiRequest(endpoint: string, method: string, data?: any) {

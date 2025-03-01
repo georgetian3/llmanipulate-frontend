@@ -10,17 +10,13 @@
  * Do not edit the class manually.
  */
 
-import { ComponentGroup } from '../models/ComponentGroup';
-import { Label } from '../models/Label';
+import { ResponseValue } from '../models/ResponseValue';
 import { HttpFile } from '../http/http';
 
-export class TaskPage {
-    /**
-    * The number of columns used to display the component groups
-    */
-    'columns'?: number;
-    'label'?: Label | null;
-    'componentGroups': Array<ComponentGroup>;
+export class TaskResponseRead {
+    'task': string;
+    'draft'?: boolean;
+    'response': { [key: string]: ResponseValue; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -28,26 +24,26 @@ export class TaskPage {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "columns",
-            "baseName": "columns",
-            "type": "number",
+            "name": "task",
+            "baseName": "task",
+            "type": "string",
+            "format": "uuid4"
+        },
+        {
+            "name": "draft",
+            "baseName": "draft",
+            "type": "boolean",
             "format": ""
         },
         {
-            "name": "label",
-            "baseName": "label",
-            "type": "Label",
-            "format": ""
-        },
-        {
-            "name": "componentGroups",
-            "baseName": "component_groups",
-            "type": "Array<ComponentGroup>",
+            "name": "response",
+            "baseName": "response",
+            "type": "{ [key: string]: ResponseValue; }",
             "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return TaskPage.attributeTypeMap;
+        return TaskResponseRead.attributeTypeMap;
     }
 
     public constructor() {

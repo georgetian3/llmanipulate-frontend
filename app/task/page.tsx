@@ -15,7 +15,8 @@ import Markdown from "@/components/markdown";
 import { LeftIcon, RightIcon } from "@/components/icons";
 import ChatUI from "@/components/chat";
 import { getTranslation } from "@/components/utils";
-import { Chat, ComponentGroup, ComponentGroupComponentsInner, ComponentGroupComponentsInnerTypeEnum, createConfiguration, FreeText, MultiChoice, ServerConfiguration, SingleChoice, Slider, TaskConfig, TaskPage, TasksApi } from "@/api";
+import { Chat, ComponentGroup, ComponentGroupComponentsInner, ComponentGroupComponentsInnerTypeEnum, FreeText, MultiChoice, SingleChoice, Slider, TaskConfig, TaskPage } from "@/api";
+import { tasksApi } from "@/components/apis";
 
 interface ComponentProps {
   config: ComponentGroupComponentsInner;
@@ -97,11 +98,7 @@ function TaskPageUI({ config, hidden }: { config: TaskPage; hidden: boolean }) {
   );
 }
 
-const tasksApi = new TasksApi(
-  createConfiguration({
-    baseServer: new ServerConfiguration("http://localhost:8000", {}),
-  }),
-);
+
 
 const sampleTaskConfig = `
 {
@@ -695,22 +692,22 @@ export default function TaskUI() {
       console.log("ParsedConfig", parsedConfig);
       setTaskConfig(parsedConfig);
       setWarningText("");
-    } catch (e) {
+    } catch {
       setWarningText("Invalid config");
     }
   }
 
   useEffect(() => {
     tasksApi.getTask("test")
-      .then((taskConfig) => {
-        setTaskConfig(taskConfig)
-        setEditableTaskConfig(JSON.stringify(taskConfig, null, 2))
+      .then((taskRead) => {
+        setTaskConfig(taskRead.config)
+        setEditableTaskConfig(JSON.stringify(taskRead.config, null, 2))
       })
       .catch((reason) => console.log("Error getting task config", reason))
   }, [])
 
   if (!taskConfig) {
-    return <>Loading</>;
+    return <>Loading</>
   }
 
   return (

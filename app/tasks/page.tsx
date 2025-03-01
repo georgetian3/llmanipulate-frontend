@@ -1,6 +1,8 @@
 // "use client";
 
-import { Suspense } from "react";
+import { TaskRead } from "@/api";
+import { usersApi } from "@/components/apis";
+import { Suspense, useEffect, useState } from "react";
 
 // import { Suspense, useEffect, useState, useCallback } from "react";
 // import TaskCard from "../../components/TaskCard";
@@ -121,6 +123,15 @@ import { Suspense } from "react";
 // }
 
 export default function TasksPageWrapper() {
+  const [tasks, setTasks] = useState<TaskRead[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    usersApi.getMyTasks()
+
+  }, [])
+
+
   return (
     <Suspense>
       {/* <TasksPage /> */}

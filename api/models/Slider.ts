@@ -11,16 +11,16 @@
  */
 
 import { Id } from '../models/Id';
-import { Translations } from '../models/Translations';
+import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { HttpFile } from '../http/http';
 
 export class Slider {
     'id': Id;
-    'label': Translations | null;
+    'label': RootModelUnionTranslationsStr;
     'optional'?: boolean;
     'type'?: SliderTypeEnum;
     'steps': number;
-    'labels'?: Array<Translations> | null;
+    'labels'?: Array<RootModelUnionTranslationsStr> | null;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -36,7 +36,7 @@ export class Slider {
         {
             "name": "label",
             "baseName": "label",
-            "type": "Translations",
+            "type": "RootModelUnionTranslationsStr",
             "format": ""
         },
         {
@@ -60,7 +60,7 @@ export class Slider {
         {
             "name": "labels",
             "baseName": "labels",
-            "type": "Array<Translations>",
+            "type": "Array<RootModelUnionTranslationsStr>",
             "format": ""
         }    ];
 

@@ -10,10 +10,12 @@
  * Do not edit the class manually.
  */
 
+import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
-export class ChatHistory {
-    'id'?: string;
+export class Name {
+    'languages': any;
+    '_default'?: string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -21,14 +23,20 @@ export class ChatHistory {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
+            "name": "languages",
+            "baseName": "languages",
+            "type": "any",
+            "format": ""
+        },
+        {
+            "name": "_default",
+            "baseName": "default",
             "type": "string",
-            "format": "uuid4"
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return ChatHistory.attributeTypeMap;
+        return Name.attributeTypeMap;
     }
 
     public constructor() {

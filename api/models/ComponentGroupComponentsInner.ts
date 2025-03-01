@@ -15,6 +15,7 @@ import { FreeText } from '../models/FreeText';
 import { Id } from '../models/Id';
 import { MultiChoice } from '../models/MultiChoice';
 import { Participant } from '../models/Participant';
+import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { Translations } from '../models/Translations';
@@ -24,7 +25,7 @@ export class ComponentGroupComponentsInner {
     'id': Id;
     'label': Translations;
     'optional'?: boolean;
-    'choices': Array<Translations>;
+    'choices': Array<RootModelUnionTranslationsStr>;
     /**
     * If `true`, choices are displayed in a random order to the user
     */
@@ -33,8 +34,9 @@ export class ComponentGroupComponentsInner {
     'minChoices'?: number;
     'maxChoices'?: number;
     'steps': number;
-    'labels'?: Array<Translations>;
+    'labels'?: Array<RootModelUnionTranslationsStr>;
     'regex'?: string;
+    'regexPrompt'?: string;
     'participants'?: Array<Participant>;
     'order'?: Array<string>;
 
@@ -64,7 +66,7 @@ export class ComponentGroupComponentsInner {
         {
             "name": "choices",
             "baseName": "choices",
-            "type": "Array<Translations>",
+            "type": "Array<RootModelUnionTranslationsStr>",
             "format": ""
         },
         {
@@ -100,12 +102,18 @@ export class ComponentGroupComponentsInner {
         {
             "name": "labels",
             "baseName": "labels",
-            "type": "Array<Translations>",
+            "type": "Array<RootModelUnionTranslationsStr>",
             "format": ""
         },
         {
             "name": "regex",
             "baseName": "regex",
+            "type": "string",
+            "format": ""
+        },
+        {
+            "name": "regexPrompt",
+            "baseName": "regex_prompt",
             "type": "string",
             "format": ""
         },

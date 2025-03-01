@@ -6,22 +6,16 @@ import { useEffect, useRef, useState } from "react";
 import {
   Chat,
   ChatHistoryRead,
-  ChatsApi,
-  createConfiguration,
-  ServerConfiguration,
 } from "@/api";
+import { chatsApi } from "./apis";
+
 
 interface ChatProps {
   config: Chat;
 }
 
-const chatsApi = new ChatsApi(
-  createConfiguration({
-    baseServer: new ServerConfiguration("http://localhost:8000", {}),
-  }),
-);
-
 export default function ChatUI({ config }: ChatProps) {
+  config.id
   const [chatHistory, setChatHistory] = useState<ChatHistoryRead>();
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
   const userId = "1aafee69-bd72-4e7c-b7c0-4898581aaf59";
@@ -35,6 +29,7 @@ export default function ChatUI({ config }: ChatProps) {
       message: draft.length === 0 ? "placeholder" : draft,
       timestamp: new Date(),
       sender: userId,
+      chat: newChatHistory.id!
     });
     setChatHistory(chatHistory);
     setDraft("");
@@ -92,7 +87,7 @@ export default function ChatUI({ config }: ChatProps) {
           </CardFooter>
         </CardBody>
       )}
-      
+
     </Card>
   );
 }

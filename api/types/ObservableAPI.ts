@@ -14,16 +14,23 @@ import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
 import { Detail } from '../models/Detail';
 import { ErrorModel } from '../models/ErrorModel';
+import { ErrorResponse } from '../models/ErrorResponse';
 import { FreeText } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
+import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
 import { Participant } from '../models/Participant';
+import { ResponseValue } from '../models/ResponseValue';
+import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
 import { TaskPage } from '../models/TaskPage';
+import { TaskRead } from '../models/TaskRead';
 import { TaskResponse } from '../models/TaskResponse';
+import { TaskResponseCreate } from '../models/TaskResponseCreate';
+import { TaskResponseRead } from '../models/TaskResponseRead';
 import { Translations } from '../models/Translations';
 import { User } from '../models/User';
 import { UserCreate } from '../models/UserCreate';
@@ -324,6 +331,53 @@ export class ObservableChatsApi {
 
 }
 
+import { ResponsesApiRequestFactory, ResponsesApiResponseProcessor} from "../apis/ResponsesApi";
+export class ObservableResponsesApi {
+    private requestFactory: ResponsesApiRequestFactory;
+    private responseProcessor: ResponsesApiResponseProcessor;
+    private configuration: Configuration;
+
+    public constructor(
+        configuration: Configuration,
+        requestFactory?: ResponsesApiRequestFactory,
+        responseProcessor?: ResponsesApiResponseProcessor
+    ) {
+        this.configuration = configuration;
+        this.requestFactory = requestFactory || new ResponsesApiRequestFactory(configuration);
+        this.responseProcessor = responseProcessor || new ResponsesApiResponseProcessor();
+    }
+
+    /**
+     * Get Responses
+     */
+    public getResponsesWithHttpInfo(_options?: Configuration): Observable<HttpInfo<any>> {
+        const requestContextPromise = this.requestFactory.getResponses(_options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (const middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (const middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getResponsesWithHttpInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Get Responses
+     */
+    public getResponses(_options?: Configuration): Observable<any> {
+        return this.getResponsesWithHttpInfo(_options).pipe(map((apiResponse: HttpInfo<any>) => apiResponse.data));
+    }
+
+}
+
 import { TasksApiRequestFactory, TasksApiResponseProcessor} from "../apis/TasksApi";
 export class ObservableTasksApi {
     private requestFactory: TasksApiRequestFactory;
@@ -341,11 +395,102 @@ export class ObservableTasksApi {
     }
 
     /**
-     * Get Task
-     * @param id
+     * Create Task Response
+     * @param taskId
+     * @param taskResponseCreate
      */
-    public getTaskWithHttpInfo(id: string, _options?: Configuration): Observable<HttpInfo<TaskConfig>> {
-        const requestContextPromise = this.requestFactory.getTask(id, _options);
+    public createTaskResponseWithHttpInfo(taskId: string, taskResponseCreate: TaskResponseCreate, _options?: Configuration): Observable<HttpInfo<TaskResponseRead>> {
+        const requestContextPromise = this.requestFactory.createTaskResponse(taskId, taskResponseCreate, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (const middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (const middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.createTaskResponseWithHttpInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Create Task Response
+     * @param taskId
+     * @param taskResponseCreate
+     */
+    public createTaskResponse(taskId: string, taskResponseCreate: TaskResponseCreate, _options?: Configuration): Observable<TaskResponseRead> {
+        return this.createTaskResponseWithHttpInfo(taskId, taskResponseCreate, _options).pipe(map((apiResponse: HttpInfo<TaskResponseRead>) => apiResponse.data));
+    }
+
+    /**
+     * Get All Tasks
+     */
+    public getAllTasksWithHttpInfo(_options?: Configuration): Observable<HttpInfo<Array<TaskRead>>> {
+        const requestContextPromise = this.requestFactory.getAllTasks(_options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (const middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (const middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getAllTasksWithHttpInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Get All Tasks
+     */
+    public getAllTasks(_options?: Configuration): Observable<Array<TaskRead>> {
+        return this.getAllTasksWithHttpInfo(_options).pipe(map((apiResponse: HttpInfo<Array<TaskRead>>) => apiResponse.data));
+    }
+
+    /**
+     * Get Sample Task
+     */
+    public getSampleTaskWithHttpInfo(_options?: Configuration): Observable<HttpInfo<TaskRead>> {
+        const requestContextPromise = this.requestFactory.getSampleTask(_options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (const middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (const middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getSampleTaskWithHttpInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Get Sample Task
+     */
+    public getSampleTask(_options?: Configuration): Observable<TaskRead> {
+        return this.getSampleTaskWithHttpInfo(_options).pipe(map((apiResponse: HttpInfo<TaskRead>) => apiResponse.data));
+    }
+
+    /**
+     * Get Task
+     * @param taskId
+     */
+    public getTaskWithHttpInfo(taskId: string, _options?: Configuration): Observable<HttpInfo<TaskRead>> {
+        const requestContextPromise = this.requestFactory.getTask(taskId, _options);
 
         // build promise chain
         let middlewarePreObservable = from<RequestContext>(requestContextPromise);
@@ -365,10 +510,41 @@ export class ObservableTasksApi {
 
     /**
      * Get Task
-     * @param id
+     * @param taskId
      */
-    public getTask(id: string, _options?: Configuration): Observable<TaskConfig> {
-        return this.getTaskWithHttpInfo(id, _options).pipe(map((apiResponse: HttpInfo<TaskConfig>) => apiResponse.data));
+    public getTask(taskId: string, _options?: Configuration): Observable<TaskRead> {
+        return this.getTaskWithHttpInfo(taskId, _options).pipe(map((apiResponse: HttpInfo<TaskRead>) => apiResponse.data));
+    }
+
+    /**
+     * Get Task Response
+     * @param taskId
+     */
+    public getTaskResponseWithHttpInfo(taskId: string, _options?: Configuration): Observable<HttpInfo<TaskResponseRead>> {
+        const requestContextPromise = this.requestFactory.getTaskResponse(taskId, _options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (const middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (const middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getTaskResponseWithHttpInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Get Task Response
+     * @param taskId
+     */
+    public getTaskResponse(taskId: string, _options?: Configuration): Observable<TaskResponseRead> {
+        return this.getTaskResponseWithHttpInfo(taskId, _options).pipe(map((apiResponse: HttpInfo<TaskResponseRead>) => apiResponse.data));
     }
 
 }
@@ -478,6 +654,35 @@ export class ObservableUsersApi {
      */
     public getAllUsersResponses(_options?: Configuration): Observable<Array<TaskResponse>> {
         return this.getAllUsersResponsesWithHttpInfo(_options).pipe(map((apiResponse: HttpInfo<Array<TaskResponse>>) => apiResponse.data));
+    }
+
+    /**
+     * Get My Tasks
+     */
+    public getMyTasksWithHttpInfo(_options?: Configuration): Observable<HttpInfo<Array<TaskRead>>> {
+        const requestContextPromise = this.requestFactory.getMyTasks(_options);
+
+        // build promise chain
+        let middlewarePreObservable = from<RequestContext>(requestContextPromise);
+        for (const middleware of this.configuration.middleware) {
+            middlewarePreObservable = middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => middleware.pre(ctx)));
+        }
+
+        return middlewarePreObservable.pipe(mergeMap((ctx: RequestContext) => this.configuration.httpApi.send(ctx))).
+            pipe(mergeMap((response: ResponseContext) => {
+                let middlewarePostObservable = of(response);
+                for (const middleware of this.configuration.middleware) {
+                    middlewarePostObservable = middlewarePostObservable.pipe(mergeMap((rsp: ResponseContext) => middleware.post(rsp)));
+                }
+                return middlewarePostObservable.pipe(map((rsp: ResponseContext) => this.responseProcessor.getMyTasksWithHttpInfo(rsp)));
+            }));
+    }
+
+    /**
+     * Get My Tasks
+     */
+    public getMyTasks(_options?: Configuration): Observable<Array<TaskRead>> {
+        return this.getMyTasksWithHttpInfo(_options).pipe(map((apiResponse: HttpInfo<Array<TaskRead>>) => apiResponse.data));
     }
 
     /**

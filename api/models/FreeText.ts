@@ -11,15 +11,16 @@
  */
 
 import { Id } from '../models/Id';
-import { Translations } from '../models/Translations';
+import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { HttpFile } from '../http/http';
 
 export class FreeText {
     'id': Id;
-    'label': Translations | null;
+    'label': RootModelUnionTranslationsStr;
     'optional'?: boolean;
     'type'?: FreeTextTypeEnum;
     'regex'?: string | null;
+    'regexPrompt'?: string | null;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -35,7 +36,7 @@ export class FreeText {
         {
             "name": "label",
             "baseName": "label",
-            "type": "Translations",
+            "type": "RootModelUnionTranslationsStr",
             "format": ""
         },
         {
@@ -53,6 +54,12 @@ export class FreeText {
         {
             "name": "regex",
             "baseName": "regex",
+            "type": "string",
+            "format": ""
+        },
+        {
+            "name": "regexPrompt",
+            "baseName": "regex_prompt",
             "type": "string",
             "format": ""
         }    ];

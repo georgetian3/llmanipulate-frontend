@@ -10,33 +10,19 @@
  * Do not edit the class manually.
  */
 
-import { ChatMessageRead } from '../models/ChatMessageRead';
 import { HttpFile } from '../http/http';
 
-export class ChatHistoryRead {
-    'id'?: string;
-    'messages': Array<ChatMessageRead>;
+export class ResponseValue {
 
     static readonly discriminator: string | undefined = undefined;
 
     static readonly mapping: {[index: string]: string} | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
-        {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
-            "format": "uuid4"
-        },
-        {
-            "name": "messages",
-            "baseName": "messages",
-            "type": "Array<ChatMessageRead>",
-            "format": ""
-        }    ];
+    ];
 
     static getAttributeTypeMap() {
-        return ChatHistoryRead.attributeTypeMap;
+        return ResponseValue.attributeTypeMap;
     }
 
     public constructor() {
