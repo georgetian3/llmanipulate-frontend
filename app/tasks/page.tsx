@@ -1,8 +1,9 @@
-// "use client";
+"use client";
 
 import { TaskRead } from "@/api";
 import { usersApi } from "@/components/apis";
-import { Suspense, useEffect, useState } from "react";
+import Markdown from "@/components/markdown";
+import { useEffect, useState } from "react";
 
 // import { Suspense, useEffect, useState, useCallback } from "react";
 // import TaskCard from "../../components/TaskCard";
@@ -127,15 +128,21 @@ export default function TasksPageWrapper() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    usersApi.getMyTasks()
-
+    (async () => {
+      setLoading(true)
+      const newTasks = await usersApi.getMyTasks()
+      setTasks(newTasks)
+      await new Promise(r => setTimeout(r, 1000))
+      setLoading(false)
+    })()
   }, [])
 
+  if (loading) {
+    return <div>Loading</div>
+  }
 
-  return (
-    <Suspense>
-      {/* <TasksPage /> */}
-      <></>
-    </Suspense>
-  );
+
+  return <div>
+    { tasks.map((task, index) => <Markdown key={index} content={task.config.name}></Markdown>) }
+  </div>
 }

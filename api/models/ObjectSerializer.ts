@@ -18,7 +18,6 @@ export * from '../models/Label';
 export * from '../models/MultiChoice';
 export * from '../models/Participant';
 export * from '../models/ResponseValue';
-export * from '../models/RootModelUnionTranslationsStr';
 export * from '../models/SingleChoice';
 export * from '../models/Slider';
 export * from '../models/TaskConfig';
@@ -55,7 +54,6 @@ import { Label } from '../models/Label';
 import { MultiChoice     , MultiChoiceTypeEnum     } from '../models/MultiChoice';
 import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
-import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { SingleChoice     , SingleChoiceTypeEnum   } from '../models/SingleChoice';
 import { Slider   , SliderTypeEnum     } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
@@ -114,7 +112,6 @@ let typeMap: {[index: string]: any} = {
     "MultiChoice": MultiChoice,
     "Participant": Participant,
     "ResponseValue": ResponseValue,
-    "RootModelUnionTranslationsStr": RootModelUnionTranslationsStr,
     "SingleChoice": SingleChoice,
     "Slider": Slider,
     "TaskConfig": TaskConfig,

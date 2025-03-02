@@ -10,13 +10,13 @@
  * Do not edit the class manually.
  */
 
-import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { TaskPage } from '../models/TaskPage';
+import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class TaskConfig {
-    'name': RootModelUnionTranslationsStr;
-    'description'?: RootModelUnionTranslationsStr | null;
+    'name': Translations;
+    'description'?: Translations | null;
     'pages': Array<TaskPage>;
 
     static readonly discriminator: string | undefined = undefined;
@@ -27,13 +27,13 @@ export class TaskConfig {
         {
             "name": "name",
             "baseName": "name",
-            "type": "RootModelUnionTranslationsStr",
+            "type": "Translations",
             "format": ""
         },
         {
             "name": "description",
             "baseName": "description",
-            "type": "RootModelUnionTranslationsStr",
+            "type": "Translations",
             "format": ""
         },
         {

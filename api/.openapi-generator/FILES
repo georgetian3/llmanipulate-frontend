@@ -1,5 +1,6 @@
 .gitattributes
 .gitignore
+.openapi-generator-ignore
 AuthApi.md
 ChatsApi.md
 README.md
@@ -41,7 +42,6 @@ models/MultiChoice.ts
 models/ObjectSerializer.ts
 models/Participant.ts
 models/ResponseValue.ts
-models/RootModelUnionTranslationsStr.ts
 models/SingleChoice.ts
 models/Slider.ts
 models/TaskConfig.ts

@@ -11,14 +11,14 @@
  */
 
 import { Id } from '../models/Id';
-import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
+import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class MultiChoice {
     'id': Id;
-    'label': RootModelUnionTranslationsStr;
+    'label': Translations;
     'optional'?: boolean;
-    'choices': Array<RootModelUnionTranslationsStr>;
+    'choices': Array<Translations>;
     /**
     * If `true`, choices are displayed in a random order to the user
     */
@@ -41,7 +41,7 @@ export class MultiChoice {
         {
             "name": "label",
             "baseName": "label",
-            "type": "RootModelUnionTranslationsStr",
+            "type": "Translations",
             "format": ""
         },
         {
@@ -53,7 +53,7 @@ export class MultiChoice {
         {
             "name": "choices",
             "baseName": "choices",
-            "type": "Array<RootModelUnionTranslationsStr>",
+            "type": "Array<Translations>",
             "format": ""
         },
         {

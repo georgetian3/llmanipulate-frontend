@@ -41,7 +41,7 @@ function ComponentUI({ config }: ComponentProps) {
     <Card>
       {config.label && (
         <CardHeader>
-          <Markdown translations={config.label} />
+          <Markdown content={config.label} />
         </CardHeader>
       )}
       <CardBody>{component}</CardBody>

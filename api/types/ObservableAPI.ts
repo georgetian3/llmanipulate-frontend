@@ -22,7 +22,6 @@ import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
 import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
-import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';

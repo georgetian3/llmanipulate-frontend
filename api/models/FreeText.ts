@@ -11,12 +11,12 @@
  */
 
 import { Id } from '../models/Id';
-import { RootModelUnionTranslationsStr } from '../models/RootModelUnionTranslationsStr';
+import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class FreeText {
     'id': Id;
-    'label': RootModelUnionTranslationsStr;
+    'label': Translations;
     'optional'?: boolean;
     'type'?: FreeTextTypeEnum;
     'regex'?: string | null;
@@ -36,7 +36,7 @@ export class FreeText {
         {
             "name": "label",
             "baseName": "label",
-            "type": "RootModelUnionTranslationsStr",
+            "type": "Translations",
             "format": ""
         },
         {
