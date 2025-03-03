@@ -18,6 +18,7 @@ export class UserRead {
     'isActive'?: boolean;
     'isSuperuser'?: boolean;
     'isVerified'?: boolean;
+    'name'?: string | null;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -28,7 +29,7 @@ export class UserRead {
             "name": "id",
             "baseName": "id",
             "type": "string",
-            "format": "uuid"
+            "format": "uuid4"
         },
         {
             "name": "email",
@@ -52,6 +53,12 @@ export class UserRead {
             "name": "isVerified",
             "baseName": "is_verified",
             "type": "boolean",
+            "format": ""
+        },
+        {
+            "name": "name",
+            "baseName": "name",
+            "type": "string",
             "format": ""
         }    ];
 

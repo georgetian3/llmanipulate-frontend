@@ -1,7 +1,8 @@
 "use client";
 
-import { TaskRead } from "@/api";
+import { MyTasks, TaskRead } from "@/api";
 import { usersApi } from "@/components/apis";
+import { AuthGuard } from "@/components/auth";
 import Markdown from "@/components/markdown";
 import { useEffect, useState } from "react";
 
@@ -123,9 +124,10 @@ import { useEffect, useState } from "react";
 //   );
 // }
 
-export default function TasksPageWrapper() {
-  const [tasks, setTasks] = useState<TaskRead[]>([])
+function TasksPage() {
+  const [tasks, setTasks] = useState<MyTasks>({created: [], participating: []})
   const [loading, setLoading] = useState(false)
+  console.log("in tasks page")
 
   useEffect(() => {
     (async () => {
@@ -143,6 +145,16 @@ export default function TasksPageWrapper() {
 
 
   return <div>
-    { tasks.map((task, index) => <Markdown key={index} content={task.config.name}></Markdown>) }
+    Participating
+    { tasks.created.map((task, index) => <Markdown key={index} content={task.config.name}></Markdown>) }
+    Created
+    { tasks.participating.map((task, index) => <Markdown key={index} content={task.config.name}></Markdown>) }
   </div>
+}
+
+export default function AuthedTasksPage() {
+  console.log("in authedtaskspage")
+  return <AuthGuard>
+    <TasksPage />
+  </AuthGuard>
 }

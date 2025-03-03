@@ -10,15 +10,12 @@
  * Do not edit the class manually.
  */
 
-import { TaskConfig } from '../models/TaskConfig';
-import { UserRead } from '../models/UserRead';
+import { TaskRead } from '../models/TaskRead';
 import { HttpFile } from '../http/http';
 
-export class TaskRead {
-    'id'?: string | null;
-    'config': TaskConfig;
-    '_public'?: boolean;
-    'creator': UserRead;
+export class MyTasks {
+    'created': Array<TaskRead>;
+    'participating': Array<TaskRead>;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -26,32 +23,20 @@ export class TaskRead {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
-            "format": "uuid4"
-        },
-        {
-            "name": "config",
-            "baseName": "config",
-            "type": "TaskConfig",
+            "name": "created",
+            "baseName": "created",
+            "type": "Array<TaskRead>",
             "format": ""
         },
         {
-            "name": "_public",
-            "baseName": "public",
-            "type": "boolean",
-            "format": ""
-        },
-        {
-            "name": "creator",
-            "baseName": "creator",
-            "type": "UserRead",
+            "name": "participating",
+            "baseName": "participating",
+            "type": "Array<TaskRead>",
             "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return TaskRead.attributeTypeMap;
+        return MyTasks.attributeTypeMap;
     }
 
     public constructor() {

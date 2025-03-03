@@ -16,6 +16,7 @@ export * from '../models/HTTPValidationError';
 export * from '../models/Id';
 export * from '../models/Label';
 export * from '../models/MultiChoice';
+export * from '../models/MyTasks';
 export * from '../models/Participant';
 export * from '../models/ResponseValue';
 export * from '../models/SingleChoice';
@@ -52,6 +53,7 @@ import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
 import { Label } from '../models/Label';
 import { MultiChoice     , MultiChoiceTypeEnum     } from '../models/MultiChoice';
+import { MyTasks } from '../models/MyTasks';
 import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice     , SingleChoiceTypeEnum   } from '../models/SingleChoice';
@@ -110,6 +112,7 @@ let typeMap: {[index: string]: any} = {
     "Id": Id,
     "Label": Label,
     "MultiChoice": MultiChoice,
+    "MyTasks": MyTasks,
     "Participant": Participant,
     "ResponseValue": ResponseValue,
     "SingleChoice": SingleChoice,

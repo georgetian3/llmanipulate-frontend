@@ -167,7 +167,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
 
 # **getMyTasks**
-> Array<TaskRead> getMyTasks()
+> MyTasks getMyTasks()
 
 
 ### Example
@@ -192,11 +192,11 @@ This endpoint does not need any parameter.
 
 ### Return type
 
-**Array<TaskRead>**
+**MyTasks**
 
 ### Authorization
 
-No authorization required
+[OAuth2PasswordBearer](README.md#OAuth2PasswordBearer)
 
 ### HTTP request headers
 

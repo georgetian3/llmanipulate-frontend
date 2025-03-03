@@ -20,6 +20,7 @@ import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
 import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
+import { MyTasks } from '../models/MyTasks';
 import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice } from '../models/SingleChoice';
@@ -658,7 +659,7 @@ export class ObservableUsersApi {
     /**
      * Get My Tasks
      */
-    public getMyTasksWithHttpInfo(_options?: Configuration): Observable<HttpInfo<Array<TaskRead>>> {
+    public getMyTasksWithHttpInfo(_options?: Configuration): Observable<HttpInfo<MyTasks>> {
         const requestContextPromise = this.requestFactory.getMyTasks(_options);
 
         // build promise chain
@@ -680,8 +681,8 @@ export class ObservableUsersApi {
     /**
      * Get My Tasks
      */
-    public getMyTasks(_options?: Configuration): Observable<Array<TaskRead>> {
-        return this.getMyTasksWithHttpInfo(_options).pipe(map((apiResponse: HttpInfo<Array<TaskRead>>) => apiResponse.data));
+    public getMyTasks(_options?: Configuration): Observable<MyTasks> {
+        return this.getMyTasksWithHttpInfo(_options).pipe(map((apiResponse: HttpInfo<MyTasks>) => apiResponse.data));
     }
 
     /**

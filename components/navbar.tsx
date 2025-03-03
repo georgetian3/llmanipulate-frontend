@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -19,7 +21,20 @@ import {
   Logo,
 } from "@/components/icons";
 
+import { Button } from "@heroui/react";
+import { isAuthenticated, logout } from "./auth";
+import { useEffect, useState } from "react";
+
 export const Navbar = () => {
+
+  const [authed, setAuthed] = useState(false)
+
+  useEffect(() => {
+    (async () => {
+      setAuthed(await isAuthenticated())
+    })()
+  }, [])
+
 
   return (
     <HeroUINavbar isBordered height={"4rem"} maxWidth="xl" position="sticky">
@@ -32,6 +47,20 @@ export const Navbar = () => {
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
+            <NavbarItem key={item.href}>
+              <NextLink
+                className={clsx(
+                  linkStyles({ color: "foreground" }),
+                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                )}
+                color="primary"
+                href={item.href}
+              >
+                {item.label}
+              </NextLink>
+            </NavbarItem>
+          ))}
+          {authed && siteConfig.authedNavItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
@@ -58,6 +87,9 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
+        {authed && <Button variant="flat" onPress={logout}>
+          Logout
+        </Button>}
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
@@ -91,4 +123,4 @@ export const Navbar = () => {
       </NavbarMenu>
     </HeroUINavbar>
   );
-};
+}

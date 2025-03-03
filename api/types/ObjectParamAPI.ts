@@ -19,6 +19,7 @@ import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
 import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
+import { MyTasks } from '../models/MyTasks';
 import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice } from '../models/SingleChoice';
@@ -597,7 +598,7 @@ export class ObjectUsersApi {
      * Get My Tasks
      * @param param the request object
      */
-    public getMyTasksWithHttpInfo(param: UsersApiGetMyTasksRequest = {}, options?: Configuration): Promise<HttpInfo<Array<TaskRead>>> {
+    public getMyTasksWithHttpInfo(param: UsersApiGetMyTasksRequest = {}, options?: Configuration): Promise<HttpInfo<MyTasks>> {
         return this.api.getMyTasksWithHttpInfo( options).toPromise();
     }
 
@@ -605,7 +606,7 @@ export class ObjectUsersApi {
      * Get My Tasks
      * @param param the request object
      */
-    public getMyTasks(param: UsersApiGetMyTasksRequest = {}, options?: Configuration): Promise<Array<TaskRead>> {
+    public getMyTasks(param: UsersApiGetMyTasksRequest = {}, options?: Configuration): Promise<MyTasks> {
         return this.api.getMyTasks( options).toPromise();
     }
 

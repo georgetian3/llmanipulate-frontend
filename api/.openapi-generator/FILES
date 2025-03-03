@@ -1,6 +1,5 @@
 .gitattributes
 .gitignore
-.openapi-generator-ignore
 AuthApi.md
 ChatsApi.md
 README.md
@@ -39,6 +38,7 @@ models/HTTPValidationError.ts
 models/Id.ts
 models/Label.ts
 models/MultiChoice.ts
+models/MyTasks.ts
 models/ObjectSerializer.ts
 models/Participant.ts
 models/ResponseValue.ts

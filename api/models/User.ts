@@ -19,6 +19,7 @@ export class User {
     'isActive'?: boolean;
     'isSuperuser'?: boolean;
     'isVerified'?: boolean;
+    'name'?: string | null;
     'demographics'?: any;
     'personality'?: any;
     'agentType'?: number;
@@ -63,6 +64,12 @@ export class User {
             "name": "isVerified",
             "baseName": "is_verified",
             "type": "boolean",
+            "format": ""
+        },
+        {
+            "name": "name",
+            "baseName": "name",
+            "type": "string",
             "format": ""
         },
         {

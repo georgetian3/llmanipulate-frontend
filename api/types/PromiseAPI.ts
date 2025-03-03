@@ -19,6 +19,7 @@ import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
 import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
+import { MyTasks } from '../models/MyTasks';
 import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice } from '../models/SingleChoice';
@@ -437,7 +438,7 @@ export class PromiseUsersApi {
     /**
      * Get My Tasks
      */
-    public getMyTasksWithHttpInfo(_options?: Configuration): Promise<HttpInfo<Array<TaskRead>>> {
+    public getMyTasksWithHttpInfo(_options?: Configuration): Promise<HttpInfo<MyTasks>> {
         const result = this.api.getMyTasksWithHttpInfo(_options);
         return result.toPromise();
     }
@@ -445,7 +446,7 @@ export class PromiseUsersApi {
     /**
      * Get My Tasks
      */
-    public getMyTasks(_options?: Configuration): Promise<Array<TaskRead>> {
+    public getMyTasks(_options?: Configuration): Promise<MyTasks> {
         const result = this.api.getMyTasks(_options);
         return result.toPromise();
     }

@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'
 import { useAppDispatch } from '@/lib/hooks'
 import { apiRequest, setUser } from '@/lib/testSlice'
+import { authApi, refreshApis } from '@/components/apis';
+import { Button, Checkbox, Form, Input } from '@heroui/react';
+import { setAccessToken } from '@/components/auth';
 
 
 const user_id_key = 'user_id'
@@ -19,7 +22,7 @@ function clearUserPassword() {
   localStorage.removeItem(user_id_key)
 }
 
-export default function LoginPage() {
+function LoginPage() {
   const router = useRouter()
   const [password, setPassword] = useState('')
 
@@ -44,7 +47,7 @@ export default function LoginPage() {
     }
     setLoading(true)
     const resp = await apiRequest(`/users/${password}`, 'GET')
-    switch(resp.status) {
+    switch (resp.status) {
       case 200: {
         setWarning('')
         if (save) {
@@ -69,35 +72,35 @@ export default function LoginPage() {
 
 
 
-    // setLoading(true);
-    // try {
-    //   const userData = await fetchUserData(usercode.trim());
-    //   if (!userData) {
-    //     alert('No matching User found. Please try again.');
-    //     return;
-    //   }
+  // setLoading(true);
+  // try {
+  //   const userData = await fetchUserData(usercode.trim());
+  //   if (!userData) {
+  //     alert('No matching User found. Please try again.');
+  //     return;
+  //   }
 
-    //   const state = {
-    //     taskType: userData.task_type,
-    //     taskId: '',
-    //     userId: usercode.trim(),
-    //     name: userData.demographics.name,
-    //     initialScores: { A: 1, B: 1, C: 1, D: 1, confidence: 1, familiarity: 1 },
-    //     options: [],
-    //   };
+  //   const state = {
+  //     taskType: userData.task_type,
+  //     taskId: '',
+  //     userId: usercode.trim(),
+  //     name: userData.demographics.name,
+  //     initialScores: { A: 1, B: 1, C: 1, D: 1, confidence: 1, familiarity: 1 },
+  //     options: [],
+  //   };
 
-    //   if (localStorage.getItem('state'))
-    //     localStorage.removeItem('state');
-    //   // setState(state);
+  //   if (localStorage.getItem('state'))
+  //     localStorage.removeItem('state');
+  //   // setState(state);
 
 
-    //   router.push(`/tasks?`);
-    // } catch (error) {
-    //   console.error('Error during login:', error);
-    //   alert('An unexpected error occurred. Please try again.');
-    // } finally {
-    //   setLoading(false);
-    // }
+  //   router.push(`/tasks?`);
+  // } catch (error) {
+  //   console.error('Error during login:', error);
+  //   alert('An unexpected error occurred. Please try again.');
+  // } finally {
+  //   setLoading(false);
+  // }
 
 
 
@@ -123,8 +126,74 @@ export default function LoginPage() {
     >
       Login
     </button>
-    { warning && <div className='text-red-500'>
+    {warning && <div className='text-red-500'>
       {warning}
     </div>}
   </div>
+}
+
+
+
+export default function NewLoginPage() {
+
+  const router = useRouter()
+
+  const [username, setUsername] = useState("sample_participant@example.com")
+  const [password, setPassword] = useState("secret")
+  const [loginClicked, setLoginClicked] = useState(false)
+  const [signUpClicked, setSignUpClicked] = useState(false)
+  const [warning, setWarning] = useState("")
+
+  async function handleLogin() {
+    setWarning("")
+    setLoginClicked(true)
+    await new Promise(r => setTimeout(r, 1000))
+    try {
+      const resp = await authApi.authAuthLogin(username, password)
+      setAccessToken(resp.accessToken)
+      refreshApis()
+      router.push("/tasks")
+    } catch {
+      setWarning("Invalid credentials")
+    }
+    setLoginClicked(false)
+  }
+
+  async function handleSignUp() {
+    setWarning("")
+    setSignUpClicked(true)
+    await new Promise(r => setTimeout(r, 1000))
+    setSignUpClicked(false)
+  }
+
+
+  return <div className="flex flex-col gap-16 h-full justify-center align-middle items-center">
+    <h1 className='font-bold text-2xl'>LLManipulate</h1>
+    <Form className="w-1/4 gap-8">
+      <Input label="Email" type="email" onChange={(event) => setUsername(event.target.value)} value={username} />
+      <Input label="Password" type="password" onChange={(event) => setPassword(event.target.value)} value={password} />
+      <Checkbox>Remember me</Checkbox>
+      <div className='w-full flex justify-evenly'>
+        <Button
+          color="primary" type="submit"
+          isDisabled={loginClicked || signUpClicked}
+          isLoading={loginClicked}
+          className='w-1/3'
+          onPress={handleLogin}
+        >
+          Login
+        </Button>
+        <Button
+          isDisabled={loginClicked || signUpClicked}
+          isLoading={signUpClicked}
+          className='w-1/3'
+          onPress={handleSignUp}
+        >
+          Sign Up
+        </Button>
+      </div>
+      {warning && <div className='w-full text-center text-danger'>{warning}</div>}
+    </Form>
+  </div>
+
 }

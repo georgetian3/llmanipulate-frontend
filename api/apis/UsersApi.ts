@@ -10,7 +10,7 @@ import {SecurityAuthentication} from '../auth/auth';
 
 import { ErrorModel } from '../models/ErrorModel';
 import { HTTPValidationError } from '../models/HTTPValidationError';
-import { TaskRead } from '../models/TaskRead';
+import { MyTasks } from '../models/MyTasks';
 import { TaskResponse } from '../models/TaskResponse';
 import { User } from '../models/User';
 import { UserCreate } from '../models/UserCreate';
@@ -124,6 +124,12 @@ export class UsersApiRequestFactory extends BaseAPIRequestFactory {
         requestContext.setHeaderParam("Accept", "application/json, */*;q=0.8")
 
 
+        let authMethod: SecurityAuthentication | undefined;
+        // Apply auth methods
+        authMethod = _config.authMethods["OAuth2PasswordBearer"]
+        if (authMethod?.applySecurityAuthentication) {
+            await authMethod?.applySecurityAuthentication(requestContext);
+        }
         
         const defaultAuth: SecurityAuthentication | undefined = _options?.authMethods?.default || this.configuration?.authMethods?.default
         if (defaultAuth?.applySecurityAuthentication) {
@@ -474,22 +480,22 @@ export class UsersApiResponseProcessor {
      * @params response Response returned by the server for a request to getMyTasks
      * @throws ApiException if the response code was not in [200, 299]
      */
-     public async getMyTasksWithHttpInfo(response: ResponseContext): Promise<HttpInfo<Array<TaskRead> >> {
+     public async getMyTasksWithHttpInfo(response: ResponseContext): Promise<HttpInfo<MyTasks >> {
         const contentType = ObjectSerializer.normalizeMediaType(response.headers["content-type"]);
         if (isCodeInRange("200", response.httpStatusCode)) {
-            const body: Array<TaskRead> = ObjectSerializer.deserialize(
+            const body: MyTasks = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "Array<TaskRead>", ""
-            ) as Array<TaskRead>;
+                "MyTasks", ""
+            ) as MyTasks;
             return new HttpInfo(response.httpStatusCode, response.headers, response.body, body);
         }
 
         // Work around for missing responses in specification, e.g. for petstore.yaml
         if (response.httpStatusCode >= 200 && response.httpStatusCode <= 299) {
-            const body: Array<TaskRead> = ObjectSerializer.deserialize(
+            const body: MyTasks = ObjectSerializer.deserialize(
                 ObjectSerializer.parse(await response.body.text(), contentType),
-                "Array<TaskRead>", ""
-            ) as Array<TaskRead>;
+                "MyTasks", ""
+            ) as MyTasks;
             return new HttpInfo(response.httpStatusCode, response.headers, response.body, body);
         }
 
