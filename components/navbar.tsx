@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
@@ -7,10 +9,7 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@heroui/navbar";
-import { Button } from "@heroui/button";
-import { Kbd } from "@heroui/kbd";
 import { Link } from "@heroui/link";
-import { Input } from "@heroui/input";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";
@@ -22,7 +21,15 @@ import {
   Logo,
 } from "@/components/icons";
 
+import { Button } from "@heroui/react";
+import { useAuthenticated, logout } from "./auth";
+import { usePathname, useRouter } from "next/navigation";
+
 export const Navbar = () => {
+
+  const isAuthed = useAuthenticated()
+  const router = useRouter()
+  const pathname = usePathname()
 
   return (
     <HeroUINavbar isBordered height={"4rem"} maxWidth="xl" position="sticky">
@@ -35,6 +42,20 @@ export const Navbar = () => {
         </NavbarBrand>
         <ul className="hidden lg:flex gap-4 justify-start ml-2">
           {siteConfig.navItems.map((item) => (
+            <NavbarItem key={item.href}>
+              <NextLink
+                className={clsx(
+                  linkStyles({ color: "foreground" }),
+                  "data-[active=true]:text-primary data-[active=true]:font-medium",
+                )}
+                color="primary"
+                href={item.href}
+              >
+                {item.label}
+              </NextLink>
+            </NavbarItem>
+          ))}
+          {isAuthed && siteConfig.authedNavItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
@@ -61,6 +82,14 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
+        {isAuthed
+          ? <Button variant="flat" onPress={logout}>
+            Logout
+          </Button>
+          : pathname !== "/login"
+            ? <Button variant="flat" onPress={() => router.push("login")}>Login</Button>
+            : <></>
+        }
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
@@ -94,4 +123,4 @@ export const Navbar = () => {
       </NavbarMenu>
     </HeroUINavbar>
   );
-};
+}

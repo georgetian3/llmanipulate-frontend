@@ -15,7 +15,6 @@ import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
 export class TaskConfig {
-    'id': string;
     'name': Translations;
     'description'?: Translations | null;
     'pages': Array<TaskPage>;
@@ -25,12 +24,6 @@ export class TaskConfig {
     static readonly mapping: {[index: string]: string} | undefined = undefined;
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
-        {
-            "name": "id",
-            "baseName": "id",
-            "type": "string",
-            "format": ""
-        },
         {
             "name": "name",
             "baseName": "name",

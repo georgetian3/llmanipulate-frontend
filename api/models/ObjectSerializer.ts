@@ -10,16 +10,23 @@ export * from '../models/ComponentGroup';
 export * from '../models/ComponentGroupComponentsInner';
 export * from '../models/Detail';
 export * from '../models/ErrorModel';
+export * from '../models/ErrorResponse';
 export * from '../models/FreeText';
 export * from '../models/HTTPValidationError';
 export * from '../models/Id';
+export * from '../models/Label';
 export * from '../models/MultiChoice';
+export * from '../models/MyTasks';
 export * from '../models/Participant';
+export * from '../models/ResponseValue';
 export * from '../models/SingleChoice';
 export * from '../models/Slider';
 export * from '../models/TaskConfig';
 export * from '../models/TaskPage';
+export * from '../models/TaskRead';
 export * from '../models/TaskResponse';
+export * from '../models/TaskResponseCreate';
+export * from '../models/TaskResponseRead';
 export * from '../models/Translations';
 export * from '../models/User';
 export * from '../models/UserCreate';
@@ -37,19 +44,26 @@ import { Chat   , ChatTypeEnum     } from '../models/Chat';
 import { ChatHistoryRead } from '../models/ChatHistoryRead';
 import { ChatMessageRead } from '../models/ChatMessageRead';
 import { ComponentGroup } from '../models/ComponentGroup';
-import { ComponentGroupComponentsInner     , ComponentGroupComponentsInnerTypeEnum          } from '../models/ComponentGroupComponentsInner';
+import { ComponentGroupComponentsInner     , ComponentGroupComponentsInnerTypeEnum           } from '../models/ComponentGroupComponentsInner';
 import { Detail } from '../models/Detail';
 import { ErrorModel } from '../models/ErrorModel';
-import { FreeText   , FreeTextTypeEnum    } from '../models/FreeText';
+import { ErrorResponse } from '../models/ErrorResponse';
+import { FreeText   , FreeTextTypeEnum     } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
+import { Label } from '../models/Label';
 import { MultiChoice     , MultiChoiceTypeEnum     } from '../models/MultiChoice';
+import { MyTasks } from '../models/MyTasks';
 import { Participant } from '../models/Participant';
+import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice     , SingleChoiceTypeEnum   } from '../models/SingleChoice';
 import { Slider   , SliderTypeEnum     } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
 import { TaskPage } from '../models/TaskPage';
+import { TaskRead } from '../models/TaskRead';
 import { TaskResponse } from '../models/TaskResponse';
+import { TaskResponseCreate } from '../models/TaskResponseCreate';
+import { TaskResponseRead } from '../models/TaskResponseRead';
 import { Translations } from '../models/Translations';
 import { User } from '../models/User';
 import { UserCreate } from '../models/UserCreate';
@@ -92,16 +106,23 @@ let typeMap: {[index: string]: any} = {
     "ComponentGroupComponentsInner": ComponentGroupComponentsInner,
     "Detail": Detail,
     "ErrorModel": ErrorModel,
+    "ErrorResponse": ErrorResponse,
     "FreeText": FreeText,
     "HTTPValidationError": HTTPValidationError,
     "Id": Id,
+    "Label": Label,
     "MultiChoice": MultiChoice,
+    "MyTasks": MyTasks,
     "Participant": Participant,
+    "ResponseValue": ResponseValue,
     "SingleChoice": SingleChoice,
     "Slider": Slider,
     "TaskConfig": TaskConfig,
     "TaskPage": TaskPage,
+    "TaskRead": TaskRead,
     "TaskResponse": TaskResponse,
+    "TaskResponseCreate": TaskResponseCreate,
+    "TaskResponseRead": TaskResponseRead,
     "Translations": Translations,
     "User": User,
     "UserCreate": UserCreate,

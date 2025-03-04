@@ -13,9 +13,10 @@
 import { HttpFile } from '../http/http';
 
 export class ChatMessageRead {
-    'id'?: string;
-    'sender': string;
     'message': string;
+    'id'?: string;
+    'chat': string;
+    'sender': string;
     'timestamp': Date;
 
     static readonly discriminator: string | undefined = undefined;
@@ -24,8 +25,20 @@ export class ChatMessageRead {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
+            "name": "message",
+            "baseName": "message",
+            "type": "string",
+            "format": ""
+        },
+        {
             "name": "id",
             "baseName": "id",
+            "type": "string",
+            "format": "uuid4"
+        },
+        {
+            "name": "chat",
+            "baseName": "chat",
             "type": "string",
             "format": "uuid4"
         },
@@ -34,12 +47,6 @@ export class ChatMessageRead {
             "baseName": "sender",
             "type": "string",
             "format": "uuid4"
-        },
-        {
-            "name": "message",
-            "baseName": "message",
-            "type": "string",
-            "format": ""
         },
         {
             "name": "timestamp",

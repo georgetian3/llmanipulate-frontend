@@ -6,8 +6,9 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**createUser**](UsersApi.md#createUser) | **PUT** /users | Create User
 [**getAllUsers**](UsersApi.md#getAllUsers) | **GET** /users | Get All Users
-[**getAllUsersResponses**](UsersApi.md#getAllUsersResponses) | **GET** /users_responses | Get All Users Responses
-[**getUser**](UsersApi.md#getUser) | **GET** /users/{user_id} | Get User
+[**getAllUsersResponses**](UsersApi.md#getAllUsersResponses) | **GET** /users/users_responses | Get All Users Responses
+[**getMyTasks**](UsersApi.md#getMyTasks) | **GET** /users/me/tasks | Get My Tasks
+[**getUser**](UsersApi.md#getUser) | **GET** /users{user_id} | Get User
 [**usersCurrentUser**](UsersApi.md#usersCurrentUser) | **GET** /users/me | Users:Current User
 [**usersDeleteUser**](UsersApi.md#usersDeleteUser) | **DELETE** /users/{id} | Users:Delete User
 [**usersPatchCurrentUser**](UsersApi.md#usersPatchCurrentUser) | **PATCH** /users/me | Users:Patch Current User
@@ -151,6 +152,51 @@ This endpoint does not need any parameter.
 ### Authorization
 
 No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Successful Response |  -  |
+
+[[Back to top]](#) [[Back to API list]](README.md#documentation-for-api-endpoints) [[Back to Model list]](README.md#documentation-for-models) [[Back to README]](README.md)
+
+# **getMyTasks**
+> MyTasks getMyTasks()
+
+
+### Example
+
+
+```typescript
+import { createConfiguration, UsersApi } from '';
+
+const configuration = createConfiguration();
+const apiInstance = new UsersApi(configuration);
+
+const request = {};
+
+const data = await apiInstance.getMyTasks(request);
+console.log('API called successfully. Returned data:', data);
+```
+
+
+### Parameters
+This endpoint does not need any parameter.
+
+
+### Return type
+
+**MyTasks**
+
+### Authorization
+
+[OAuth2PasswordBearer](README.md#OAuth2PasswordBearer)
 
 ### HTTP request headers
 

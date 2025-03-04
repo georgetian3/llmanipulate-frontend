@@ -35,6 +35,7 @@ export class ComponentGroupComponentsInner {
     'steps': number;
     'labels'?: Array<Translations>;
     'regex'?: string;
+    'regexPrompt'?: string;
     'participants'?: Array<Participant>;
     'order'?: Array<string>;
 
@@ -106,6 +107,12 @@ export class ComponentGroupComponentsInner {
         {
             "name": "regex",
             "baseName": "regex",
+            "type": "string",
+            "format": ""
+        },
+        {
+            "name": "regexPrompt",
+            "baseName": "regex_prompt",
             "type": "string",
             "format": ""
         },

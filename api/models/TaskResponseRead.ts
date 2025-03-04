@@ -10,10 +10,13 @@
  * Do not edit the class manually.
  */
 
+import { ResponseValue } from '../models/ResponseValue';
 import { HttpFile } from '../http/http';
 
-export class ChatHistory {
-    'id'?: string;
+export class TaskResponseRead {
+    'task': string;
+    'draft'?: boolean;
+    'response': { [key: string]: ResponseValue; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -21,14 +24,26 @@ export class ChatHistory {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
+            "name": "task",
+            "baseName": "task",
             "type": "string",
             "format": "uuid4"
+        },
+        {
+            "name": "draft",
+            "baseName": "draft",
+            "type": "boolean",
+            "format": ""
+        },
+        {
+            "name": "response",
+            "baseName": "response",
+            "type": "{ [key: string]: ResponseValue; }",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return ChatHistory.attributeTypeMap;
+        return TaskResponseRead.attributeTypeMap;
     }
 
     public constructor() {

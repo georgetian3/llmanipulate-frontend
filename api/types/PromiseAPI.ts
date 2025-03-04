@@ -13,16 +13,23 @@ import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
 import { Detail } from '../models/Detail';
 import { ErrorModel } from '../models/ErrorModel';
+import { ErrorResponse } from '../models/ErrorResponse';
 import { FreeText } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
+import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
+import { MyTasks } from '../models/MyTasks';
 import { Participant } from '../models/Participant';
+import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
 import { TaskPage } from '../models/TaskPage';
+import { TaskRead } from '../models/TaskRead';
 import { TaskResponse } from '../models/TaskResponse';
+import { TaskResponseCreate } from '../models/TaskResponseCreate';
+import { TaskResponseRead } from '../models/TaskResponseRead';
 import { Translations } from '../models/Translations';
 import { User } from '../models/User';
 import { UserCreate } from '../models/UserCreate';
@@ -220,6 +227,41 @@ export class PromiseChatsApi {
 
 
 
+import { ObservableResponsesApi } from './ObservableAPI';
+
+import { ResponsesApiRequestFactory, ResponsesApiResponseProcessor} from "../apis/ResponsesApi";
+export class PromiseResponsesApi {
+    private api: ObservableResponsesApi
+
+    public constructor(
+        configuration: Configuration,
+        requestFactory?: ResponsesApiRequestFactory,
+        responseProcessor?: ResponsesApiResponseProcessor
+    ) {
+        this.api = new ObservableResponsesApi(configuration, requestFactory, responseProcessor);
+    }
+
+    /**
+     * Get Responses
+     */
+    public getResponsesWithHttpInfo(_options?: Configuration): Promise<HttpInfo<any>> {
+        const result = this.api.getResponsesWithHttpInfo(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get Responses
+     */
+    public getResponses(_options?: Configuration): Promise<any> {
+        const result = this.api.getResponses(_options);
+        return result.toPromise();
+    }
+
+
+}
+
+
+
 import { ObservableTasksApi } from './ObservableAPI';
 
 import { TasksApiRequestFactory, TasksApiResponseProcessor} from "../apis/TasksApi";
@@ -235,20 +277,90 @@ export class PromiseTasksApi {
     }
 
     /**
-     * Get Task
-     * @param id
+     * Create Task Response
+     * @param taskId
+     * @param taskResponseCreate
      */
-    public getTaskWithHttpInfo(id: string, _options?: Configuration): Promise<HttpInfo<TaskConfig>> {
-        const result = this.api.getTaskWithHttpInfo(id, _options);
+    public createTaskResponseWithHttpInfo(taskId: string, taskResponseCreate: TaskResponseCreate, _options?: Configuration): Promise<HttpInfo<TaskResponseRead>> {
+        const result = this.api.createTaskResponseWithHttpInfo(taskId, taskResponseCreate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Create Task Response
+     * @param taskId
+     * @param taskResponseCreate
+     */
+    public createTaskResponse(taskId: string, taskResponseCreate: TaskResponseCreate, _options?: Configuration): Promise<TaskResponseRead> {
+        const result = this.api.createTaskResponse(taskId, taskResponseCreate, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get All Tasks
+     */
+    public getAllTasksWithHttpInfo(_options?: Configuration): Promise<HttpInfo<Array<TaskRead>>> {
+        const result = this.api.getAllTasksWithHttpInfo(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get All Tasks
+     */
+    public getAllTasks(_options?: Configuration): Promise<Array<TaskRead>> {
+        const result = this.api.getAllTasks(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get Sample Task
+     */
+    public getSampleTaskWithHttpInfo(_options?: Configuration): Promise<HttpInfo<TaskRead>> {
+        const result = this.api.getSampleTaskWithHttpInfo(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get Sample Task
+     */
+    public getSampleTask(_options?: Configuration): Promise<TaskRead> {
+        const result = this.api.getSampleTask(_options);
         return result.toPromise();
     }
 
     /**
      * Get Task
-     * @param id
+     * @param taskId
      */
-    public getTask(id: string, _options?: Configuration): Promise<TaskConfig> {
-        const result = this.api.getTask(id, _options);
+    public getTaskWithHttpInfo(taskId: string, _options?: Configuration): Promise<HttpInfo<TaskRead>> {
+        const result = this.api.getTaskWithHttpInfo(taskId, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get Task
+     * @param taskId
+     */
+    public getTask(taskId: string, _options?: Configuration): Promise<TaskRead> {
+        const result = this.api.getTask(taskId, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get Task Response
+     * @param taskId
+     */
+    public getTaskResponseWithHttpInfo(taskId: string, _options?: Configuration): Promise<HttpInfo<TaskResponseRead>> {
+        const result = this.api.getTaskResponseWithHttpInfo(taskId, _options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get Task Response
+     * @param taskId
+     */
+    public getTaskResponse(taskId: string, _options?: Configuration): Promise<TaskResponseRead> {
+        const result = this.api.getTaskResponse(taskId, _options);
         return result.toPromise();
     }
 
@@ -320,6 +432,22 @@ export class PromiseUsersApi {
      */
     public getAllUsersResponses(_options?: Configuration): Promise<Array<TaskResponse>> {
         const result = this.api.getAllUsersResponses(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get My Tasks
+     */
+    public getMyTasksWithHttpInfo(_options?: Configuration): Promise<HttpInfo<MyTasks>> {
+        const result = this.api.getMyTasksWithHttpInfo(_options);
+        return result.toPromise();
+    }
+
+    /**
+     * Get My Tasks
+     */
+    public getMyTasks(_options?: Configuration): Promise<MyTasks> {
+        const result = this.api.getMyTasks(_options);
         return result.toPromise();
     }
 

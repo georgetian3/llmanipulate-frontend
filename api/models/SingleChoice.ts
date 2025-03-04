@@ -16,7 +16,7 @@ import { HttpFile } from '../http/http';
 
 export class SingleChoice {
     'id': Id;
-    'label': Translations | null;
+    'label': Translations;
     'optional'?: boolean;
     'choices': Array<Translations>;
     /**

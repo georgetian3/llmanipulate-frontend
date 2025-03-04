@@ -10,11 +10,16 @@
  * Do not edit the class manually.
  */
 
+import { ResponseValue } from '../models/ResponseValue';
 import { HttpFile } from '../http/http';
 
 export class TaskResponse {
-    'task': number;
-    'creator': string;
+    'task': string;
+    'draft'?: boolean;
+    'response': { [key: string]: ResponseValue; };
+    'updatedTimestamp'?: Date;
+    'createdTimestamp'?: Date;
+    'user': string;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -24,12 +29,36 @@ export class TaskResponse {
         {
             "name": "task",
             "baseName": "task",
-            "type": "number",
+            "type": "string",
+            "format": "uuid4"
+        },
+        {
+            "name": "draft",
+            "baseName": "draft",
+            "type": "boolean",
             "format": ""
         },
         {
-            "name": "creator",
-            "baseName": "creator",
+            "name": "response",
+            "baseName": "response",
+            "type": "{ [key: string]: ResponseValue; }",
+            "format": ""
+        },
+        {
+            "name": "updatedTimestamp",
+            "baseName": "updated_timestamp",
+            "type": "Date",
+            "format": "date-time"
+        },
+        {
+            "name": "createdTimestamp",
+            "baseName": "created_timestamp",
+            "type": "Date",
+            "format": "date-time"
+        },
+        {
+            "name": "user",
+            "baseName": "user",
             "type": "string",
             "format": "uuid4"
         }    ];

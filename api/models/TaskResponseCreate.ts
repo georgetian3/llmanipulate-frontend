@@ -10,14 +10,13 @@
  * Do not edit the class manually.
  */
 
+import { ResponseValue } from '../models/ResponseValue';
 import { HttpFile } from '../http/http';
 
-export class ChatMessage {
-    'id'?: string;
-    'sender': string;
-    'message': string;
-    'timestamp': Date;
-    'chat': string;
+export class TaskResponseCreate {
+    'task': string;
+    'draft'?: boolean;
+    'response': { [key: string]: ResponseValue; };
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -25,38 +24,26 @@ export class ChatMessage {
 
     static readonly attributeTypeMap: Array<{name: string, baseName: string, type: string, format: string}> = [
         {
-            "name": "id",
-            "baseName": "id",
+            "name": "task",
+            "baseName": "task",
             "type": "string",
             "format": "uuid4"
         },
         {
-            "name": "sender",
-            "baseName": "sender",
-            "type": "string",
-            "format": "uuid4"
-        },
-        {
-            "name": "message",
-            "baseName": "message",
-            "type": "string",
+            "name": "draft",
+            "baseName": "draft",
+            "type": "boolean",
             "format": ""
         },
         {
-            "name": "timestamp",
-            "baseName": "timestamp",
-            "type": "Date",
-            "format": "date-time"
-        },
-        {
-            "name": "chat",
-            "baseName": "chat",
-            "type": "string",
-            "format": "uuid4"
+            "name": "response",
+            "baseName": "response",
+            "type": "{ [key: string]: ResponseValue; }",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {
-        return ChatMessage.attributeTypeMap;
+        return TaskResponseCreate.attributeTypeMap;
     }
 
     public constructor() {

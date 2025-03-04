@@ -13,16 +13,23 @@ import { ComponentGroup } from '../models/ComponentGroup';
 import { ComponentGroupComponentsInner } from '../models/ComponentGroupComponentsInner';
 import { Detail } from '../models/Detail';
 import { ErrorModel } from '../models/ErrorModel';
+import { ErrorResponse } from '../models/ErrorResponse';
 import { FreeText } from '../models/FreeText';
 import { HTTPValidationError } from '../models/HTTPValidationError';
 import { Id } from '../models/Id';
+import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
+import { MyTasks } from '../models/MyTasks';
 import { Participant } from '../models/Participant';
+import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { TaskConfig } from '../models/TaskConfig';
 import { TaskPage } from '../models/TaskPage';
+import { TaskRead } from '../models/TaskRead';
 import { TaskResponse } from '../models/TaskResponse';
+import { TaskResponseCreate } from '../models/TaskResponseCreate';
+import { TaskResponseRead } from '../models/TaskResponseRead';
 import { Translations } from '../models/Translations';
 import { User } from '../models/User';
 import { UserCreate } from '../models/UserCreate';
@@ -286,8 +293,61 @@ export class ObjectChatsApi {
 
 }
 
+import { ObservableResponsesApi } from "./ObservableAPI";
+import { ResponsesApiRequestFactory, ResponsesApiResponseProcessor} from "../apis/ResponsesApi";
+
+export interface ResponsesApiGetResponsesRequest {
+}
+
+export class ObjectResponsesApi {
+    private api: ObservableResponsesApi
+
+    public constructor(configuration: Configuration, requestFactory?: ResponsesApiRequestFactory, responseProcessor?: ResponsesApiResponseProcessor) {
+        this.api = new ObservableResponsesApi(configuration, requestFactory, responseProcessor);
+    }
+
+    /**
+     * Get Responses
+     * @param param the request object
+     */
+    public getResponsesWithHttpInfo(param: ResponsesApiGetResponsesRequest = {}, options?: Configuration): Promise<HttpInfo<any>> {
+        return this.api.getResponsesWithHttpInfo( options).toPromise();
+    }
+
+    /**
+     * Get Responses
+     * @param param the request object
+     */
+    public getResponses(param: ResponsesApiGetResponsesRequest = {}, options?: Configuration): Promise<any> {
+        return this.api.getResponses( options).toPromise();
+    }
+
+}
+
 import { ObservableTasksApi } from "./ObservableAPI";
 import { TasksApiRequestFactory, TasksApiResponseProcessor} from "../apis/TasksApi";
+
+export interface TasksApiCreateTaskResponseRequest {
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof TasksApicreateTaskResponse
+     */
+    taskId: string
+    /**
+     * 
+     * @type TaskResponseCreate
+     * @memberof TasksApicreateTaskResponse
+     */
+    taskResponseCreate: TaskResponseCreate
+}
+
+export interface TasksApiGetAllTasksRequest {
+}
+
+export interface TasksApiGetSampleTaskRequest {
+}
 
 export interface TasksApiGetTaskRequest {
     /**
@@ -296,7 +356,17 @@ export interface TasksApiGetTaskRequest {
      * @type string
      * @memberof TasksApigetTask
      */
-    id: string
+    taskId: string
+}
+
+export interface TasksApiGetTaskResponseRequest {
+    /**
+     * 
+     * Defaults to: undefined
+     * @type string
+     * @memberof TasksApigetTaskResponse
+     */
+    taskId: string
 }
 
 export class ObjectTasksApi {
@@ -307,19 +377,83 @@ export class ObjectTasksApi {
     }
 
     /**
-     * Get Task
+     * Create Task Response
      * @param param the request object
      */
-    public getTaskWithHttpInfo(param: TasksApiGetTaskRequest, options?: Configuration): Promise<HttpInfo<TaskConfig>> {
-        return this.api.getTaskWithHttpInfo(param.id,  options).toPromise();
+    public createTaskResponseWithHttpInfo(param: TasksApiCreateTaskResponseRequest, options?: Configuration): Promise<HttpInfo<TaskResponseRead>> {
+        return this.api.createTaskResponseWithHttpInfo(param.taskId, param.taskResponseCreate,  options).toPromise();
+    }
+
+    /**
+     * Create Task Response
+     * @param param the request object
+     */
+    public createTaskResponse(param: TasksApiCreateTaskResponseRequest, options?: Configuration): Promise<TaskResponseRead> {
+        return this.api.createTaskResponse(param.taskId, param.taskResponseCreate,  options).toPromise();
+    }
+
+    /**
+     * Get All Tasks
+     * @param param the request object
+     */
+    public getAllTasksWithHttpInfo(param: TasksApiGetAllTasksRequest = {}, options?: Configuration): Promise<HttpInfo<Array<TaskRead>>> {
+        return this.api.getAllTasksWithHttpInfo( options).toPromise();
+    }
+
+    /**
+     * Get All Tasks
+     * @param param the request object
+     */
+    public getAllTasks(param: TasksApiGetAllTasksRequest = {}, options?: Configuration): Promise<Array<TaskRead>> {
+        return this.api.getAllTasks( options).toPromise();
+    }
+
+    /**
+     * Get Sample Task
+     * @param param the request object
+     */
+    public getSampleTaskWithHttpInfo(param: TasksApiGetSampleTaskRequest = {}, options?: Configuration): Promise<HttpInfo<TaskRead>> {
+        return this.api.getSampleTaskWithHttpInfo( options).toPromise();
+    }
+
+    /**
+     * Get Sample Task
+     * @param param the request object
+     */
+    public getSampleTask(param: TasksApiGetSampleTaskRequest = {}, options?: Configuration): Promise<TaskRead> {
+        return this.api.getSampleTask( options).toPromise();
     }
 
     /**
      * Get Task
      * @param param the request object
      */
-    public getTask(param: TasksApiGetTaskRequest, options?: Configuration): Promise<TaskConfig> {
-        return this.api.getTask(param.id,  options).toPromise();
+    public getTaskWithHttpInfo(param: TasksApiGetTaskRequest, options?: Configuration): Promise<HttpInfo<TaskRead>> {
+        return this.api.getTaskWithHttpInfo(param.taskId,  options).toPromise();
+    }
+
+    /**
+     * Get Task
+     * @param param the request object
+     */
+    public getTask(param: TasksApiGetTaskRequest, options?: Configuration): Promise<TaskRead> {
+        return this.api.getTask(param.taskId,  options).toPromise();
+    }
+
+    /**
+     * Get Task Response
+     * @param param the request object
+     */
+    public getTaskResponseWithHttpInfo(param: TasksApiGetTaskResponseRequest, options?: Configuration): Promise<HttpInfo<TaskResponseRead>> {
+        return this.api.getTaskResponseWithHttpInfo(param.taskId,  options).toPromise();
+    }
+
+    /**
+     * Get Task Response
+     * @param param the request object
+     */
+    public getTaskResponse(param: TasksApiGetTaskResponseRequest, options?: Configuration): Promise<TaskResponseRead> {
+        return this.api.getTaskResponse(param.taskId,  options).toPromise();
     }
 
 }
@@ -340,6 +474,9 @@ export interface UsersApiGetAllUsersRequest {
 }
 
 export interface UsersApiGetAllUsersResponsesRequest {
+}
+
+export interface UsersApiGetMyTasksRequest {
 }
 
 export interface UsersApiGetUserRequest {
@@ -455,6 +592,22 @@ export class ObjectUsersApi {
      */
     public getAllUsersResponses(param: UsersApiGetAllUsersResponsesRequest = {}, options?: Configuration): Promise<Array<TaskResponse>> {
         return this.api.getAllUsersResponses( options).toPromise();
+    }
+
+    /**
+     * Get My Tasks
+     * @param param the request object
+     */
+    public getMyTasksWithHttpInfo(param: UsersApiGetMyTasksRequest = {}, options?: Configuration): Promise<HttpInfo<MyTasks>> {
+        return this.api.getMyTasksWithHttpInfo( options).toPromise();
+    }
+
+    /**
+     * Get My Tasks
+     * @param param the request object
+     */
+    public getMyTasks(param: UsersApiGetMyTasksRequest = {}, options?: Configuration): Promise<MyTasks> {
+        return this.api.getMyTasks( options).toPromise();
     }
 
     /**

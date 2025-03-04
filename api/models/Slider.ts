@@ -16,7 +16,7 @@ import { HttpFile } from '../http/http';
 
 export class Slider {
     'id': Id;
-    'label': Translations | null;
+    'label': Translations;
     'optional'?: boolean;
     'type'?: SliderTypeEnum;
     'steps': number;
