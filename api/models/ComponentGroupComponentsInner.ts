@@ -10,11 +10,11 @@
  * Do not edit the class manually.
  */
 
+import { Agent } from '../models/Agent';
 import { Chat } from '../models/Chat';
 import { FreeText } from '../models/FreeText';
 import { Id } from '../models/Id';
 import { MultiChoice } from '../models/MultiChoice';
-import { Participant } from '../models/Participant';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
 import { Translations } from '../models/Translations';
@@ -36,8 +36,9 @@ export class ComponentGroupComponentsInner {
     'labels'?: Array<Translations>;
     'regex'?: string;
     'regexPrompt'?: string;
-    'participants'?: Array<Participant>;
+    'agents'?: Array<Agent>;
     'order'?: Array<string>;
+    'allUsers': boolean;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -117,9 +118,9 @@ export class ComponentGroupComponentsInner {
             "format": ""
         },
         {
-            "name": "participants",
-            "baseName": "participants",
-            "type": "Array<Participant>",
+            "name": "agents",
+            "baseName": "agents",
+            "type": "Array<Agent>",
             "format": ""
         },
         {
@@ -127,6 +128,12 @@ export class ComponentGroupComponentsInner {
             "baseName": "order",
             "type": "Array<string>",
             "format": "uuid4"
+        },
+        {
+            "name": "allUsers",
+            "baseName": "all_users",
+            "type": "boolean",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {

@@ -1,3 +1,4 @@
+export * from '../models/Agent';
 export * from '../models/BearerResponse';
 export * from '../models/BodyResetForgotPasswordAuthForgotPasswordPost';
 export * from '../models/BodyResetResetPasswordAuthResetPasswordPost';
@@ -17,7 +18,6 @@ export * from '../models/Id';
 export * from '../models/Label';
 export * from '../models/MultiChoice';
 export * from '../models/MyTasks';
-export * from '../models/Participant';
 export * from '../models/ResponseValue';
 export * from '../models/SingleChoice';
 export * from '../models/Slider';
@@ -35,16 +35,17 @@ export * from '../models/UserUpdate';
 export * from '../models/ValidationError';
 export * from '../models/ValidationErrorLocInner';
 
+import { Agent  , AgentTypeEnum      } from '../models/Agent';
 import { BearerResponse } from '../models/BearerResponse';
 import { BodyResetForgotPasswordAuthForgotPasswordPost } from '../models/BodyResetForgotPasswordAuthForgotPasswordPost';
 import { BodyResetResetPasswordAuthResetPasswordPost } from '../models/BodyResetResetPasswordAuthResetPasswordPost';
 import { BodyVerifyRequestTokenAuthRequestVerifyTokenPost } from '../models/BodyVerifyRequestTokenAuthRequestVerifyTokenPost';
 import { BodyVerifyVerifyAuthVerifyPost } from '../models/BodyVerifyVerifyAuthVerifyPost';
-import { Chat   , ChatTypeEnum     } from '../models/Chat';
+import { Chat   , ChatTypeEnum      } from '../models/Chat';
 import { ChatHistoryRead } from '../models/ChatHistoryRead';
 import { ChatMessageRead } from '../models/ChatMessageRead';
 import { ComponentGroup } from '../models/ComponentGroup';
-import { ComponentGroupComponentsInner     , ComponentGroupComponentsInnerTypeEnum           } from '../models/ComponentGroupComponentsInner';
+import { ComponentGroupComponentsInner     , ComponentGroupComponentsInnerTypeEnum            } from '../models/ComponentGroupComponentsInner';
 import { Detail } from '../models/Detail';
 import { ErrorModel } from '../models/ErrorModel';
 import { ErrorResponse } from '../models/ErrorResponse';
@@ -54,7 +55,6 @@ import { Id } from '../models/Id';
 import { Label } from '../models/Label';
 import { MultiChoice     , MultiChoiceTypeEnum     } from '../models/MultiChoice';
 import { MyTasks } from '../models/MyTasks';
-import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice     , SingleChoiceTypeEnum   } from '../models/SingleChoice';
 import { Slider   , SliderTypeEnum     } from '../models/Slider';
@@ -85,6 +85,7 @@ let primitives = [
                  ];
 
 let enumsMap: Set<string> = new Set<string>([
+    "AgentTypeEnum",
     "ChatTypeEnum",
     "ComponentGroupComponentsInnerTypeEnum",
     "FreeTextTypeEnum",
@@ -94,6 +95,7 @@ let enumsMap: Set<string> = new Set<string>([
 ]);
 
 let typeMap: {[index: string]: any} = {
+    "Agent": Agent,
     "BearerResponse": BearerResponse,
     "BodyResetForgotPasswordAuthForgotPasswordPost": BodyResetForgotPasswordAuthForgotPasswordPost,
     "BodyResetResetPasswordAuthResetPasswordPost": BodyResetResetPasswordAuthResetPasswordPost,
@@ -113,7 +115,6 @@ let typeMap: {[index: string]: any} = {
     "Label": Label,
     "MultiChoice": MultiChoice,
     "MyTasks": MyTasks,
-    "Participant": Participant,
     "ResponseValue": ResponseValue,
     "SingleChoice": SingleChoice,
     "Slider": Slider,

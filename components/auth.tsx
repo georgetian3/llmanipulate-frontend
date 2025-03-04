@@ -45,20 +45,16 @@ export function useAuthenticated() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
 
   async function handleAccessTokenEvent() {
-    console.log("in handle access token event")
     if (!getAccessToken()) {
       setIsAuthenticated(false)
-      console.log("auth false")
+      return
     }
     setIsAuthenticated(null)
-    console.log("auth null")
     try {
       await usersApi.usersCurrentUser()
       setIsAuthenticated(true)
-      console.log("auth true")
     } catch {
       setIsAuthenticated(false)
-      console.log("auth false")
     }
   }
 

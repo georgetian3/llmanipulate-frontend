@@ -137,7 +137,11 @@ function TaskCard({ task }: TaskCardProps) {
 
   const router = useRouter()
   return (
-    <Card className="w-full" isPressable onPress={() => router.push(`/tasks/${task.id}`)}>
+    <Card
+      className="w-full"
+      isPressable={taskLoaded}
+      onPress={() => taskLoaded && router.push(`/tasks/${task.id}`)}
+    >
       <CardHeader className="gap-4">
         <Skeleton className="flex rounded-full" isLoaded={taskLoaded}>
           <Avatar src="https://i.pravatar.cc/300" />
@@ -214,7 +218,6 @@ function TasksPage() {
 }
 
 export default function AuthedTasksPage() {
-  console.log("in authed tasks page")
   return <AuthGuard>
     <TasksPage />
   </AuthGuard>

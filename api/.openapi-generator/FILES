@@ -20,6 +20,7 @@ http/http.ts
 http/isomorphic-fetch.ts
 index.ts
 middleware.ts
+models/Agent.ts
 models/BearerResponse.ts
 models/BodyResetForgotPasswordAuthForgotPasswordPost.ts
 models/BodyResetResetPasswordAuthResetPasswordPost.ts
@@ -40,7 +41,6 @@ models/Label.ts
 models/MultiChoice.ts
 models/MyTasks.ts
 models/ObjectSerializer.ts
-models/Participant.ts
 models/ResponseValue.ts
 models/SingleChoice.ts
 models/Slider.ts

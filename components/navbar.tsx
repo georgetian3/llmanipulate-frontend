@@ -83,7 +83,10 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         {isAuthed
-          ? <Button variant="flat" onPress={logout}>
+          ? <Button variant="flat" onPress={() => {
+            logout()
+            router.push("/")
+          }}>
             Logout
           </Button>
           : pathname !== "/login"
