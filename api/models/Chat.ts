@@ -10,8 +10,8 @@
  * Do not edit the class manually.
  */
 
+import { Agent } from '../models/Agent';
 import { Id } from '../models/Id';
-import { Participant } from '../models/Participant';
 import { Translations } from '../models/Translations';
 import { HttpFile } from '../http/http';
 
@@ -20,8 +20,9 @@ export class Chat {
     'label'?: Translations | null;
     'optional'?: boolean;
     'type'?: ChatTypeEnum;
-    'participants'?: Array<Participant>;
+    'agents'?: Array<Agent>;
     'order'?: Array<string> | null;
+    'allUsers': boolean;
 
     static readonly discriminator: string | undefined = undefined;
 
@@ -53,9 +54,9 @@ export class Chat {
             "format": ""
         },
         {
-            "name": "participants",
-            "baseName": "participants",
-            "type": "Array<Participant>",
+            "name": "agents",
+            "baseName": "agents",
+            "type": "Array<Agent>",
             "format": ""
         },
         {
@@ -63,6 +64,12 @@ export class Chat {
             "baseName": "order",
             "type": "Array<string>",
             "format": "uuid4"
+        },
+        {
+            "name": "allUsers",
+            "baseName": "all_users",
+            "type": "boolean",
+            "format": ""
         }    ];
 
     static getAttributeTypeMap() {

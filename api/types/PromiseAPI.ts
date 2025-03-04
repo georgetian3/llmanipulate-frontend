@@ -1,6 +1,7 @@
 import { ResponseContext, RequestContext, HttpFile, HttpInfo } from '../http/http';
 import { Configuration} from '../configuration'
 
+import { Agent } from '../models/Agent';
 import { BearerResponse } from '../models/BearerResponse';
 import { BodyResetForgotPasswordAuthForgotPasswordPost } from '../models/BodyResetForgotPasswordAuthForgotPasswordPost';
 import { BodyResetResetPasswordAuthResetPasswordPost } from '../models/BodyResetResetPasswordAuthResetPasswordPost';
@@ -20,7 +21,6 @@ import { Id } from '../models/Id';
 import { Label } from '../models/Label';
 import { MultiChoice } from '../models/MultiChoice';
 import { MyTasks } from '../models/MyTasks';
-import { Participant } from '../models/Participant';
 import { ResponseValue } from '../models/ResponseValue';
 import { SingleChoice } from '../models/SingleChoice';
 import { Slider } from '../models/Slider';
