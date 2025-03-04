@@ -2,17 +2,36 @@
 
 import { useEffect, useState } from "react"
 import { authApi, refreshApis, usersApi } from "./apis"
-import { Spinner } from "@heroui/react"
 import { useRouter } from "next/navigation"
 
-const ACCESS_TOKEN_KEY = "accessToken"
+const ACCESS_TOKEN_STORAGE_EVENT = "accessTokenStorageEvent"
 
 export function setAccessToken(accessToken?: string) {
-  localStorage.setItem(ACCESS_TOKEN_KEY, accessToken ?? "")
+  console.log("Setting access token", accessToken)
+  if (typeof window === 'undefined') {
+    accessToken = ""
+  }
+  localStorage.setItem("accessToken", accessToken ?? "")
+  refreshApis()
+  window.dispatchEvent(new Event(ACCESS_TOKEN_STORAGE_EVENT))
 }
 
 export function getAccessToken() {
-  return localStorage.getItem(ACCESS_TOKEN_KEY) ?? ""
+  if (typeof window === 'undefined') {
+    return ""
+  }
+  return localStorage.getItem("accessToken") ?? ""
+}
+
+export async function login(username: string, password: string) {
+  await new Promise(r => setTimeout(r, 1000))
+  try {
+    const resp = await authApi.authAuthLogin(username, password)
+    setAccessToken(resp.accessToken)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export async function logout() {
@@ -20,44 +39,53 @@ export async function logout() {
     await authApi.authAuthLogout()
   } catch { }
   setAccessToken()
-  refreshApis()
 }
 
-export async function isAuthenticated() {
-  if (!getAccessToken()) {
-    return false
+export function useAuthenticated() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+
+  async function handleAccessTokenEvent() {
+    console.log("in handle access token event")
+    if (!getAccessToken()) {
+      setIsAuthenticated(false)
+      console.log("auth false")
+    }
+    setIsAuthenticated(null)
+    console.log("auth null")
+    try {
+      await usersApi.usersCurrentUser()
+      setIsAuthenticated(true)
+      console.log("auth true")
+    } catch {
+      setIsAuthenticated(false)
+      console.log("auth false")
+    }
   }
-  try {
-    await usersApi.usersCurrentUser()
-    return true
-  } catch {
-    return false
-  }
+
+  useEffect(() => {
+    handleAccessTokenEvent()
+    window.addEventListener(ACCESS_TOKEN_STORAGE_EVENT, handleAccessTokenEvent)
+    return () => {
+      window.removeEventListener(ACCESS_TOKEN_STORAGE_EVENT, handleAccessTokenEvent)
+    }
+  }, [])
+
+  return isAuthenticated
 }
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const [authed, setAuthed] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const isAuthed = useAuthenticated()
   const router = useRouter()
 
   useEffect(() => {
-    (async () => {
-      setLoading(true)
-      const newAuthed = await isAuthenticated()
-      setAuthed(newAuthed)
-      !newAuthed && router.push("/login")
-      setLoading(false)
-    })()
-  }, [authed])
+    if (isAuthed === false) {
+      router.push("/login")
+    }
+  }, [isAuthed, router])
 
-  if (loading) {
-    return <Spinner />
-  }
-
-  if (!authed) {
+  if (!isAuthed) {
     return null
   }
-  console.log("returning children")
 
   return <>{children}</>
 }

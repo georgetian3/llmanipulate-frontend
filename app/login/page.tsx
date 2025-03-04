@@ -5,7 +5,7 @@ import { useAppDispatch } from '@/lib/hooks'
 import { apiRequest, setUser } from '@/lib/testSlice'
 import { authApi, refreshApis } from '@/components/apis';
 import { Button, Checkbox, Form, Input } from '@heroui/react';
-import { setAccessToken } from '@/components/auth';
+import { login, setAccessToken } from '@/components/auth';
 
 
 const user_id_key = 'user_id'
@@ -138,22 +138,19 @@ export default function NewLoginPage() {
 
   const router = useRouter()
 
-  const [username, setUsername] = useState("sample_participant@example.com")
+  const [username, setUsername] = useState("sample_user1@example.com")
   const [password, setPassword] = useState("secret")
   const [loginClicked, setLoginClicked] = useState(false)
   const [signUpClicked, setSignUpClicked] = useState(false)
   const [warning, setWarning] = useState("")
+  const inputDisabled = loginClicked || signUpClicked
 
   async function handleLogin() {
     setWarning("")
     setLoginClicked(true)
-    await new Promise(r => setTimeout(r, 1000))
-    try {
-      const resp = await authApi.authAuthLogin(username, password)
-      setAccessToken(resp.accessToken)
-      refreshApis()
+    if (await login(username, password)) {
       router.push("/tasks")
-    } catch {
+    } else {
       setWarning("Invalid credentials")
     }
     setLoginClicked(false)
@@ -170,13 +167,13 @@ export default function NewLoginPage() {
   return <div className="flex flex-col gap-16 h-full justify-center align-middle items-center">
     <h1 className='font-bold text-2xl'>LLManipulate</h1>
     <Form className="w-1/4 gap-8">
-      <Input label="Email" type="email" onChange={(event) => setUsername(event.target.value)} value={username} />
-      <Input label="Password" type="password" onChange={(event) => setPassword(event.target.value)} value={password} />
-      <Checkbox>Remember me</Checkbox>
+      <Input isDisabled={inputDisabled} label="Email" type="email" onChange={(event) => setUsername(event.target.value)} value={username} />
+      <Input isDisabled={inputDisabled} label="Password" type="password" onChange={(event) => setPassword(event.target.value)} value={password} />
+      <Checkbox isDisabled={inputDisabled}>Remember me</Checkbox>
       <div className='w-full flex justify-evenly'>
         <Button
           color="primary" type="submit"
-          isDisabled={loginClicked || signUpClicked}
+          isDisabled={inputDisabled}
           isLoading={loginClicked}
           className='w-1/3'
           onPress={handleLogin}
@@ -184,7 +181,7 @@ export default function NewLoginPage() {
           Login
         </Button>
         <Button
-          isDisabled={loginClicked || signUpClicked}
+          isDisabled={inputDisabled}
           isLoading={signUpClicked}
           className='w-1/3'
           onPress={handleSignUp}

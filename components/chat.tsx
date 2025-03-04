@@ -46,7 +46,6 @@ export default function ChatUI({ config }: ChatProps) {
   }, []);
 
   function scrollToBottom() {
-    console.log("scrolling to bottom");
     if (chatBoxRef && chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current!.scrollHeight;
     }

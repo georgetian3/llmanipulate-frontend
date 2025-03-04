@@ -4,6 +4,8 @@ import { MyTasks, TaskRead } from "@/api";
 import { usersApi } from "@/components/apis";
 import { AuthGuard } from "@/components/auth";
 import Markdown from "@/components/markdown";
+import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Skeleton } from "@heroui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // import { Suspense, useEffect, useState, useCallback } from "react";
@@ -124,36 +126,95 @@ import { useEffect, useState } from "react";
 //   );
 // }
 
-function TasksPage() {
-  const [tasks, setTasks] = useState<MyTasks>({created: [], participating: []})
-  const [loading, setLoading] = useState(false)
-  console.log("in tasks page")
+interface TaskCardProps {
+  task?: TaskRead
+}
 
+function TaskCard({ task }: TaskCardProps) {
+
+
+  const taskLoaded = task !== undefined
+
+  const router = useRouter()
+  return (
+    <Card className="w-full" isPressable onPress={() => router.push(`/tasks/${task.id}`)}>
+      <CardHeader className="gap-4">
+        <Skeleton className="flex rounded-full" isLoaded={taskLoaded}>
+          <Avatar src="https://i.pravatar.cc/300" />
+        </Skeleton>
+        <Skeleton className="rounded-lg" isLoaded={taskLoaded}>
+          <h1 className="text-2xl">
+            {task ? <Markdown content={task.config.name}></Markdown> : "Empty task name"}
+          </h1>
+        </Skeleton>
+      </CardHeader>
+      <Divider />
+
+      <CardBody>
+        {task && task.config.description ? <Markdown content={task.config.description} /> :
+          <div className="flex flex-col gap-4">
+            <Skeleton className="h-4 rounded-lg" />
+            <Skeleton className="h-4 rounded-lg" />
+            <Skeleton className="h-4 rounded-lg" />
+          </div>
+        }
+      </CardBody>
+      <Divider />
+      <CardFooter>
+        <Skeleton className="rounded-lg" isLoaded={taskLoaded}>
+          Created {task ? "2024-01-01" : "2024-01-01"}
+        </Skeleton>
+      </CardFooter>
+    </Card>
+  )
+}
+
+interface TaskGridProps {
+  tasks?: (TaskRead | undefined)[]
+}
+
+function TaskGrid({ tasks }: TaskGridProps) {
+  if (tasks === undefined) {
+    tasks = [undefined, undefined, undefined, undefined]
+  }
+  return (
+    <div className="w-full gap-4 grid grid-cols-4">
+      {tasks.map((task, index) => <TaskCard key={index} task={task} />)}
+    </div>
+  )
+}
+
+function TasksPage() {
+  const [tasks, setTasks] = useState<MyTasks | null>(null)
   useEffect(() => {
     (async () => {
-      setLoading(true)
-      const newTasks = await usersApi.getMyTasks()
-      setTasks(newTasks)
+      setTasks(null)
       await new Promise(r => setTimeout(r, 1000))
-      setLoading(false)
+      try {
+        const newTasks = await usersApi.getMyTasks()
+        setTasks(newTasks)
+      } catch {
+        console.log("get tasks error")
+      }
     })()
   }, [])
 
-  if (loading) {
-    return <div>Loading</div>
-  }
-
-
-  return <div>
-    Participating
-    { tasks.created.map((task, index) => <Markdown key={index} content={task.config.name}></Markdown>) }
-    Created
-    { tasks.participating.map((task, index) => <Markdown key={index} content={task.config.name}></Markdown>) }
-  </div>
+  return (
+    <div className="flex flex-col items-center justify-center gap-8 m-4">
+      <h1 className="text-4xl font-bold">
+        Participating
+      </h1>
+      <TaskGrid tasks={tasks ? tasks.created : undefined} />
+      <h1 className="text-4xl font-bold">
+        Created
+      </h1>
+      <TaskGrid tasks={tasks ? tasks.created : undefined} />
+    </div>
+  )
 }
 
 export default function AuthedTasksPage() {
-  console.log("in authedtaskspage")
+  console.log("in authed tasks page")
   return <AuthGuard>
     <TasksPage />
   </AuthGuard>

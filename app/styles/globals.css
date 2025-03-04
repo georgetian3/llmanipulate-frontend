@@ -6,3 +6,7 @@
     @apply text-primary-500;
     text-decoration: underline;
 }
+
+.debug {
+    border: solid 1px red;
+}

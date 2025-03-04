@@ -22,19 +22,14 @@ import {
 } from "@/components/icons";
 
 import { Button } from "@heroui/react";
-import { isAuthenticated, logout } from "./auth";
-import { useEffect, useState } from "react";
+import { useAuthenticated, logout } from "./auth";
+import { usePathname, useRouter } from "next/navigation";
 
 export const Navbar = () => {
 
-  const [authed, setAuthed] = useState(false)
-
-  useEffect(() => {
-    (async () => {
-      setAuthed(await isAuthenticated())
-    })()
-  }, [])
-
+  const isAuthed = useAuthenticated()
+  const router = useRouter()
+  const pathname = usePathname()
 
   return (
     <HeroUINavbar isBordered height={"4rem"} maxWidth="xl" position="sticky">
@@ -60,7 +55,7 @@ export const Navbar = () => {
               </NextLink>
             </NavbarItem>
           ))}
-          {authed && siteConfig.authedNavItems.map((item) => (
+          {isAuthed && siteConfig.authedNavItems.map((item) => (
             <NavbarItem key={item.href}>
               <NextLink
                 className={clsx(
@@ -87,9 +82,14 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
-        {authed && <Button variant="flat" onPress={logout}>
-          Logout
-        </Button>}
+        {isAuthed
+          ? <Button variant="flat" onPress={logout}>
+            Logout
+          </Button>
+          : pathname !== "/login"
+            ? <Button variant="flat" onPress={() => router.push("login")}>Login</Button>
+            : <></>
+        }
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">

@@ -15,7 +15,7 @@ import { UserRead } from '../models/UserRead';
 import { HttpFile } from '../http/http';
 
 export class TaskRead {
-    'id'?: string | null;
+    'id'?: string;
     'config': TaskConfig;
     '_public'?: boolean;
     'creator': UserRead;

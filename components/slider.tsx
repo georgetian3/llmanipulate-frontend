@@ -9,6 +9,7 @@ interface SliderProps {
 export default function SliderUI({ config }: SliderProps) {
   return (
     <Slider
+      aria-label="slider"
       marks={[...Array(config.steps)].map((_, i) => {
         return { value: i + 1, label: (i + 1).toString() };
       })}
