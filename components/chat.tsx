@@ -7,7 +7,7 @@ import {
   Chat,
   ChatHistoryRead,
 } from "@/api";
-import { chatsApi } from "./apis";
+import api from "../lib/apis";
 
 
 interface ChatProps {
@@ -37,12 +37,10 @@ export default function ChatUI({ config }: ChatProps) {
   }
 
   useEffect(() => {
-    chatsApi
-      .getChat("test")
-      .then((chatHistory: ChatHistoryRead) => {
-        setChatHistory(chatHistory);
-      })
-      .catch((reason) => console.log("Error getting task config", reason));
+    (async () => {
+      const chatHistory = await api.getChatHistory("test")
+      setChatHistory(chatHistory);
+    })()
   }, []);
 
   function scrollToBottom() {

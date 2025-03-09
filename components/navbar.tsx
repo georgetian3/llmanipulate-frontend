@@ -3,11 +3,9 @@
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
-  NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import { link as linkStyles } from "@heroui/theme";
@@ -22,7 +20,7 @@ import {
 } from "@/components/icons";
 
 import { Button } from "@heroui/react";
-import { useAuthenticated, logout } from "./auth";
+import { useAuthenticated, useLogout, } from "./auth";
 import { usePathname, useRouter } from "next/navigation";
 
 export const Navbar = () => {
@@ -30,6 +28,7 @@ export const Navbar = () => {
   const isAuthed = useAuthenticated()
   const router = useRouter()
   const pathname = usePathname()
+  const logout = useLogout()
 
   return (
     <HeroUINavbar isBordered height={"4rem"} maxWidth="xl" position="sticky">
@@ -83,8 +82,8 @@ export const Navbar = () => {
           <ThemeSwitch />
         </NavbarItem>
         {isAuthed
-          ? <Button variant="flat" onPress={() => {
-            logout()
+          ? <Button variant="flat" onPress={async () => {
+            await logout()
             router.push("/")
           }}>
             Logout
@@ -103,27 +102,6 @@ export const Navbar = () => {
         <NavbarMenuToggle />
       </NavbarContent>
 
-      <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
-                size="lg"
-              >
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
-        </div>
-      </NavbarMenu>
     </HeroUINavbar>
   );
 }

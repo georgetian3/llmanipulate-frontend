@@ -121,7 +121,7 @@ export const SearchIcon = (props: IconSvgProps) => (
   </svg>
 );
 
-export const LeftIcon = (props: IconSvgProps) => (
+export const LeftIcon = () => (
   <svg
     className="size-6"
     fill="none"
@@ -138,7 +138,7 @@ export const LeftIcon = (props: IconSvgProps) => (
   </svg>
 );
 
-export const RightIcon = (props: IconSvgProps) => (
+export const RightIcon = () => (
   <svg
     className="size-6"
     fill="none"

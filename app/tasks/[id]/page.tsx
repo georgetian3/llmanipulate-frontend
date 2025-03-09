@@ -15,37 +15,38 @@ import Markdown from "@/components/markdown";
 import { LeftIcon, RightIcon } from "@/components/icons";
 import ChatUI from "@/components/chat";
 import { getTranslation } from "@/components/utils";
-import { Chat, ComponentGroup, ComponentGroupComponentsInner, ComponentGroupComponentsInnerTypeEnum, FreeText, MultiChoice, SingleChoice, Slider, TaskConfig, TaskPage } from "@/api";
-import { tasksApi } from "@/components/apis";
 import { AuthGuard } from "@/components/auth";
-import { useRouter } from "next/router";
+import { Chat, ComponentGroup, FreeText, MultiChoice, SingleChoice, Slider, TaskConfig, TaskPage } from "@/api";
+import api from "@/lib/apis";
+import { ComponentIdType, selectState, setCurrentTask } from "@/lib/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { Spinner } from "@heroui/react";
 
 interface ComponentProps {
-  config: ComponentGroupComponentsInner;
+  config: SingleChoice | MultiChoice | Slider | FreeText | Chat;
 }
 
 function ComponentUI({ config }: ComponentProps) {
-  let component = null;
-
-  if (config.type == ComponentGroupComponentsInnerTypeEnum.SingleChoice) {
+  let component;
+  if (config.type == "single_choice") {
     component = <SingleChoiceUI config={config as SingleChoice} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.MultiChoice) {
+  } else if (config.type == "multi_choice") {
     component = <MultiChoiceUI config={config as MultiChoice} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.Slider) {
+  } else if (config.type == "slider") {
     component = <SliderUI config={config as Slider} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.FreeText) {
+  } else if (config.type == "free_text") {
     component = <FreeTextUI config={config as FreeText} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.Chat) {
+  } else if (config.type == "chat") {
     return <ChatUI config={config as Chat} />;
   }
 
   return (
     <Card>
-      {config.label && (
-        <CardHeader>
-          <Markdown content={config.label} />
-        </CardHeader>
-      )}
+      <CardHeader className="flex gap-1">
+        {config.label && <Markdown content={config.label} />}
+        {!config.optional && <div className="text-danger">*</div>}
+      </CardHeader>
       <CardBody>{component}</CardBody>
     </Card>
   );
@@ -91,7 +92,7 @@ function TaskPageUI({ config, hidden }: { config: TaskPage; hidden: boolean }) {
           {getTranslation(config.label)}
         </div>
         <div className={`grid ${colClass} p-8 gap-4`}>
-          {config.componentGroups.map((componentGroup, index) => (
+          {config.component_groups.map((componentGroup, index) => (
             <ComponentGroupUI key={index} config={componentGroup} />
           ))}
         </div>
@@ -108,37 +109,81 @@ interface TaskParams {
 
 export function TaskUI({ params }: TaskParams) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [taskConfig, setTaskConfig] = useState<TaskConfig | null>(null);
   const [editableTaskConfig, setEditableTaskConfig] = useState("");
   const [warningText, setWarningText] = useState("");
+  const state = useSelector(selectState)
+  const task = useSelector(selectState).currentTask
+  const pageCount = task?.config.pages.length
+  const router = useRouter()
+  const dispatch = useDispatch()
 
   function parseEditedConfig(newConfig: string) {
     setEditableTaskConfig(newConfig);
     try {
       const parsedConfig = JSON.parse(newConfig) as TaskConfig;
-      setTaskConfig(parsedConfig);
       setWarningText("");
     } catch {
       setWarningText("Invalid config");
     }
   }
 
+  async function handleNext() {
+    if (!pageCount) {
+      return
+    }
+    const currentResponses = state.currentTaskResponse
+    const onLastPage = currentPage === pageCount - 1
+
+    // checking component responses
+
+    const missingComponentIds: ComponentIdType[] = []
+
+    task.config.pages.map((page, index) => {
+      // all components in current and previous pages should have responses
+      if (index <= currentPage) {
+        page.component_groups.map(group => group.components.map(component => {
+          if (!component.optional && !state.currentTaskResponse.hasOwnProperty(component.id)) {
+            missingComponentIds.push(component.id)
+          }
+        }))
+      }
+    })
+
+    if (missingComponentIds) {
+      console.log("Components missing responses:", missingComponentIds)
+      return
+    }
+
+
+    await api.submitResponse(task.id, currentResponses, !onLastPage)
+    if (onLastPage) {
+      router.push("/tasks")
+    } else {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
   useEffect(() => {
     (async () => {
-      setTaskConfig(null)
-      const { id } = await params
+      const taskId = (await params).id
       try {
-        const task = await tasksApi.getTask(id)
-        setTaskConfig(task.config)
-        setEditableTaskConfig(JSON.stringify(task.config, null, 2))
+        const task = await api.getTask(taskId)
+        if (!task) {
+          console.log("Error getting task in try")
+          return
+        }
+        dispatch(setCurrentTask(task))
+        setEditableTaskConfig(JSON.stringify(task?.config, null, 2))
       } catch (e) {
         console.log("Error getting task config", e)
       }
     })()
   }, [])
 
-  if (taskConfig === null) {
-    return <>Loading</>
+  if (!task) {
+    return <div className="h-full w-full flex justify-center">
+      <Spinner size="lg" />
+    </div>
   }
 
   return (
@@ -160,39 +205,13 @@ export function TaskUI({ params }: TaskParams) {
           <CardFooter className="text-red-500">{warningText}</CardFooter>
         </Card>
       </div>
-      {taskConfig.pages.map((page, index) => (
+      {task.config.pages.map((page, index) => (
         <TaskPageUI key={index} config={page} hidden={currentPage != index} />
       ))}
       <div className="flex gap-4 items-center">
-        <Button
-          isIconOnly
-          color="primary"
-          disabled={currentPage == 0}
-          size="sm"
-          variant="flat"
-          onPress={() => setCurrentPage((prev) => (prev > 0 ? prev - 1 : prev))}
-        >
-          <LeftIcon />
-        </Button>
-        <Pagination
-          color="primary"
-          page={currentPage + 1}
-          total={taskConfig.pages.length}
-          onChange={(page) => setCurrentPage(page - 1)}
-        />
-        <Button
-          isIconOnly
-          color="primary"
-          disabled={currentPage == taskConfig.pages.length - 1}
-          size="sm"
-          variant="flat"
-          onPress={() =>
-            setCurrentPage((prev) =>
-              prev < taskConfig.pages.length - 1 ? prev + 1 : prev,
-            )
-          }
-        >
-          <RightIcon />
+        Page {currentPage + 1} of {pageCount}
+        <Button color="primary" onPress={handleNext}>
+          Next
         </Button>
       </div>
     </div>

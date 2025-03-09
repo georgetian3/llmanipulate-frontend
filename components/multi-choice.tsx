@@ -2,15 +2,24 @@ import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 
 
 import { getTranslation } from "./utils";
-import { MultiChoice } from "@/api/models/MultiChoice";
+import { useAppDispatch } from "@/lib/hooks";
+import { setComponentResponse } from "@/lib/appSlice";
+import { MultiChoice } from "@/api";
 
 interface MultiChoiceProps {
   config: MultiChoice;
 }
 
 export function MultiChoiceUI({ config }: MultiChoiceProps) {
+
+  const dispatch = useAppDispatch()
+
+  function handleInput(value: string[]) {
+    dispatch(setComponentResponse({ componentId: config.id, response: value.map(x => Number.parseInt(x)) }))
+  }
+
   return (
-    <CheckboxGroup>
+    <CheckboxGroup onValueChange={handleInput}>
       {config.choices.map((choice, index) => (
         <Checkbox key={index} value={index.toString()}>
           {getTranslation(choice)}

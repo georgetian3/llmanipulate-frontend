@@ -1,11 +1,18 @@
-import { Translations } from "@/api/models/Translations";
+import { Translations } from "@/api";
+
+export async function wait(duration: number) {
+  await new Promise(r => setTimeout(r, duration))
+}
 
 export function getTranslation(
-  translations?: Translations | null,
+  translations?: Translations | string | null,
   language?: string,
 ): string {
   if (!translations) {
     return "";
+  }
+  if (typeof translations === "string") {
+    return translations
   }
   if (Object.keys(translations.languages).length == 0) {
     console.error("Empty translation", translations);
@@ -16,16 +23,9 @@ export function getTranslation(
   if (language && language in languages) {
     return languages[language];
   }
-  if (translations._default) {
-    return languages[translations._default];
+  if (translations.default) {
+    return languages[translations.default];
   }
 
   return Object.values(languages)[0];
-}
-
-export function shuffle(list: any[]) {
-  for (let i = list.length - 1; i >= 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [list[i], list[j]] = [list[j], list[i]];
-  }
 }
