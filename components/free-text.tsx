@@ -22,7 +22,7 @@ export default function FreeTextUI({ config }: FreeTextProps) {
   }
 
   return <div>
-    <Textarea onChange={(event) => handleTextInput(event.target.value)} />;
+    <Textarea onChange={(event) => handleTextInput(event.target.value)} />
     {!match && <p>{config.regex_prompt ?? "Invalid input"}</p>}
   </div>
 }

@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Pagination } from "@heroui/pagination";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { Textarea } from "@heroui/input";
 
 import SliderUI from "@/components/slider";
 
@@ -22,6 +20,7 @@ import { ComponentIdType, selectState, setCurrentTask } from "@/lib/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@heroui/react";
+import { addToast, ToastProvider } from "@heroui/toast";
 
 interface ComponentProps {
   config: SingleChoice | MultiChoice | Slider | FreeText | Chat;
@@ -109,35 +108,25 @@ interface TaskParams {
 
 export function TaskUI({ params }: TaskParams) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [editableTaskConfig, setEditableTaskConfig] = useState("");
   const [warningText, setWarningText] = useState("");
   const state = useSelector(selectState)
   const task = useSelector(selectState).currentTask
   const pageCount = task?.config.pages.length
   const router = useRouter()
   const dispatch = useDispatch()
+  const [nextLoading, setNextLoading] = useState(false)
 
-  function parseEditedConfig(newConfig: string) {
-    setEditableTaskConfig(newConfig);
-    try {
-      const parsedConfig = JSON.parse(newConfig) as TaskConfig;
-      setWarningText("");
-    } catch {
-      setWarningText("Invalid config");
-    }
-  }
 
   async function handleNext() {
     if (!pageCount) {
       return
     }
+    setNextLoading(true)
     const currentResponses = state.currentTaskResponse
     const onLastPage = currentPage === pageCount - 1
 
     // checking component responses
-
     const missingComponentIds: ComponentIdType[] = []
-
     task.config.pages.map((page, index) => {
       // all components in current and previous pages should have responses
       if (index <= currentPage) {
@@ -148,18 +137,26 @@ export function TaskUI({ params }: TaskParams) {
         }))
       }
     })
-
-    if (missingComponentIds) {
+    if (missingComponentIds.length) {
       console.log("Components missing responses:", missingComponentIds)
+      setNextLoading(false)
+      addToast({
+        title: "Please complete all required fields",
+        color: "warning",
+      })
       return
     }
 
 
-    await api.submitResponse(task.id, currentResponses, !onLastPage)
+    const resp = await api.submitResponse(task.id, currentResponses, !onLastPage)
+    if (!resp) {
+      console.log("Error submitting response")
+    }
     if (onLastPage) {
       router.push("/tasks")
     } else {
       setCurrentPage(currentPage + 1)
+      setNextLoading(false)
     }
   }
 
@@ -173,7 +170,6 @@ export function TaskUI({ params }: TaskParams) {
           return
         }
         dispatch(setCurrentTask(task))
-        setEditableTaskConfig(JSON.stringify(task?.config, null, 2))
       } catch (e) {
         console.log("Error getting task config", e)
       }
@@ -187,34 +183,20 @@ export function TaskUI({ params }: TaskParams) {
   }
 
   return (
-    <div className="h-full w-full flex flex-col items-center gap-4 py-8">
-      <div className="absolute top-20 left-2">
-        <Card>
-          <CardHeader>Change the config here</CardHeader>
-          <CardBody>
-            <Textarea
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize h-[800px]",
-              }}
-              value={editableTaskConfig}
-              onChange={(event) => parseEditedConfig(event.target.value)}
-            />
-          </CardBody>
-          <CardFooter className="text-red-500">{warningText}</CardFooter>
-        </Card>
+    <>
+      <div className="h-full w-full flex flex-col items-center gap-4 py-8">
+        {task.config.pages.map((page, index) => (
+          <TaskPageUI key={index} config={page} hidden={currentPage != index} />
+        ))}
+        <div className="flex gap-4 items-center">
+          Page {currentPage + 1} of {pageCount}
+          <Button isLoading={nextLoading} color="primary" onPress={handleNext}>
+            Next
+          </Button>
+        </div>
       </div>
-      {task.config.pages.map((page, index) => (
-        <TaskPageUI key={index} config={page} hidden={currentPage != index} />
-      ))}
-      <div className="flex gap-4 items-center">
-        Page {currentPage + 1} of {pageCount}
-        <Button color="primary" onPress={handleNext}>
-          Next
-        </Button>
-      </div>
-    </div>
+    </>
+
   );
 }
 

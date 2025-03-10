@@ -3,6 +3,8 @@ import { Slider } from "@heroui/slider";
 import { Slider as SliderConfig } from "@/api";
 import { useAppDispatch } from "@/lib/hooks";
 import { setComponentResponse } from "@/lib/appSlice";
+import { useEffect } from "react";
+import { getTranslation } from "./utils";
 
 interface SliderProps {
   config: SliderConfig;
@@ -19,12 +21,16 @@ export default function SliderUI({ config }: SliderProps) {
     dispatch(setComponentResponse({ componentId: config.id, response: value }))
   }
 
+  useEffect(() => {
+    handleInput(0)
+  })
+
   return (
-    <Slider 
+    <Slider
       aria-label="slider"
-      marks={[...Array(config.steps)].map((_, i) => {
-        return { value: i + 1, label: (i + 1).toString() };
-      })}
+      marks={config.labels
+        ? config.labels.map((label, i) => { return { value: i, label: getTranslation(label) } })
+        : [...Array(config.steps)].map((_, i) => { return { value: i, label: (i + 1).toString() } })}
       maxValue={config.steps}
       minValue={1}
       showSteps={true}

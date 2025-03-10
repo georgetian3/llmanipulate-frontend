@@ -5,6 +5,7 @@ import { getTranslation } from "./utils";
 import { useAppDispatch } from "@/lib/hooks";
 import { setComponentResponse } from "@/lib/appSlice";
 import { MultiChoice } from "@/api";
+import { useEffect } from "react";
 
 interface MultiChoiceProps {
   config: MultiChoice;
@@ -17,6 +18,12 @@ export function MultiChoiceUI({ config }: MultiChoiceProps) {
   function handleInput(value: string[]) {
     dispatch(setComponentResponse({ componentId: config.id, response: value.map(x => Number.parseInt(x)) }))
   }
+
+  useEffect(() => {
+    if (config.min_choices === 0) {
+      handleInput([])
+    }
+  }, [])
 
   return (
     <CheckboxGroup onValueChange={handleInput}>

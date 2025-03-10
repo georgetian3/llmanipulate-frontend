@@ -98,8 +98,6 @@ export type FreeText = {
     regex_prompt?: string | null;
 };
 
-export type FreeTextResponse = string;
-
 export type HttpValidationError = {
     detail?: Array<ValidationError>;
 };
@@ -118,12 +116,16 @@ export type MultiChoice = {
     max_choices?: number;
 };
 
-export type MultiChoiceResponse = Array<number>;
-
 export type MyTasks = {
     created: Array<TaskRead>;
     participating: Array<TaskRead>;
 };
+
+export type RootModelInt = number;
+
+export type RootModelListInt = Array<number>;
+
+export type RootModelStr = string;
 
 export type SingleChoice = {
     id: string | number;
@@ -137,8 +139,6 @@ export type SingleChoice = {
     type?: 'single_choice';
 };
 
-export type SingleChoiceResponse = number;
-
 export type Slider = {
     id: string | number;
     label?: Translations | null;
@@ -147,8 +147,6 @@ export type Slider = {
     steps: number;
     labels?: Array<Translations> | null;
 };
-
-export type SliderResponse = number;
 
 export type TaskConfig = {
     name: Translations;
@@ -175,7 +173,7 @@ export type TaskRead = {
 export type TaskResponse = {
     draft?: boolean;
     response: {
-        [key: string]: SingleChoiceResponse | MultiChoiceResponse | SliderResponse | FreeTextResponse;
+        [key: string]: RootModelInt | RootModelListInt | RootModelStr;
     };
     updated_timestamp?: Date;
     created_timestamp?: Date;
@@ -186,14 +184,14 @@ export type TaskResponse = {
 export type TaskResponseCreate = {
     draft?: boolean;
     response: {
-        [key: string]: SingleChoiceResponse | MultiChoiceResponse | SliderResponse | FreeTextResponse;
+        [key: string]: RootModelInt | RootModelListInt | RootModelStr;
     };
 };
 
 export type TaskResponseRead = {
     draft?: boolean;
     response: {
-        [key: string]: SingleChoiceResponse | MultiChoiceResponse | SliderResponse | FreeTextResponse;
+        [key: string]: RootModelInt | RootModelListInt | RootModelStr;
     };
     updated_timestamp?: Date;
     created_timestamp?: Date;
