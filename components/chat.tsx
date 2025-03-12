@@ -8,6 +8,8 @@ import {
   ChatHistoryRead,
 } from "@/api";
 import api from "../lib/apis";
+import { useAppDispatch } from "@/lib/hooks";
+import { setComponentResponse } from "@/lib/appSlice";
 
 
 interface ChatProps {
@@ -20,9 +22,21 @@ export default function ChatUI({ config }: ChatProps) {
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
   const userId = "1aafee69-bd72-4e7c-b7c0-4898581aaf59";
   const [draft, setDraft] = useState("");
+  const [messageCount, setMessageCount] = useState(0)
+  const dispatch = useAppDispatch()
 
-  function sendMessage() {
+  function checkChatValid() {
+    if (messageCount >= (config.min_messages ?? 0)) {
+      dispatch(setComponentResponse({ componentId: config.id, response: 1 }))
+    }
+  }
+
+  useEffect(checkChatValid, [])
+
+
+  function handleSendMessage() {
     const newChatHistory = { ...chatHistory } as ChatHistoryRead;
+
 
     newChatHistory.messages.push({
       id: "1",
@@ -33,7 +47,10 @@ export default function ChatUI({ config }: ChatProps) {
     });
     setChatHistory(chatHistory);
     setDraft("");
-    setTimeout(() => scrollToBottom());
+    setMessageCount(messageCount + 1)
+    
+    setTimeout(scrollToBottom);
+    setTimeout(checkChatValid);
   }
 
   useEffect(() => {
@@ -78,7 +95,7 @@ export default function ChatUI({ config }: ChatProps) {
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
             />
-            <Button color="primary" variant="bordered" onPress={sendMessage}>
+            <Button color="primary" variant="bordered" onPress={handleSendMessage}>
               Send
             </Button>
           </CardFooter>

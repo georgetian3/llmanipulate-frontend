@@ -2,38 +2,39 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { wait } from "./utils"
 import { useAppDispatch } from "@/lib/hooks"
 import { setCurrentUser } from "@/lib/appSlice"
 import api from "../lib/apis"
 
-const ACCESS_TOKEN_STORAGE_EVENT = "accessTokenStorageEvent"
+const SET_USER_ID_EVENT = "setUserIdEvent"
 
-export function setAccessToken(accessToken?: string) {
-  localStorage.setItem("accessToken", accessToken ?? "")
-  window.dispatchEvent(new Event(ACCESS_TOKEN_STORAGE_EVENT))
+export function saveUserId(accessToken?: string) {
+  localStorage.setItem("userId", accessToken ?? "")
 }
 
-export function getAccessToken() {
+export function getUserId() {
   if (typeof window === 'undefined') {
     return ""
   }
-  return localStorage.getItem("accessToken") ?? ""
+  return localStorage.getItem("userId") ?? ""
 }
 
 export function useLogin() {
   const dispatch = useAppDispatch()
-  const login = async (username: string, password: string) => {
+  const login = async (userId: string) => {
     try {
-      const token = await api.login(username, password)
-      setAccessToken(token)
-      const currentUser = await api.getCurrentUser()
-      dispatch(setCurrentUser(currentUser))
-      return true
+      console.log("Here")
+      const user = await api.getMe(userId)
+      if (user) {
+        saveUserId(userId)
+        dispatch(setCurrentUser(user))
+        return true
+      }
     } catch (e) {
       console.error(e)
-      return false
     }
+    saveUserId()
+    return false
   }
   return login
 }
@@ -41,12 +42,7 @@ export function useLogin() {
 export function useLogout() {
   const dispatch = useAppDispatch()
   const logout = async () => {
-    try {
-      await api.logout()
-    } catch (e) {
-      console.error("Error logging out", e)
-    }
-    setAccessToken()
+    saveUserId()
     dispatch(setCurrentUser())
   }
   return logout
@@ -55,35 +51,39 @@ export function useLogout() {
 export function useAuthenticated() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(undefined)
 
-  async function handleAccessTokenEvent() {
+  async function handleSetUserIdEvent() {
     if (!window) {
       return
     }
-    if (!getAccessToken()) {
+    setIsAuthenticated(undefined)
+    if (!await api.loginRequired()) {
+      setIsAuthenticated(true)
+      return
+    }
+    const userId = getUserId()
+    if (!userId) {
       setIsAuthenticated(false)
       return
     }
     setIsAuthenticated(undefined)
     try {
-      if (await api.getCurrentUser()) {
+      if (await api.getMe(userId)) {
         setIsAuthenticated(true)
       } else {
         setIsAuthenticated(false)
-        console.log("a")
-        setAccessToken()
+        saveUserId()
       }
     } catch {
       setIsAuthenticated(false)
-      console.log("b")
-      setAccessToken()
+      saveUserId()
     }
   }
 
   useEffect(() => {
-    handleAccessTokenEvent()
-    window.addEventListener(ACCESS_TOKEN_STORAGE_EVENT, handleAccessTokenEvent)
+    handleSetUserIdEvent()
+    window.addEventListener(SET_USER_ID_EVENT, handleSetUserIdEvent)
     return () => {
-      window.removeEventListener(ACCESS_TOKEN_STORAGE_EVENT, handleAccessTokenEvent)
+      window.removeEventListener(SET_USER_ID_EVENT, handleSetUserIdEvent)
     }
   }, [])
 

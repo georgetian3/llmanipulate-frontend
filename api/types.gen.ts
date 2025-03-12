@@ -9,37 +9,6 @@ export type Agent = {
     prompt: string;
 };
 
-export type BearerResponse = {
-    access_token: string;
-    token_type: string;
-};
-
-export type BodyAuthAuthLoginAuthLoginPost = {
-    grant_type?: string | null;
-    username: string;
-    password: string;
-    scope?: string;
-    client_id?: string | null;
-    client_secret?: string | null;
-};
-
-export type BodyResetForgotPasswordAuthForgotPasswordPost = {
-    email: string;
-};
-
-export type BodyResetResetPasswordAuthResetPasswordPost = {
-    token: string;
-    password: string;
-};
-
-export type BodyVerifyRequestTokenAuthRequestVerifyTokenPost = {
-    email: string;
-};
-
-export type BodyVerifyVerifyAuthVerifyPost = {
-    token: string;
-};
-
 export type Chat = {
     id: string | number;
     label?: Translations | null;
@@ -73,12 +42,6 @@ export type ComponentGroup = {
     components: Array<SingleChoice | MultiChoice | Slider | FreeText | Chat>;
 };
 
-export type ErrorModel = {
-    detail: string | {
-        [key: string]: string;
-    };
-};
-
 export type ErrorResponse = {
     detail: string;
 };
@@ -102,6 +65,10 @@ export type HttpValidationError = {
     detail?: Array<ValidationError>;
 };
 
+export type LoginRequired = {
+    login_required: boolean;
+};
+
 export type MultiChoice = {
     id: string | number;
     label?: Translations | null;
@@ -114,11 +81,6 @@ export type MultiChoice = {
     type?: 'multi_choice';
     min_choices?: number;
     max_choices?: number;
-};
-
-export type MyTasks = {
-    created: Array<TaskRead>;
-    participating: Array<TaskRead>;
 };
 
 export type RootModelInt = number;
@@ -164,39 +126,40 @@ export type TaskPage = {
 };
 
 export type TaskRead = {
-    id: string;
+    id?: string;
     config: TaskConfig;
-    public: boolean;
-    creator: UserRead;
+};
+
+export type TaskReadParticipant = {
+    id?: string;
+    config: TaskConfig;
+    completed: boolean;
 };
 
 export type TaskResponse = {
-    draft?: boolean;
     response: {
         [key: string]: RootModelInt | RootModelListInt | RootModelStr;
     };
     updated_timestamp?: Date;
     created_timestamp?: Date;
     task: string;
-    user: string;
+    user: string | null;
 };
 
 export type TaskResponseCreate = {
-    draft?: boolean;
     response: {
         [key: string]: RootModelInt | RootModelListInt | RootModelStr;
     };
 };
 
 export type TaskResponseRead = {
-    draft?: boolean;
     response: {
         [key: string]: RootModelInt | RootModelListInt | RootModelStr;
     };
     updated_timestamp?: Date;
     created_timestamp?: Date;
     task: string;
-    user: string;
+    user: string | null;
 };
 
 export type Translations = {
@@ -210,424 +173,32 @@ export type Translations = {
 };
 
 export type User = {
-    id?: string;
-    email: string;
-    hashed_password: string;
-    is_active?: boolean;
-    is_superuser?: boolean;
-    is_verified?: boolean;
-    name?: string | null;
-    demographics?: {
+    id: string;
+    attributes?: {
         [key: string]: unknown;
     };
-    personality?: {
-        [key: string]: unknown;
-    };
-    agent_type?: number;
-    task_type?: number;
+    is_admin?: boolean;
 };
 
 export type UserCreate = {
-    email: string;
-    password: string;
-    is_active?: boolean | null;
-    is_superuser?: boolean | null;
-    is_verified?: boolean | null;
+    id: string;
+    attributes?: {
+        [key: string]: unknown;
+    };
 };
 
 export type UserRead = {
     id: string;
-    email: string;
-    is_active?: boolean;
-    is_superuser?: boolean;
-    is_verified?: boolean;
-    name?: string | null;
-};
-
-export type UserUpdate = {
-    password?: string | null;
-    email?: string | null;
-    is_active?: boolean | null;
-    is_superuser?: boolean | null;
-    is_verified?: boolean | null;
+    attributes?: {
+        [key: string]: unknown;
+    };
+    is_admin?: boolean;
 };
 
 export type ValidationError = {
     loc: Array<string | number>;
     msg: string;
     type: string;
-};
-
-export type AuthAuthLoginData = {
-    body: BodyAuthAuthLoginAuthLoginPost;
-    path?: never;
-    query?: never;
-    url: '/auth/login';
-};
-
-export type AuthAuthLoginErrors = {
-    /**
-     * Bad Request
-     */
-    400: ErrorModel;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type AuthAuthLoginError = AuthAuthLoginErrors[keyof AuthAuthLoginErrors];
-
-export type AuthAuthLoginResponses = {
-    /**
-     * Successful Response
-     */
-    200: BearerResponse;
-};
-
-export type AuthAuthLoginResponse = AuthAuthLoginResponses[keyof AuthAuthLoginResponses];
-
-export type AuthAuthLogoutData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/auth/logout';
-};
-
-export type AuthAuthLogoutErrors = {
-    /**
-     * Missing token or inactive user.
-     */
-    401: unknown;
-};
-
-export type AuthAuthLogoutResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
-};
-
-export type RegisterRegisterData = {
-    body: UserCreate;
-    path?: never;
-    query?: never;
-    url: '/auth/register';
-};
-
-export type RegisterRegisterErrors = {
-    /**
-     * Bad Request
-     */
-    400: ErrorModel;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type RegisterRegisterError = RegisterRegisterErrors[keyof RegisterRegisterErrors];
-
-export type RegisterRegisterResponses = {
-    /**
-     * Successful Response
-     */
-    201: UserRead;
-};
-
-export type RegisterRegisterResponse = RegisterRegisterResponses[keyof RegisterRegisterResponses];
-
-export type ResetForgotPasswordData = {
-    body: BodyResetForgotPasswordAuthForgotPasswordPost;
-    path?: never;
-    query?: never;
-    url: '/auth/forgot-password';
-};
-
-export type ResetForgotPasswordErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type ResetForgotPasswordError = ResetForgotPasswordErrors[keyof ResetForgotPasswordErrors];
-
-export type ResetForgotPasswordResponses = {
-    /**
-     * Successful Response
-     */
-    202: unknown;
-};
-
-export type ResetResetPasswordData = {
-    body: BodyResetResetPasswordAuthResetPasswordPost;
-    path?: never;
-    query?: never;
-    url: '/auth/reset-password';
-};
-
-export type ResetResetPasswordErrors = {
-    /**
-     * Bad Request
-     */
-    400: ErrorModel;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type ResetResetPasswordError = ResetResetPasswordErrors[keyof ResetResetPasswordErrors];
-
-export type ResetResetPasswordResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
-};
-
-export type VerifyRequestTokenData = {
-    body: BodyVerifyRequestTokenAuthRequestVerifyTokenPost;
-    path?: never;
-    query?: never;
-    url: '/auth/request-verify-token';
-};
-
-export type VerifyRequestTokenErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type VerifyRequestTokenError = VerifyRequestTokenErrors[keyof VerifyRequestTokenErrors];
-
-export type VerifyRequestTokenResponses = {
-    /**
-     * Successful Response
-     */
-    202: unknown;
-};
-
-export type VerifyVerifyData = {
-    body: BodyVerifyVerifyAuthVerifyPost;
-    path?: never;
-    query?: never;
-    url: '/auth/verify';
-};
-
-export type VerifyVerifyErrors = {
-    /**
-     * Bad Request
-     */
-    400: ErrorModel;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type VerifyVerifyError = VerifyVerifyErrors[keyof VerifyVerifyErrors];
-
-export type VerifyVerifyResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserRead;
-};
-
-export type VerifyVerifyResponse = VerifyVerifyResponses[keyof VerifyVerifyResponses];
-
-export type UsersCurrentUserData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/users/me';
-};
-
-export type UsersCurrentUserErrors = {
-    /**
-     * Missing token or inactive user.
-     */
-    401: unknown;
-};
-
-export type UsersCurrentUserResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserRead;
-};
-
-export type UsersCurrentUserResponse = UsersCurrentUserResponses[keyof UsersCurrentUserResponses];
-
-export type UsersPatchCurrentUserData = {
-    body: UserUpdate;
-    path?: never;
-    query?: never;
-    url: '/users/me';
-};
-
-export type UsersPatchCurrentUserErrors = {
-    /**
-     * Bad Request
-     */
-    400: ErrorModel;
-    /**
-     * Missing token or inactive user.
-     */
-    401: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type UsersPatchCurrentUserError = UsersPatchCurrentUserErrors[keyof UsersPatchCurrentUserErrors];
-
-export type UsersPatchCurrentUserResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserRead;
-};
-
-export type UsersPatchCurrentUserResponse = UsersPatchCurrentUserResponses[keyof UsersPatchCurrentUserResponses];
-
-export type UsersDeleteUserData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/users/{id}';
-};
-
-export type UsersDeleteUserErrors = {
-    /**
-     * Missing token or inactive user.
-     */
-    401: unknown;
-    /**
-     * Not a superuser.
-     */
-    403: unknown;
-    /**
-     * The user does not exist.
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type UsersDeleteUserError = UsersDeleteUserErrors[keyof UsersDeleteUserErrors];
-
-export type UsersDeleteUserResponses = {
-    /**
-     * Successful Response
-     */
-    204: void;
-};
-
-export type UsersDeleteUserResponse = UsersDeleteUserResponses[keyof UsersDeleteUserResponses];
-
-export type UsersUserData = {
-    body?: never;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/users/{id}';
-};
-
-export type UsersUserErrors = {
-    /**
-     * Missing token or inactive user.
-     */
-    401: unknown;
-    /**
-     * Not a superuser.
-     */
-    403: unknown;
-    /**
-     * The user does not exist.
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type UsersUserError = UsersUserErrors[keyof UsersUserErrors];
-
-export type UsersUserResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserRead;
-};
-
-export type UsersUserResponse = UsersUserResponses[keyof UsersUserResponses];
-
-export type UsersPatchUserData = {
-    body: UserUpdate;
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/users/{id}';
-};
-
-export type UsersPatchUserErrors = {
-    /**
-     * Bad Request
-     */
-    400: ErrorModel;
-    /**
-     * Missing token or inactive user.
-     */
-    401: unknown;
-    /**
-     * Not a superuser.
-     */
-    403: unknown;
-    /**
-     * The user does not exist.
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type UsersPatchUserError = UsersPatchUserErrors[keyof UsersPatchUserErrors];
-
-export type UsersPatchUserResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserRead;
-};
-
-export type UsersPatchUserResponse = UsersPatchUserResponses[keyof UsersPatchUserResponses];
-
-export type GetResponsesData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/responses';
-};
-
-export type GetResponsesResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
 };
 
 export type GetChatData = {
@@ -698,10 +269,42 @@ export type CreateUserResponses = {
 
 export type CreateUserResponse = CreateUserResponses[keyof CreateUserResponses];
 
+export type GetMeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/users/me';
+};
+
+export type GetMeResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserRead;
+};
+
+export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
+
+export type LoginRequiredData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/users/login-required';
+};
+
+export type LoginRequiredResponses = {
+    /**
+     * Successful Response
+     */
+    200: LoginRequired;
+};
+
+export type LoginRequiredResponse = LoginRequiredResponses[keyof LoginRequiredResponses];
+
 export type GetUserData = {
     body?: never;
     path: {
-        user_id: string;
+        user_id: string | null;
     };
     query?: never;
     url: '/users/{user_id}';
@@ -752,7 +355,7 @@ export type GetMyTasksResponses = {
     /**
      * Successful Response
      */
-    200: MyTasks;
+    200: Array<TaskReadParticipant>;
 };
 
 export type GetMyTasksResponse = GetMyTasksResponses[keyof GetMyTasksResponses];
@@ -820,32 +423,32 @@ export type GetSampleTaskResponses = {
 
 export type GetSampleTaskResponse = GetSampleTaskResponses[keyof GetSampleTaskResponses];
 
-export type GetTaskResponseData = {
+export type GetTaskResponsesData = {
     body?: never;
     path: {
         task_id: string;
     };
     query?: never;
-    url: '/tasks/{task_id}/response';
+    url: '/tasks/{task_id}/responses';
 };
 
-export type GetTaskResponseErrors = {
+export type GetTaskResponsesErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type GetTaskResponseError = GetTaskResponseErrors[keyof GetTaskResponseErrors];
+export type GetTaskResponsesError = GetTaskResponsesErrors[keyof GetTaskResponsesErrors];
 
-export type GetTaskResponseResponses = {
+export type GetTaskResponsesResponses = {
     /**
      * Successful Response
      */
     200: TaskResponseRead;
 };
 
-export type GetTaskResponseResponse = GetTaskResponseResponses[keyof GetTaskResponseResponses];
+export type GetTaskResponsesResponse = GetTaskResponsesResponses[keyof GetTaskResponsesResponses];
 
 export type CreateTaskResponseData = {
     body: TaskResponseCreate;
@@ -881,6 +484,20 @@ export type CreateTaskResponseResponses = {
 };
 
 export type CreateTaskResponseResponse = CreateTaskResponseResponses[keyof CreateTaskResponseResponses];
+
+export type GetResponsesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/responses';
+};
+
+export type GetResponsesResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type ClientOptions = {
     baseUrl: `${string}://${string}` | (string & {});

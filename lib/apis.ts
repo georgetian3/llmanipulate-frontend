@@ -1,6 +1,7 @@
-import { authAuthLogin, authAuthLogout, createTaskResponse, getChat, getMyTasks, getTask, registerRegister, usersCurrentUser } from "@/api";
+import { createTaskResponse, getChat, getMe, getMyTasks, getTask, loginRequired } from "@/api";
 import { createClient } from "@hey-api/client-fetch";
 import { ComponentResponsesType } from "./appSlice";
+import { wait } from "@/components/utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000"
 
@@ -8,28 +9,24 @@ const client = createClient({ baseUrl: API_URL })
 
 
 const api = {
-  async register(username: string, password: string) {
-    const resp = await registerRegister({ client: client, body: { email: username, password: password } })
+
+  async getMe(userId: string) {
+    client.setConfig({ baseUrl: API_URL, auth: userId })
+    const resp = await getMe({ client: client })
     return resp.data
   },
-  async login(username: string, password: string) {
-    const resp = await authAuthLogin({ client: client, body: { username: username, password: password } })
-    if (resp.data) {
-      client.setConfig({ auth: resp.data.access_token })
-    }
-    return resp.data?.access_token
+
+  async loginRequired() {
+    const resp = await loginRequired({ client: client })
+    return resp.data!.login_required
   },
-  async logout() {
-    await authAuthLogout({ client: client })
-  },
+
   async getMyTasks() {
+    await wait(1000)
     const resp = await getMyTasks({ client: client })
     return resp.data
   },
-  async getCurrentUser() {
-    const resp = await usersCurrentUser({ client: client })
-    return resp.data
-  },
+
   async getTask(taskId: string) {
     const resp = await getTask({ client: client, path: { task_id: taskId } })
     return resp.data
@@ -38,9 +35,14 @@ const api = {
     const resp = await getChat({ client: client, path: { chat_id: chatId } })
     return resp.data
   },
-  async submitResponse(taskId: string, responses: ComponentResponsesType, draft: boolean) {
-    const resp = await createTaskResponse({client: client, path: {task_id: taskId}, body: {draft: draft, response: responses}})
-    return resp.data
+  async submitResponse(taskId: string, responses: ComponentResponsesType) {
+    try {
+      const resp = await createTaskResponse({ client: client, path: { task_id: taskId }, body: { response: responses } })
+      return resp.data
+    } catch (e) {
+      console.error("Error encountered while submitting response:", e)
+      return undefined
+    }
   }
 
 }

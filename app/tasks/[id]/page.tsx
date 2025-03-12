@@ -110,6 +110,7 @@ export function TaskUI({ params }: TaskParams) {
   const [currentPage, setCurrentPage] = useState(0);
   const [warningText, setWarningText] = useState("");
   const state = useSelector(selectState)
+  const [taskLoading, setTaskLoading] = useState(false)
   const task = useSelector(selectState).currentTask
   const pageCount = task?.config.pages.length
   const router = useRouter()
@@ -139,21 +140,26 @@ export function TaskUI({ params }: TaskParams) {
     })
     if (missingComponentIds.length) {
       console.log("Components missing responses:", missingComponentIds)
-      setNextLoading(false)
       addToast({
         title: "Please complete all required fields",
         color: "warning",
       })
+      setNextLoading(false)
       return
     }
 
 
-    const resp = await api.submitResponse(task.id, currentResponses, !onLastPage)
-    if (!resp) {
-      console.log("Error submitting response")
-    }
     if (onLastPage) {
-      router.push("/tasks")
+      const resp = await api.submitResponse(task.id!, currentResponses)
+      if (resp) {
+        router.push("/tasks")
+      } else {
+        addToast({
+          title: "Error submitting response, please try again",
+          color: "danger",
+        })
+        setNextLoading(false)
+      }
     } else {
       setCurrentPage(currentPage + 1)
       setNextLoading(false)
@@ -162,6 +168,7 @@ export function TaskUI({ params }: TaskParams) {
 
   useEffect(() => {
     (async () => {
+      setTaskLoading(true)
       const taskId = (await params).id
       try {
         const task = await api.getTask(taskId)
@@ -173,12 +180,20 @@ export function TaskUI({ params }: TaskParams) {
       } catch (e) {
         console.log("Error getting task config", e)
       }
+      setTaskLoading(false)
     })()
   }, [])
 
-  if (!task) {
+
+  if (taskLoading) {
     return <div className="h-full w-full flex justify-center">
       <Spinner size="lg" />
+    </div>
+  }
+
+  if (!task) {
+    return <div className="h-full w-full flex justify-center items-center">
+      Error loading task, please refresh.
     </div>
   }
 
