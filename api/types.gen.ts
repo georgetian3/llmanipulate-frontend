@@ -114,6 +114,7 @@ export type TaskConfig = {
     name: Translations;
     description?: Translations | null;
     pages: Array<TaskPage>;
+    login_required: boolean;
 };
 
 export type TaskPage = {
@@ -239,7 +240,7 @@ export type GetAllUsersResponses = {
     /**
      * Successful Response
      */
-    200: Array<User>;
+    200: Array<UserRead>;
 };
 
 export type GetAllUsersResponse = GetAllUsersResponses[keyof GetAllUsersResponses];
@@ -360,21 +361,21 @@ export type GetMyTasksResponses = {
 
 export type GetMyTasksResponse = GetMyTasksResponses[keyof GetMyTasksResponses];
 
-export type GetAllTasksData = {
+export type GetTasksData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/tasks/';
 };
 
-export type GetAllTasksResponses = {
+export type GetTasksResponses = {
     /**
      * Successful Response
      */
     200: Array<TaskRead>;
 };
 
-export type GetAllTasksResponse = GetAllTasksResponses[keyof GetAllTasksResponses];
+export type GetTasksResponse = GetTasksResponses[keyof GetTasksResponses];
 
 export type GetTaskData = {
     body?: never;
@@ -390,6 +391,10 @@ export type GetTaskErrors = {
      * Forbidden
      */
     403: ErrorResponse;
+    /**
+     * Not found
+     */
+    404: ErrorResponse;
     /**
      * Validation Error
      */
@@ -468,6 +473,10 @@ export type CreateTaskResponseErrors = {
      * Not found
      */
     404: ErrorResponse;
+    /**
+     * Task already completed
+     */
+    409: ErrorResponse;
     /**
      * Validation Error
      */

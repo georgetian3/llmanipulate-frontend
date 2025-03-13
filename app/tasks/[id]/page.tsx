@@ -16,11 +16,13 @@ import { getTranslation } from "@/components/utils";
 import { AuthGuard } from "@/components/auth";
 import { Chat, ComponentGroup, FreeText, MultiChoice, SingleChoice, Slider, TaskConfig, TaskPage } from "@/api";
 import api from "@/lib/apis";
-import { ComponentIdType, selectState, setCurrentTask } from "@/lib/appSlice";
+import { ComponentIdType, selectCurrentUser, selectState, setCurrentTask } from "@/lib/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@heroui/react";
 import { addToast, ToastProvider } from "@heroui/toast";
+import AdminTaskPage from "./admin";
+import { useAppSelector } from "@/lib/hooks";
 
 interface ComponentProps {
   config: SingleChoice | MultiChoice | Slider | FreeText | Chat;
@@ -217,7 +219,15 @@ export function TaskUI({ params }: TaskParams) {
 
 
 export default function AuthedTaskPage({ params }: TaskParams) {
+  const currentUser = useAppSelector(selectCurrentUser)
+  if (currentUser && currentUser.is_admin) {
+    return <AuthGuard admin>
+      <AdminTaskPage />
+    </AuthGuard>
+  }
+
   return <AuthGuard>
     <TaskUI params={params} />
   </AuthGuard>
 }
+

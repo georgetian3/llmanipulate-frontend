@@ -19,9 +19,11 @@ import {
   Logo,
 } from "@/components/icons";
 
-import { Button } from "@heroui/react";
+import { Button, Tooltip } from "@heroui/react";
 import { useAuthenticated, useLogout, } from "./auth";
 import { usePathname, useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/hooks";
+import { selectState } from "@/lib/appSlice";
 
 export const Navbar = () => {
 
@@ -29,6 +31,7 @@ export const Navbar = () => {
   const router = useRouter()
   const pathname = usePathname()
   const logout = useLogout()
+  const currentUser = useAppSelector(selectState).currentUser
 
   return (
     <HeroUINavbar isBordered height={"4rem"} maxWidth="xl" position="sticky">
@@ -81,17 +84,22 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
-        {isAuthed
-          ? <Button variant="flat" onPress={async () => {
-            await logout()
-            router.push("/")
-          }}>
-            Logout
-          </Button>
-          : pathname !== "/login"
-            ? <Button variant="flat" onPress={() => router.push("login")}>Login</Button>
-            : <></>
-        }
+        <Tooltip content={`Current user: ${currentUser?.id ?? "null"}`}>
+          {isAuthed
+            ? <Button
+              variant="flat"
+              onPress={async () => {
+                await logout()
+                router.push("/")
+              }}>
+              Logout
+            </Button>
+            : <Button variant="flat" onPress={() => router.push("login")}>Login</Button>
+          }
+        </Tooltip>
+        { currentUser?.is_admin && <div>
+          Admin
+        </div> }
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">

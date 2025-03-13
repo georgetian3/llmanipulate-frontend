@@ -1,15 +1,16 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useAppDispatch } from "@/lib/hooks"
-import { setCurrentUser } from "@/lib/appSlice"
+import { forbidden, useRouter } from "next/navigation"
+import { useAppDispatch, useAppSelector } from "@/lib/hooks"
+import { selectCurrentUser, selectState, setCurrentUser } from "@/lib/appSlice"
 import api from "../lib/apis"
 
 const SET_USER_ID_EVENT = "setUserIdEvent"
 
-export function saveUserId(accessToken?: string) {
-  localStorage.setItem("userId", accessToken ?? "")
+export function saveUserId(userId?: string) {
+  localStorage.setItem("userId", userId ?? "")
+  window.dispatchEvent(new Event(SET_USER_ID_EVENT))
 }
 
 export function getUserId() {
@@ -23,7 +24,6 @@ export function useLogin() {
   const dispatch = useAppDispatch()
   const login = async (userId: string) => {
     try {
-      console.log("Here")
       const user = await api.getMe(userId)
       if (user) {
         saveUserId(userId)
@@ -90,18 +90,32 @@ export function useAuthenticated() {
   return isAuthenticated
 }
 
-export function AuthGuard({ children }: { children: React.ReactNode }) {
+
+interface AuthGuardProps {
+  children: React.ReactNode,
+  admin?: boolean,
+  condition?: Promise<boolean>
+}
+
+export function AuthGuard({ children, admin, condition }: AuthGuardProps) {
   const isAuthed = useAuthenticated()
   const router = useRouter()
+  const currentUser = useAppSelector(selectCurrentUser)
+  const [conditionResult, setConditionResult] = useState<boolean | undefined>(condition ? undefined : true)
 
   useEffect(() => {
-    if (isAuthed === false) {
-      router.push("/login")
-    }
-  }, [isAuthed, router])
+    (async () => {
+      setConditionResult(undefined)
+      setConditionResult(condition ? await condition: true)
+    })()
+  }, [isAuthed, router, currentUser])
 
-  if (!isAuthed) {
+  if (!isAuthed || conditionResult === undefined) {
     return null
+  }
+
+  if (!conditionResult || admin && (!currentUser || !currentUser.is_admin)) {
+    forbidden()
   }
 
   return <>{children}</>

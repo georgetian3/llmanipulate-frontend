@@ -1,4 +1,4 @@
-import { createTaskResponse, getChat, getMe, getMyTasks, getTask, loginRequired } from "@/api";
+import { createTaskResponse, getChat, getMe, getMyTasks, getTask, getTasks, loginRequired } from "@/api";
 import { createClient } from "@hey-api/client-fetch";
 import { ComponentResponsesType } from "./appSlice";
 import { wait } from "@/components/utils";
@@ -30,6 +30,9 @@ const api = {
   async getTask(taskId: string) {
     const resp = await getTask({ client: client, path: { task_id: taskId } })
     return resp.data
+  },
+  async getTasks() {
+    return (await getTasks({ client: client })).data
   },
   async getChatHistory(chatId: string) {
     const resp = await getChat({ client: client, path: { chat_id: chatId } })

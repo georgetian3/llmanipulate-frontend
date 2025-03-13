@@ -1,12 +1,15 @@
 "use client";
 
-import { TaskRead, TaskReadParticipant } from "@/api";
+import { TaskReadParticipant } from "@/api";
 import api from "@/lib/apis";
 import { AuthGuard } from "@/components/auth";
 import Markdown from "@/components/markdown";
 import { Avatar, Button, Card, CardBody, CardHeader, Skeleton, Spinner } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useAppSelector } from "@/lib/hooks";
+import { selectCurrentUser } from "@/lib/appSlice";
+import AdminTasksPage from "./admin";
 
 interface TaskCardProps {
   task?: TaskReadParticipant
@@ -80,7 +83,6 @@ interface TaskGridProps {
 }
 
 function TaskGrid({ tasks }: TaskGridProps) {
-  console.log("tasks", tasks)
   if (tasks === undefined) {
     tasks = [undefined, undefined, undefined, undefined]
   }
@@ -127,7 +129,14 @@ function TasksPage() {
   )
 }
 
+
 export default function AuthedTasksPage() {
+  const currentUser = useAppSelector(selectCurrentUser)
+  if (currentUser && currentUser.is_admin) {
+    return <AuthGuard admin>
+      <AdminTasksPage />
+    </AuthGuard>
+  }
   return <AuthGuard>
     <TasksPage />
   </AuthGuard>

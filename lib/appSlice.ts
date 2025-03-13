@@ -40,8 +40,8 @@ export const appSlice = createAppSlice({
     }),
 
   }),
-selectors: {
-  selectCurrentUser: (state) => state.currentUser,
+  selectors: {
+    selectCurrentUser: (state) => state.currentUser,
     selectState: (state) => state,
   }
 })
