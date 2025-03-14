@@ -1,146 +1,56 @@
 "use client";
 
-import { MyTasks, TaskRead } from "@/api";
-import { usersApi } from "@/components/apis";
+import { TaskReadParticipant } from "@/api";
+import api from "@/lib/apis";
 import { AuthGuard } from "@/components/auth";
 import Markdown from "@/components/markdown";
-import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Skeleton } from "@heroui/react";
+import { Avatar, Button, Card, CardBody, CardHeader, Skeleton, Spinner } from "@heroui/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-// import { Suspense, useEffect, useState, useCallback } from "react";
-// import TaskCard from "../../components/TaskCard";
-// import "../../styles/tasks_page.css";
-// import tasks_list from "../../data/tasks.json";
-// import { apiRequest } from "../utils";
-// import { useStateContext } from "../context/StateContext";
-// import { useRouter } from "next/navigation";
-
-// type Task = {
-//   task_id: number;
-//   query: {
-//     title: {
-//       en: string;
-//       zh: string;
-//     };
-//     desc: {
-//       en: string;
-//       zh: string;
-//     };
-//   };
-//   options: {
-//     option_id: string;
-//     desc: {
-//       en: string;
-//       zh: string;
-//     };
-//     info: {};
-//   }[];
-//   hidden_incentive: string;
-// };
-
-// function TasksPage() {
-//   const { state, setState } = useStateContext(); // Use setState for global updates
-//   const { userId, name, taskType } = state;
-//   const router = useRouter();
-//   const [tasks, setTasks] = useState<Task[]>([]);
-//   const [completedTasks, setCompletedTasks] = useState<number[]>([]);
-//   const [loading, setLoading] = useState(true);
-
-//   // Restore global state from localStorage on component mount
-//   useEffect(() => {
-//     const savedState = localStorage.getItem("state");
-//     if (savedState) {
-//       setState((prev) => ({ ...prev, ...JSON.parse(savedState) }));
-//     }
-//   }, [setState]);
-
-//   // Persist global state to localStorage whenever it changes
-//   useEffect(() => {
-//     localStorage.setItem("state", JSON.stringify(state));
-//   }, [state]);
-
-//   // Fetch tasks and completed tasks
-//   useEffect(() => {
-//     if (taskType && tasks_list[taskType as keyof typeof tasks_list]) {
-//       setTasks(tasks_list[taskType as keyof typeof tasks_list] || []);
-//     } else {
-//       setTasks([]);
-//     }
-//   }, [taskType]);
-
-//   const fetchCompletedTasks = useCallback(async () => {
-//     try {
-//       const response = await apiRequest(`/responses_by_user?user_id=${userId}`, "GET");
-//       const data = await response.json();
-//       if (Array.isArray(data)) {
-//         setCompletedTasks(data.map((item) => Number(item.task_name)));
-//       }
-//     } catch (error) {
-//       console.error("Error fetching completed tasks:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [userId]); // Memoriza a função com base em `userId`
-
-//   useEffect(() => {
-//     if (userId) {
-//       fetchCompletedTasks();
-//     }
-//   }, [taskType, userId, fetchCompletedTasks]);
-
-//   // Navigate to the final page when all tasks are completed
-//   useEffect(() => {
-//     const requiredTaskIds = [1, 2, 3]; // Required task IDs
-
-//     const allRequiredTasksCompleted = requiredTaskIds.every((taskId) =>
-//       completedTasks.includes(taskId)
-//     );
-
-//     if (allRequiredTasksCompleted) {
-//       router.push("/final");
-//     }
-//   }, [completedTasks, router]);
-
-//   if (loading) {
-//     return <div>Loading tasks...</div>;
-//   }
-
-//   return (
-//     <div className="tasks-container">
-//       <h1 className="font-bold text-left">Welcome, {name}</h1>
-//       <h2>Please select one of the following scenarios:</h2>
-//       <div className="task-cards">
-//         {tasks.map((task, index) => (
-//           <TaskCard
-//             key={index}
-//             task={task}
-//             taskType={taskType}
-//             userId={userId}
-//             name={name}
-//             isCompleted={completedTasks.includes(task.task_id)}
-//           />
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
+import { useAppSelector } from "@/lib/hooks";
+import { selectCurrentUser } from "@/lib/appSlice";
+import AdminTasksPage from "./admin";
 
 interface TaskCardProps {
-  task?: TaskRead
+  task?: TaskReadParticipant
 }
 
 function TaskCard({ task }: TaskCardProps) {
-
-
   const taskLoaded = task !== undefined
-
   const router = useRouter()
+
+  if (!taskLoaded) {
+    return (
+      <Card className="w-full" >
+        <CardHeader className="gap-4">
+          <Skeleton className="flex rounded-full" isLoaded={taskLoaded}>
+            <Avatar />
+          </Skeleton>
+          <Skeleton className="rounded-lg" isLoaded={taskLoaded}>
+            <h1 className="text-2xl">
+              Empty task name
+            </h1>
+          </Skeleton>
+        </CardHeader>
+        <CardBody className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4">
+            <Skeleton className="h-4 rounded-lg" />
+            <Skeleton className="h-4 rounded-lg" />
+            <Skeleton className="h-4 rounded-lg" />
+          </div>
+          <Skeleton>
+            <Button className="w-min" color="primary" variant="flat">
+              Enter
+            </Button>
+          </Skeleton>
+        </CardBody>
+      </Card>
+    )
+  }
+
   return (
     <Card
       className="w-full"
-      isPressable={taskLoaded}
-      onPress={() => taskLoaded && router.push(`/tasks/${task.id}`)}
     >
       <CardHeader className="gap-4">
         <Skeleton className="flex rounded-full" isLoaded={taskLoaded}>
@@ -152,72 +62,79 @@ function TaskCard({ task }: TaskCardProps) {
           </h1>
         </Skeleton>
       </CardHeader>
-      <Divider />
-
-      <CardBody>
-        {task && task.config.description ? <Markdown content={task.config.description} /> :
-          <div className="flex flex-col gap-4">
-            <Skeleton className="h-4 rounded-lg" />
-            <Skeleton className="h-4 rounded-lg" />
-            <Skeleton className="h-4 rounded-lg" />
-          </div>
-        }
+      <CardBody className="flex flex-col gap-4 items-center">
+        {task.config.description && <Markdown content={task.config.description} />}
+        <Button
+          isDisabled={task.completed}
+          className="w-min"
+          color="primary"
+          variant="bordered"
+          onPress={() => router.push(`/tasks/${task.id}`)}
+        >
+          {task.completed ? "Completed" : "Enter"}
+        </Button>
       </CardBody>
-      <Divider />
-      <CardFooter>
-        <Skeleton className="rounded-lg" isLoaded={taskLoaded}>
-          Created {task ? "2024-01-01" : "2024-01-01"}
-        </Skeleton>
-      </CardFooter>
     </Card>
   )
 }
 
 interface TaskGridProps {
-  tasks?: (TaskRead | undefined)[]
+  tasks?: (TaskReadParticipant | undefined)[]
 }
 
 function TaskGrid({ tasks }: TaskGridProps) {
   if (tasks === undefined) {
     tasks = [undefined, undefined, undefined, undefined]
   }
+  if (tasks.length === 0) {
+    return <div>No tasks found</div>
+  }
+
+
   return (
-    <div className="w-full gap-4 grid grid-cols-4">
+    <div className={`flex w-full gap-4 items-center justify-center`}>
       {tasks.map((task, index) => <TaskCard key={index} task={task} />)}
     </div>
   )
 }
 
 function TasksPage() {
-  const [tasks, setTasks] = useState<MyTasks | null>(null)
+  const [tasks, setTasks] = useState<TaskReadParticipant[] | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+  const [forbidden, setForbidden] = useState(false)
   useEffect(() => {
     (async () => {
-      setTasks(null)
-      await new Promise(r => setTimeout(r, 1000))
+      setLoading(true)
+      setTasks(undefined)
       try {
-        const newTasks = await usersApi.getMyTasks()
-        setTasks(newTasks)
-      } catch {
-        console.log("get tasks error")
-      }
+        const resp = await api.getMyTasks()
+        setTasks(resp.data)
+      } catch {}
+      setLoading(false)
     })()
   }, [])
 
   return (
-    <div className="flex flex-col items-center justify-center gap-8 m-4">
-      <h1 className="text-4xl font-bold">
-        Participating
-      </h1>
-      <TaskGrid tasks={tasks ? tasks.created : undefined} />
-      <h1 className="text-4xl font-bold">
-        Created
-      </h1>
-      <TaskGrid tasks={tasks ? tasks.created : undefined} />
+    <div className="flex flex-col h-full items-center justify-center gap-8 m-4">
+      {
+        loading
+          ? <Spinner size="lg" />
+          : (tasks === undefined)
+            ? <p>Error loading tasks, please refresh</p>
+            : <TaskGrid tasks={tasks} />
+      }
     </div>
   )
 }
 
+
 export default function AuthedTasksPage() {
+  const currentUser = useAppSelector(selectCurrentUser)
+  if (currentUser && currentUser.is_admin) {
+    return <AuthGuard admin>
+      <AdminTasksPage />
+    </AuthGuard>
+  }
   return <AuthGuard>
     <TasksPage />
   </AuthGuard>

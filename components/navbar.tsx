@@ -3,11 +3,9 @@
 import {
   Navbar as HeroUINavbar,
   NavbarContent,
-  NavbarMenu,
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
 } from "@heroui/navbar";
 import { Link } from "@heroui/link";
 import { link as linkStyles } from "@heroui/theme";
@@ -21,15 +19,18 @@ import {
   Logo,
 } from "@/components/icons";
 
-import { Button } from "@heroui/react";
-import { useAuthenticated, logout } from "./auth";
-import { usePathname, useRouter } from "next/navigation";
+import { Button, Tooltip } from "@heroui/react";
+import { useAuthenticated, useLogout, } from "./auth";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/lib/hooks";
+import { selectState } from "@/lib/appSlice";
 
 export const Navbar = () => {
 
   const isAuthed = useAuthenticated()
   const router = useRouter()
-  const pathname = usePathname()
+  const logout = useLogout()
+  const currentUser = useAppSelector(selectState).currentUser
 
   return (
     <HeroUINavbar isBordered height={"4rem"} maxWidth="xl" position="sticky">
@@ -82,17 +83,22 @@ export const Navbar = () => {
           </Link>
           <ThemeSwitch />
         </NavbarItem>
-        {isAuthed
-          ? <Button variant="flat" onPress={() => {
-            logout()
-            router.push("/")
-          }}>
-            Logout
-          </Button>
-          : pathname !== "/login"
-            ? <Button variant="flat" onPress={() => router.push("login")}>Login</Button>
-            : <></>
-        }
+        <Tooltip content={`Current user: ${currentUser?.id ?? "null"}`}>
+          {currentUser
+            ? <Button
+              variant="flat"
+              onPress={async () => {
+                router.push("/")
+                logout() // don't await
+              }}>
+              Logout
+            </Button>
+            : <Button variant="flat" onPress={() => router.push("/login")}>Login</Button>
+          }
+        </Tooltip>
+        {currentUser?.is_admin && <div>
+          Admin
+        </div>}
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
@@ -103,27 +109,6 @@ export const Navbar = () => {
         <NavbarMenuToggle />
       </NavbarContent>
 
-      <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
-              <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
-                size="lg"
-              >
-                {item.label}
-              </Link>
-            </NavbarMenuItem>
-          ))}
-        </div>
-      </NavbarMenu>
     </HeroUINavbar>
   );
 }

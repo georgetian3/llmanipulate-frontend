@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .markdown >* a {
-    @apply text-primary-500;
+    @apply text-primary;
     text-decoration: underline;
 }
 

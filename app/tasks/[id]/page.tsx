@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
-import { Pagination } from "@heroui/pagination";
+import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
-import { Textarea } from "@heroui/input";
 
 import SliderUI from "@/components/slider";
 
@@ -12,46 +10,49 @@ import { SingleChoiceUI } from "@/components/single-choice";
 import { MultiChoiceUI } from "@/components/multi-choice";
 import FreeTextUI from "@/components/free-text";
 import Markdown from "@/components/markdown";
-import { LeftIcon, RightIcon } from "@/components/icons";
 import ChatUI from "@/components/chat";
 import { getTranslation } from "@/components/utils";
-import { Chat, ComponentGroup, ComponentGroupComponentsInner, ComponentGroupComponentsInnerTypeEnum, FreeText, MultiChoice, SingleChoice, Slider, TaskConfig, TaskPage } from "@/api";
-import { tasksApi } from "@/components/apis";
 import { AuthGuard } from "@/components/auth";
-import { useRouter } from "next/router";
+import { Chat, ComponentGroupOutput, FreeText, MultiChoice, SingleChoice, Slider, TaskPageOutput } from "@/api";
+import api from "@/lib/apis";
+import { ComponentIdType, resetCurrentTask, selectCurrentTask, selectCurrentUser, selectState, setCurrentTask } from "@/lib/appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { addToast } from "@heroui/toast";
+import AdminTaskPage from "./admin";
+import { useAppSelector } from "@/lib/hooks";
+import { CenteredSpinner } from "@/components/common";
 
 interface ComponentProps {
-  config: ComponentGroupComponentsInner;
+  config: SingleChoice | MultiChoice | Slider | FreeText | Chat;
 }
 
 function ComponentUI({ config }: ComponentProps) {
-  let component = null;
-
-  if (config.type == ComponentGroupComponentsInnerTypeEnum.SingleChoice) {
+  let component;
+  if (config.type == "single_choice") {
     component = <SingleChoiceUI config={config as SingleChoice} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.MultiChoice) {
+  } else if (config.type == "multi_choice") {
     component = <MultiChoiceUI config={config as MultiChoice} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.Slider) {
+  } else if (config.type == "slider") {
     component = <SliderUI config={config as Slider} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.FreeText) {
+  } else if (config.type == "free_text") {
     component = <FreeTextUI config={config as FreeText} />;
-  } else if (config.type == ComponentGroupComponentsInnerTypeEnum.Chat) {
+  } else if (config.type == "chat") {
     return <ChatUI config={config as Chat} />;
   }
 
   return (
     <Card>
-      {config.label && (
-        <CardHeader>
-          <Markdown content={config.label} />
-        </CardHeader>
-      )}
+      <CardHeader className="flex gap-1">
+        {config.label && <Markdown content={config.label} />}
+        {!config.optional && <div className="text-danger">*</div>}
+      </CardHeader>
       <CardBody>{component}</CardBody>
     </Card>
   );
 }
 
-function ComponentGroupUI({ config }: { config: ComponentGroup }) {
+function ComponentGroupUI({ config }: { config: ComponentGroupOutput }) {
   const colClass = `grid-cols-${config.columns ?? 1}`
 
   if (config.components.length <= 1) {
@@ -82,7 +83,7 @@ function ComponentGroupUI({ config }: { config: ComponentGroup }) {
   );
 }
 
-function TaskPageUI({ config, hidden }: { config: TaskPage; hidden: boolean }) {
+function TaskPageUI({ config, hidden }: { config: TaskPageOutput; hidden: boolean }) {
   const colClass = `grid-cols-${config.columns ?? 1}`
   return (
     !hidden && (
@@ -91,7 +92,7 @@ function TaskPageUI({ config, hidden }: { config: TaskPage; hidden: boolean }) {
           {getTranslation(config.label)}
         </div>
         <div className={`grid ${colClass} p-8 gap-4`}>
-          {config.componentGroups.map((componentGroup, index) => (
+          {config.component_groups.map((componentGroup, index) => (
             <ComponentGroupUI key={index} config={componentGroup} />
           ))}
         </div>
@@ -101,107 +102,126 @@ function TaskPageUI({ config, hidden }: { config: TaskPage; hidden: boolean }) {
 }
 
 
-interface TaskParams {
+export interface TaskParams {
   params: Promise<{ id: string }>
 }
 
 
 export function TaskUI({ params }: TaskParams) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [taskConfig, setTaskConfig] = useState<TaskConfig | null>(null);
-  const [editableTaskConfig, setEditableTaskConfig] = useState("");
-  const [warningText, setWarningText] = useState("");
+  const [nextLoading, setNextLoading] = useState(false)
+  const [taskLoading, setTaskLoading] = useState(false)
+  const state = useSelector(selectState)
+  const task = useSelector(selectCurrentTask)
+  const pageCount = task?.config.pages.length
+  const router = useRouter()
+  const dispatch = useDispatch()
 
-  function parseEditedConfig(newConfig: string) {
-    setEditableTaskConfig(newConfig);
-    try {
-      const parsedConfig = JSON.parse(newConfig) as TaskConfig;
-      setTaskConfig(parsedConfig);
-      setWarningText("");
-    } catch {
-      setWarningText("Invalid config");
-    }
-  }
 
   useEffect(() => {
     (async () => {
-      setTaskConfig(null)
-      const { id } = await params
+      setTaskLoading(true)
+      const taskId = (await params).id
       try {
-        const task = await tasksApi.getTask(id)
-        setTaskConfig(task.config)
-        setEditableTaskConfig(JSON.stringify(task.config, null, 2))
+        const newTask = await api.getTask(taskId)
+        dispatch(setCurrentTask(newTask))
       } catch (e) {
         console.log("Error getting task config", e)
       }
+      setTaskLoading(false)
     })()
   }, [])
 
-  if (taskConfig === null) {
-    return <>Loading</>
+  
+  async function handleNext() {
+    if (!pageCount) {
+      return
+    }
+    setNextLoading(true)
+    const currentResponses = state.currentTaskResponse
+    const onLastPage = currentPage === pageCount - 1
+
+    // checking component responses
+    const missingComponentIds: ComponentIdType[] = []
+    task.config.pages.map((page, index) => {
+      // all components in current and previous pages should have responses
+      if (index <= currentPage) {
+        page.component_groups.map(group => group.components.map(component => {
+          if (!component.optional && !state.currentTaskResponse.hasOwnProperty(component.id)) {
+            missingComponentIds.push(component.id)
+          }
+        }))
+      }
+    })
+    if (missingComponentIds.length) {
+      console.log("Components missing responses:", missingComponentIds)
+      addToast({
+        title: "Please complete all required fields",
+        color: "warning",
+      })
+      setNextLoading(false)
+      return
+    }
+
+
+    if (onLastPage) {
+      const resp = await api.submitResponse(task.id!, currentResponses)
+      if (resp) {
+        dispatch(resetCurrentTask())
+        router.push("/tasks")
+      } else {
+        addToast({
+          title: "Error submitting response, please try again",
+          color: "danger",
+        })
+        setNextLoading(false)
+      }
+    } else {
+      setCurrentPage(currentPage + 1)
+      setNextLoading(false)
+    }
+  }
+
+
+  if (taskLoading) {
+    return <CenteredSpinner />
+  }
+
+  if (!task) {
+    return <div className="h-full w-full flex justify-center items-center">
+      Error loading task, please refresh.
+    </div>
   }
 
   return (
-    <div className="h-full w-full flex flex-col items-center gap-4 py-8">
-      <div className="absolute top-20 left-2">
-        <Card>
-          <CardHeader>Change the config here</CardHeader>
-          <CardBody>
-            <Textarea
-              disableAnimation
-              disableAutosize
-              classNames={{
-                input: "resize h-[800px]",
-              }}
-              value={editableTaskConfig}
-              onChange={(event) => parseEditedConfig(event.target.value)}
-            />
-          </CardBody>
-          <CardFooter className="text-red-500">{warningText}</CardFooter>
-        </Card>
+    <>
+      <div className="h-full w-full flex flex-col items-center gap-4 py-8">
+        {task.config.pages.map((page, index) => (
+          <TaskPageUI key={index} config={page} hidden={currentPage != index} />
+        ))}
+        <div className="flex gap-4 items-center">
+          Page {currentPage + 1} of {pageCount}
+          <Button isLoading={nextLoading} color="primary" onPress={handleNext}>
+            Next
+          </Button>
+        </div>
       </div>
-      {taskConfig.pages.map((page, index) => (
-        <TaskPageUI key={index} config={page} hidden={currentPage != index} />
-      ))}
-      <div className="flex gap-4 items-center">
-        <Button
-          isIconOnly
-          color="primary"
-          disabled={currentPage == 0}
-          size="sm"
-          variant="flat"
-          onPress={() => setCurrentPage((prev) => (prev > 0 ? prev - 1 : prev))}
-        >
-          <LeftIcon />
-        </Button>
-        <Pagination
-          color="primary"
-          page={currentPage + 1}
-          total={taskConfig.pages.length}
-          onChange={(page) => setCurrentPage(page - 1)}
-        />
-        <Button
-          isIconOnly
-          color="primary"
-          disabled={currentPage == taskConfig.pages.length - 1}
-          size="sm"
-          variant="flat"
-          onPress={() =>
-            setCurrentPage((prev) =>
-              prev < taskConfig.pages.length - 1 ? prev + 1 : prev,
-            )
-          }
-        >
-          <RightIcon />
-        </Button>
-      </div>
-    </div>
+    </>
+
   );
 }
 
 
 export default function AuthedTaskPage({ params }: TaskParams) {
+  const currentUser = useAppSelector(selectCurrentUser)
+  if (currentUser && currentUser.is_admin) {
+    return <AuthGuard admin>
+      <AdminTaskPage params={params} />
+    </AuthGuard>
+  }
+
   return <AuthGuard>
     <TaskUI params={params} />
   </AuthGuard>
 }
+

@@ -5,6 +5,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { HeroUIProvider } from '@heroui/react'
+import {ToastProvider} from "@heroui/toast"
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import type { ThemeProviderProps } from "next-themes";
 
@@ -32,6 +33,7 @@ export const Providers = ({ children, themeProps }: ProvidersProps) => {
 
   return <Provider store={storeRef.current}>
     <HeroUIProvider>
+      <ToastProvider />
       <NextThemesProvider {...themeProps}>
         {children}
       </NextThemesProvider>
