@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { forbidden, useRouter } from "next/navigation"
 import { useAppDispatch, useAppSelector } from "@/lib/hooks"
-import { selectCurrentUser, selectState, setCurrentUser } from "@/lib/appSlice"
+import { resetState, selectCurrentUser, selectState, setCurrentUser } from "@/lib/appSlice"
 import api from "../lib/apis"
 
 const SET_USER_ID_EVENT = "setUserIdEvent"
@@ -14,7 +14,7 @@ export function saveUserId(userId?: string) {
 }
 
 export function getUserId() {
-  if (typeof window === 'undefined') {
+  if (!window) {
     return ""
   }
   return localStorage.getItem("userId") ?? ""
@@ -43,40 +43,40 @@ export function useLogout() {
   const dispatch = useAppDispatch()
   const logout = async () => {
     saveUserId()
-    dispatch(setCurrentUser())
+    dispatch(resetState())
   }
   return logout
 }
 
 export function useAuthenticated() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | undefined>(undefined)
+  const dispatch = useAppDispatch()
 
   async function handleSetUserIdEvent() {
-    if (!window) {
-      return
-    }
     setIsAuthenticated(undefined)
     if (!await api.loginRequired()) {
+      console.log("Login not required")
       setIsAuthenticated(true)
       return
     }
     const userId = getUserId()
     if (!userId) {
+      console.log("No userId")
       setIsAuthenticated(false)
       return
     }
-    setIsAuthenticated(undefined)
     try {
-      if (await api.getMe(userId)) {
+      const currentUser = await api.getMe(userId)
+      if (currentUser) {
+        console.log("User ID valid")
+        dispatch(setCurrentUser(currentUser))
         setIsAuthenticated(true)
-      } else {
-        setIsAuthenticated(false)
-        saveUserId()
+        return
       }
-    } catch {
-      setIsAuthenticated(false)
-      saveUserId()
-    }
+    } catch { }
+    console.log("User ID invalid")
+    setIsAuthenticated(false)
+    saveUserId()
   }
 
   useEffect(() => {
@@ -106,15 +106,15 @@ export function AuthGuard({ children, admin, condition }: AuthGuardProps) {
   useEffect(() => {
     (async () => {
       setConditionResult(undefined)
-      setConditionResult(condition ? await condition: true)
+      setConditionResult(condition ? await condition : true)
     })()
-  }, [isAuthed, router, currentUser])
+  }, [isAuthed, router, currentUser, condition])
 
-  if (!isAuthed || conditionResult === undefined) {
+  if (isAuthed === undefined || conditionResult === undefined) {
     return null
   }
 
-  if (!conditionResult || admin && (!currentUser || !currentUser.is_admin)) {
+  if (!conditionResult || isAuthed === false || admin && (!currentUser || !currentUser.is_admin)) {
     forbidden()
   }
 

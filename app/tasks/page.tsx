@@ -101,20 +101,18 @@ function TaskGrid({ tasks }: TaskGridProps) {
 function TasksPage() {
   const [tasks, setTasks] = useState<TaskReadParticipant[] | undefined>(undefined)
   const [loading, setLoading] = useState(false)
+  const [forbidden, setForbidden] = useState(false)
   useEffect(() => {
     (async () => {
       setLoading(true)
       setTasks(undefined)
       try {
-        const newTasks = await api.getMyTasks()
-        setTasks(newTasks ?? [])
-      } catch (e) {
-        console.log("get tasks error", e)
-      }
+        const resp = await api.getMyTasks()
+        setTasks(resp.data)
+      } catch {}
       setLoading(false)
     })()
   }, [])
-
 
   return (
     <div className="flex flex-col h-full items-center justify-center gap-8 m-4">

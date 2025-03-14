@@ -1,8 +1,7 @@
 import { TaskRead } from "@/api";
-import { Centered } from "@/components/common";
+import { CenteredSpinner } from "@/components/common";
 import api from "@/lib/apis";
-import { Spinner } from "@heroui/react";
-import React, { Key, useCallback, useMemo } from "react";
+import React, { Key, useMemo } from "react";
 import {
   Table,
   TableHeader,
@@ -12,9 +11,13 @@ import {
   TableCell,
   Input,
   Button,
-
-  User,
-
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+  Chip,
 } from "@heroui/react";
 import { DeleteIcon, PlusIcon, SearchIcon, ViewIcon } from "@/components/icons";
 import { useEffect, useState } from "react";
@@ -23,28 +26,21 @@ import { useRouter } from "next/navigation";
 
 
 
-function TaskRow({ task }: { task: TaskRead }) {
-  return (
-    <TableRow>
-      <TableCell>{task.id}</TableCell>
-      <TableCell>{JSON.stringify(task.config)}</TableCell>
-      <TableCell>Actions</TableCell>
-    </TableRow>
-  )
-}
-
 
 const columns = [
-  {name: "id", label: "ID"},
-  {name: "name", label: "Name"},
-  {name: "actions", label: "Actions"},
+  { name: "id", label: "ID" },
+  { name: "name", label: "Name" },
+  { name: "loginRequired", label: "Login Required" },
+  { name: "actions", label: "Actions" },
 ]
 
 export default function AdminTasksPage() {
   const [tasks, setTasks] = useState<TaskRead[] | undefined>([])
   const [loading, setLoading] = useState(true)
-  const router = useRouter()
   const [filterValue, setFilterValue] = useState("")
+  const [deleteTaskId, setDeleteTaskId] = useState("")
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const router = useRouter()
   const items = useMemo(() => {
     return tasks ? tasks.filter(task => getTranslation(task.config.name).toLowerCase().includes(filterValue)) : undefined
   }, [tasks, filterValue])
@@ -56,7 +52,9 @@ export default function AdminTasksPage() {
   }
 
   async function deleteTask() {
-    
+    await api.deleteTask(deleteTaskId)
+    setDeleteTaskId("")
+    await getTasks()
   }
 
   useEffect(() => {
@@ -67,15 +65,12 @@ export default function AdminTasksPage() {
 
   if (loading) {
     return (
-      <Centered>
-        <Spinner size="lg" />
-      </Centered>
+      <CenteredSpinner />
     )
   }
 
 
   function renderCell(task: TaskRead, column: Key) {
-    console.log("Column", column)
     switch (column) {
       case "id":
         return (
@@ -89,24 +84,37 @@ export default function AdminTasksPage() {
             {getTranslation(task.config.name)}
           </div>
         )
-
+      case "loginRequired":
+        return (
+        <div>
+          {task.config.login_required
+            ? <Chip color="success">Yes</Chip>
+            : <Chip color="danger">No</Chip>
+          }
+        </div>
+        )
       case "actions":
         return (
           <div className="relative flex justify-end items-center gap-2">
             <Button isIconOnly color="primary" onPress={() => router.push(`/tasks/${task.id}`)}>
               <ViewIcon />
             </Button>
-            <Button isIconOnly color="danger">
+            <Button
+              isIconOnly
+              color="danger"
+              onPress={() => {
+                setDeleteTaskId(task.id!)
+                onOpen()
+              }}
+            >
               <DeleteIcon />
             </Button>
           </div>
         );
       default:
-        return "";
+        return ""
     }
   }
-
-
 
   const topContent = (
     <div className="flex flex-col gap-4">
@@ -121,8 +129,8 @@ export default function AdminTasksPage() {
           onValueChange={(value) => setFilterValue(value ?? "")}
         />
         <div className="flex gap-3">
-          <Button color="primary" endContent={<PlusIcon />}>
-            Add New
+          <Button color="primary" endContent={<PlusIcon />} onPress={() => router.push("/tasks/create")}>
+            Create
           </Button>
         </div>
       </div>
@@ -130,32 +138,58 @@ export default function AdminTasksPage() {
     </div>
   )
 
-
-
   return (
-    <Table
-      isHeaderSticky
-      classNames={{ base: "max-h-[80vh] m-4" }}
-      topContent={topContent}
-      topContentPlacement="outside"
-    >
-      <TableHeader columns={columns}>
-        {(column) => (
-          <TableColumn key={column.name} align={column.name === "actions" ? "center" : "start"}>
-            {column.label}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody emptyContent={"No users found"} items={items}>
-        {(item) => (
-          <TableRow key={item.id}>
-            {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
-  )
+    <div>
+      <Table
+        isHeaderSticky
+        classNames={{ base: "h-[calc(100vh-6rem)] pt-4" }}
+        topContent={topContent}
+        topContentPlacement="outside"
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.name} align={column.name === "actions" ? "center" : "start"}>
+              {column.label}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No tasks found"} items={items}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
 
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange} backdrop="blur">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+              <ModalBody>
+                Are you sure you want to delete this task?
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={async () => {
+                    await deleteTask()
+                    onClose()
+                  }}
+                >
+                  Delete
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </div>
+  )
 
 }
 

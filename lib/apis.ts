@@ -1,4 +1,4 @@
-import { createTaskResponse, getChat, getMe, getMyTasks, getTask, getTasks, loginRequired } from "@/api";
+import { createTask, createTaskResponse, deleteTask, getChat, getMe, getMyTasks, getTask, getTaskParticipants, getTaskResponses, getTasks, loginRequired, TaskCreate } from "@/api";
 import { createClient } from "@hey-api/client-fetch";
 import { ComponentResponsesType } from "./appSlice";
 import { wait } from "@/components/utils";
@@ -15,24 +15,27 @@ const api = {
     const resp = await getMe({ client: client })
     return resp.data
   },
-
   async loginRequired() {
     const resp = await loginRequired({ client: client })
     return resp.data!.login_required
   },
-
+  async createTask(task: TaskCreate) {
+    return await createTask({ client: client, body: task })
+  },
   async getMyTasks() {
     await wait(1000)
     const resp = await getMyTasks({ client: client })
-    return resp.data
+    return resp
   },
-
   async getTask(taskId: string) {
     const resp = await getTask({ client: client, path: { task_id: taskId } })
     return resp.data
   },
   async getTasks() {
     return (await getTasks({ client: client })).data
+  },
+  async deleteTask(taskId: string) {
+    return (await deleteTask({ client: client, path: { task_id: taskId } }))
   },
   async getChatHistory(chatId: string) {
     const resp = await getChat({ client: client, path: { chat_id: chatId } })
@@ -46,6 +49,12 @@ const api = {
       console.error("Error encountered while submitting response:", e)
       return undefined
     }
+  },
+  async getTaskResponses(taskId: string) {
+    return (await getTaskResponses({ client: client, path: { task_id: taskId } })).data
+  },
+  async getTaskParticipants(taskId: string) {
+    return (await getTaskParticipants({ client: client, path: { task_id: taskId } })).data
   }
 
 }

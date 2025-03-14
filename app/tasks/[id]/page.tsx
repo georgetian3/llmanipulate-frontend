@@ -10,19 +10,18 @@ import { SingleChoiceUI } from "@/components/single-choice";
 import { MultiChoiceUI } from "@/components/multi-choice";
 import FreeTextUI from "@/components/free-text";
 import Markdown from "@/components/markdown";
-import { LeftIcon, RightIcon } from "@/components/icons";
 import ChatUI from "@/components/chat";
 import { getTranslation } from "@/components/utils";
 import { AuthGuard } from "@/components/auth";
-import { Chat, ComponentGroup, FreeText, MultiChoice, SingleChoice, Slider, TaskConfig, TaskPage } from "@/api";
+import { Chat, ComponentGroupOutput, FreeText, MultiChoice, SingleChoice, Slider, TaskPageOutput } from "@/api";
 import api from "@/lib/apis";
-import { ComponentIdType, selectCurrentUser, selectState, setCurrentTask } from "@/lib/appSlice";
+import { ComponentIdType, resetCurrentTask, selectCurrentTask, selectCurrentUser, selectState, setCurrentTask } from "@/lib/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { Spinner } from "@heroui/react";
-import { addToast, ToastProvider } from "@heroui/toast";
+import { addToast } from "@heroui/toast";
 import AdminTaskPage from "./admin";
 import { useAppSelector } from "@/lib/hooks";
+import { CenteredSpinner } from "@/components/common";
 
 interface ComponentProps {
   config: SingleChoice | MultiChoice | Slider | FreeText | Chat;
@@ -53,7 +52,7 @@ function ComponentUI({ config }: ComponentProps) {
   );
 }
 
-function ComponentGroupUI({ config }: { config: ComponentGroup }) {
+function ComponentGroupUI({ config }: { config: ComponentGroupOutput }) {
   const colClass = `grid-cols-${config.columns ?? 1}`
 
   if (config.components.length <= 1) {
@@ -84,7 +83,7 @@ function ComponentGroupUI({ config }: { config: ComponentGroup }) {
   );
 }
 
-function TaskPageUI({ config, hidden }: { config: TaskPage; hidden: boolean }) {
+function TaskPageUI({ config, hidden }: { config: TaskPageOutput; hidden: boolean }) {
   const colClass = `grid-cols-${config.columns ?? 1}`
   return (
     !hidden && (
@@ -103,23 +102,37 @@ function TaskPageUI({ config, hidden }: { config: TaskPage; hidden: boolean }) {
 }
 
 
-interface TaskParams {
+export interface TaskParams {
   params: Promise<{ id: string }>
 }
 
 
 export function TaskUI({ params }: TaskParams) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [warningText, setWarningText] = useState("");
-  const state = useSelector(selectState)
+  const [nextLoading, setNextLoading] = useState(false)
   const [taskLoading, setTaskLoading] = useState(false)
-  const task = useSelector(selectState).currentTask
+  const state = useSelector(selectState)
+  const task = useSelector(selectCurrentTask)
   const pageCount = task?.config.pages.length
   const router = useRouter()
   const dispatch = useDispatch()
-  const [nextLoading, setNextLoading] = useState(false)
 
 
+  useEffect(() => {
+    (async () => {
+      setTaskLoading(true)
+      const taskId = (await params).id
+      try {
+        const newTask = await api.getTask(taskId)
+        dispatch(setCurrentTask(newTask))
+      } catch (e) {
+        console.log("Error getting task config", e)
+      }
+      setTaskLoading(false)
+    })()
+  }, [])
+
+  
   async function handleNext() {
     if (!pageCount) {
       return
@@ -154,6 +167,7 @@ export function TaskUI({ params }: TaskParams) {
     if (onLastPage) {
       const resp = await api.submitResponse(task.id!, currentResponses)
       if (resp) {
+        dispatch(resetCurrentTask())
         router.push("/tasks")
       } else {
         addToast({
@@ -168,29 +182,9 @@ export function TaskUI({ params }: TaskParams) {
     }
   }
 
-  useEffect(() => {
-    (async () => {
-      setTaskLoading(true)
-      const taskId = (await params).id
-      try {
-        const task = await api.getTask(taskId)
-        if (!task) {
-          console.log("Error getting task in try")
-          return
-        }
-        dispatch(setCurrentTask(task))
-      } catch (e) {
-        console.log("Error getting task config", e)
-      }
-      setTaskLoading(false)
-    })()
-  }, [])
-
 
   if (taskLoading) {
-    return <div className="h-full w-full flex justify-center">
-      <Spinner size="lg" />
-    </div>
+    return <CenteredSpinner />
   }
 
   if (!task) {
@@ -222,7 +216,7 @@ export default function AuthedTaskPage({ params }: TaskParams) {
   const currentUser = useAppSelector(selectCurrentUser)
   if (currentUser && currentUser.is_admin) {
     return <AuthGuard admin>
-      <AdminTaskPage />
+      <AdminTaskPage params={params} />
     </AuthGuard>
   }
 

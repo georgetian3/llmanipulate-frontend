@@ -33,7 +33,16 @@ export type ChatMessageRead = {
     timestamp: Date;
 };
 
-export type ComponentGroup = {
+export type ComponentGroupInput = {
+    /**
+     * The number of columns used to display the children of this component
+     */
+    columns?: number;
+    label?: Translations | null;
+    components: Array<SingleChoice | MultiChoice | Slider | FreeText | Chat>;
+};
+
+export type ComponentGroupOutput = {
     /**
      * The number of columns used to display the children of this component
      */
@@ -110,30 +119,56 @@ export type Slider = {
     labels?: Array<Translations> | null;
 };
 
-export type TaskConfig = {
+export type TaskConfigInput = {
     name: Translations;
     description?: Translations | null;
-    pages: Array<TaskPage>;
+    pages: Array<TaskPageInput>;
     login_required: boolean;
 };
 
-export type TaskPage = {
+export type TaskConfigOutput = {
+    name: Translations;
+    description?: Translations | null;
+    pages: Array<TaskPageOutput>;
+    login_required: boolean;
+};
+
+export type TaskCreate = {
+    config: TaskConfigInput;
+};
+
+export type TaskPageInput = {
     /**
      * The number of columns used to display the component groups
      */
     columns?: number;
     label?: Translations | string | null;
-    component_groups: Array<ComponentGroup>;
+    component_groups: Array<ComponentGroupInput>;
+};
+
+export type TaskPageOutput = {
+    /**
+     * The number of columns used to display the component groups
+     */
+    columns?: number;
+    label?: Translations | string | null;
+    component_groups: Array<ComponentGroupOutput>;
+};
+
+export type TaskParticipantRead = {
+    task: string;
+    user: string | null;
+    completed: boolean;
 };
 
 export type TaskRead = {
+    config: TaskConfigOutput;
     id?: string;
-    config: TaskConfig;
 };
 
 export type TaskReadParticipant = {
+    config: TaskConfigOutput;
     id?: string;
-    config: TaskConfig;
     completed: boolean;
 };
 
@@ -229,21 +264,21 @@ export type GetChatResponses = {
 
 export type GetChatResponse = GetChatResponses[keyof GetChatResponses];
 
-export type GetAllUsersData = {
+export type GetUsersData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/users';
 };
 
-export type GetAllUsersResponses = {
+export type GetUsersResponses = {
     /**
      * Successful Response
      */
     200: Array<UserRead>;
 };
 
-export type GetAllUsersResponse = GetAllUsersResponses[keyof GetAllUsersResponses];
+export type GetUsersResponse = GetUsersResponses[keyof GetUsersResponses];
 
 export type CreateUserData = {
     body: UserCreate;
@@ -329,21 +364,32 @@ export type GetUserResponses = {
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
 
-export type GetAllUsersResponsesData = {
+export type GetUserResponsesData = {
     body?: never;
-    path?: never;
+    path: {
+        user_id: string;
+    };
     query?: never;
-    url: '/users/users_responses';
+    url: '/users/{user_id}/responses';
 };
 
-export type GetAllUsersResponsesResponses = {
+export type GetUserResponsesErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetUserResponsesError = GetUserResponsesErrors[keyof GetUserResponsesErrors];
+
+export type GetUserResponsesResponses = {
     /**
      * Successful Response
      */
     200: Array<TaskResponse>;
 };
 
-export type GetAllUsersResponsesResponse = GetAllUsersResponsesResponses[keyof GetAllUsersResponsesResponses];
+export type GetUserResponsesResponse = GetUserResponsesResponses[keyof GetUserResponsesResponses];
 
 export type GetMyTasksData = {
     body?: never;
@@ -376,6 +422,56 @@ export type GetTasksResponses = {
 };
 
 export type GetTasksResponse = GetTasksResponses[keyof GetTasksResponses];
+
+export type CreateTaskData = {
+    body: TaskCreate;
+    path?: never;
+    query?: never;
+    url: '/tasks/';
+};
+
+export type CreateTaskErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateTaskError = CreateTaskErrors[keyof CreateTaskErrors];
+
+export type CreateTaskResponses = {
+    /**
+     * Successful Response
+     */
+    200: TaskRead;
+};
+
+export type CreateTaskResponse = CreateTaskResponses[keyof CreateTaskResponses];
+
+export type DeleteTaskData = {
+    body?: never;
+    path: {
+        task_id: string;
+    };
+    query?: never;
+    url: '/tasks/{task_id}';
+};
+
+export type DeleteTaskErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteTaskError = DeleteTaskErrors[keyof DeleteTaskErrors];
+
+export type DeleteTaskResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type GetTaskData = {
     body?: never;
@@ -450,7 +546,7 @@ export type GetTaskResponsesResponses = {
     /**
      * Successful Response
      */
-    200: TaskResponseRead;
+    200: Array<TaskResponseRead>;
 };
 
 export type GetTaskResponsesResponse = GetTaskResponsesResponses[keyof GetTaskResponsesResponses];
@@ -494,6 +590,33 @@ export type CreateTaskResponseResponses = {
 
 export type CreateTaskResponseResponse = CreateTaskResponseResponses[keyof CreateTaskResponseResponses];
 
+export type GetTaskParticipantsData = {
+    body?: never;
+    path: {
+        task_id: string;
+    };
+    query?: never;
+    url: '/tasks/{task_id}/participants';
+};
+
+export type GetTaskParticipantsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetTaskParticipantsError = GetTaskParticipantsErrors[keyof GetTaskParticipantsErrors];
+
+export type GetTaskParticipantsResponses = {
+    /**
+     * Successful Response
+     */
+    200: Array<TaskParticipantRead>;
+};
+
+export type GetTaskParticipantsResponse = GetTaskParticipantsResponses[keyof GetTaskParticipantsResponses];
+
 export type GetResponsesData = {
     body?: never;
     path?: never;
@@ -505,8 +628,10 @@ export type GetResponsesResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: Array<TaskResponseRead>;
 };
+
+export type GetResponsesResponse = GetResponsesResponses[keyof GetResponsesResponses];
 
 export type ClientOptions = {
     baseUrl: `${string}://${string}` | (string & {});

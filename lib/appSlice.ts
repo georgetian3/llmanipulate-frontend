@@ -29,7 +29,7 @@ export const appSlice = createAppSlice({
     setCurrentUser: create.reducer((state, action: PayloadAction<UserRead | undefined>) => {
       state.currentUser = action.payload
     }),
-    setCurrentTask: create.reducer((state, action: PayloadAction<TaskRead>) => {
+    setCurrentTask: create.reducer((state, action: PayloadAction<TaskRead | undefined>) => {
       state.currentTask = action.payload
     }),
     setComponentResponse: create.reducer((state, action: PayloadAction<ComponentResponse>) => {
@@ -38,16 +38,21 @@ export const appSlice = createAppSlice({
     removeComponentResponse: create.reducer((state, action: PayloadAction<ComponentIdType>) => {
       delete state.currentTaskResponse[action.payload]
     }),
-
+    resetCurrentTask: create.reducer((state) => {
+      state.currentTask = undefined
+      state.currentTaskResponse = {}
+    }),
+    resetState: () => initialState
   }),
   selectors: {
     selectCurrentUser: (state) => state.currentUser,
     selectState: (state) => state,
+    selectCurrentTask: (state) => state.currentTask,
   }
 })
 
-export const { setCurrentUser, setComponentResponse, removeComponentResponse, setCurrentTask } = appSlice.actions
-export const { selectCurrentUser, selectState } = appSlice.selectors
+export const { setCurrentUser, setComponentResponse, removeComponentResponse, setCurrentTask, resetCurrentTask, resetState } = appSlice.actions
+export const { selectCurrentUser, selectState, selectCurrentTask } = appSlice.selectors
 
 // // If you are not using async thunks you can use the standalone `createSlice`.
 // export const counterSlice = createAppSlice({

@@ -1,7 +1,275 @@
-export default function AdminTaskPage() {
+import { Key, useEffect, useState } from "react"
+import { TaskParams } from "./page"
+import { TaskParticipantRead, TaskRead, TaskResponseRead, UserRead } from "@/api"
+import api from "@/lib/apis"
+import { Centered, CenteredSpinner } from "@/components/common"
+import { notFound } from "next/navigation"
+import { Button, Chip, Input, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from "@heroui/react"
+import { Editor } from "@monaco-editor/react"
+import { useTheme } from "next-themes"
+import { DeleteIcon, PlusIcon } from "@/components/icons"
+
+interface TaskReadProp {
+  task: TaskRead
+}
+
+function ConfigTab({ task }: TaskReadProp) {
+  const { theme, setTheme } = useTheme()
+  return (
+    <div
+      className="h-[calc(100vh-10rem)]"
+    >
+      <Editor
+        theme={theme === "light" ? "light" : "vs-dark"}
+        defaultLanguage="json"
+        defaultValue={JSON.stringify(task.config, null, 2)}
+        options={{
+          readOnly: true
+        }}
+      />
+    </div>
+  )
+}
+
+
+function ResponsesTab({ task }: TaskReadProp) {
+  const [responses, setResponses] = useState<TaskResponseRead[] | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+  const columns = [
+    { name: "userId", label: "User ID" },
+    { name: "response", label: "Response" },
+    { name: "created", label: "Created" }
+  ]
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true)
+      setResponses(await api.getTaskResponses(task.id!))
+      setLoading(false)
+    })()
+  }, [])
+
+  if (loading) {
+    return <CenteredSpinner />
+  }
+
+  if (responses === undefined) {
+    return <Centered>
+      Cannot fetch responses
+    </Centered>
+  }
+
+
+  function renderCell(response: TaskResponseRead, column: Key) {
+    switch (column) {
+      case "userId":
+        return (
+          <div>
+            {response.user}
+          </div>
+        )
+      case "response":
+        return (
+          <div>
+            {JSON.stringify(response.response)}
+          </div>
+        )
+      case "created":
+        return (
+          <div>
+            {response.created_timestamp ? response.created_timestamp.toISOString() : ""}
+          </div>
+        )
+      default:
+        return ""
+    }
+  }
+
   return (
     <div>
-      Admin Task Page
+      <Table
+        isHeaderSticky
+        classNames={{ base: "h-[calc(100vh-6rem)] pt-4" }}
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.name} align={"start"}>
+              {column.label}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No responses"} items={responses}>
+          {(item) => (
+            <TableRow key={item.user}>
+              {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+
+const uuid4Regex = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[1-5][0-9a-f]{3}-?[89ab][0-9a-f]{3}-?[0-9a-f]{12}$/i
+function isValidUuid4(value: string) {
+  return !!value.match(uuid4Regex)
+}
+
+function ParticipantsTab({ task }: TaskReadProp) {
+
+  const [participants, setParticipants] = useState<TaskParticipantRead[] | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+  const [participantId, setParticipantId] = useState("")
+  const validParticipantId = participantId ? isValidUuid4(participantId) : undefined
+  const columns = [
+    { name: "userId", label: "User ID" },
+    { name: "completed", label: "Completed" },
+    { name: "actions", label: "Actions" },
+  ]
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true)
+      setParticipants(await api.getTaskParticipants(task.id!))
+      setLoading(false)
+    })()
+  }, [])
+
+  if (loading) {
+    return <CenteredSpinner />
+  }
+
+  if (participants === undefined) {
+    return <Centered>
+      Cannot fetch participants
+    </Centered>
+  }
+
+  const topContent = (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between gap-3 items-end">
+        <Input
+          isClearable
+          className="w-full"
+          placeholder="Search by name..."
+          value={participantId}
+          onClear={() => setParticipantId("")}
+          onValueChange={(value) => setParticipantId(value ?? "")}
+        />
+        <div className="flex gap-3">
+          <Button isDisabled={validParticipantId === false} color="primary" endContent={<PlusIcon />} onPress={() => {console.log("TODO")}}>
+            Create {!participantId && "random"}
+          </Button>
+        </div>
+      </div>
+
+    </div>
+  )
+
+
+  function renderCell(participant: TaskParticipantRead, column: Key) {
+    switch (column) {
+      case "userId":
+        return (
+          <div>
+            {participant.user}
+          </div>
+        )
+      case "completed":
+        return (
+          <div>
+            {participant.completed
+              ? <Chip color="success">Yes</Chip>
+              : <Chip color="danger">No</Chip>
+            }
+          </div>
+        )
+      case "actions":
+        return (
+          <div>
+            <Button color="danger" isIconOnly>
+              <DeleteIcon />
+            </Button>
+          </div>
+        )
+      default:
+        return ""
+    }
+  }
+
+  return (
+    <div>
+      <Table
+        isHeaderSticky
+        topContent={topContent}
+        topContentPlacement="outside"
+        classNames={{ base: "h-[calc(100vh-6rem)] pt-4" }}
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.name} align={"start"}>
+              {column.label}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No participants"} items={participants}>
+          {(item) => (
+            <TableRow key={item.user}>
+              {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+
+
+
+export default function AdminTaskPage({ params }: TaskParams) {
+  const [task, setTask] = useState<TaskRead | undefined>(undefined)
+  const [taskLoading, setTaskLoading] = useState(false)
+
+  useEffect(() => {
+    (async () => {
+      setTaskLoading(true)
+      const taskId = (await params).id
+      try {
+        console.log("getting task")
+        setTask(await api.getTask(taskId))
+      } catch { }
+      setTaskLoading(false)
+    })()
+  }, [])
+
+  if (taskLoading) {
+    return <CenteredSpinner />
+  }
+
+  if (!task) {
+    return (
+      <Centered>
+        Task not found
+      </Centered>
+    )
+  }
+
+  return (
+    <div className="h-full">
+      <Tabs variant="underlined">
+        <Tab title="Config" className="">
+          <ConfigTab task={task} />
+        </Tab>
+        <Tab title="Responses">
+          <ResponsesTab task={task} />
+        </Tab>
+        {
+          task.config.login_required &&
+          <Tab title="Participants">
+            <ParticipantsTab task={task} />
+          </Tab>
+        }
+      </Tabs>
     </div>
   )
 }
