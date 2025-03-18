@@ -155,6 +155,10 @@ export type TaskPageOutput = {
     component_groups: Array<ComponentGroupOutput>;
 };
 
+export type TaskParticipantCreate = {
+    user: string | null;
+};
+
 export type TaskParticipantRead = {
     task: string;
     user: string | null;
@@ -164,11 +168,13 @@ export type TaskParticipantRead = {
 export type TaskRead = {
     config: TaskConfigOutput;
     id?: string;
+    login_required: boolean;
 };
 
 export type TaskReadParticipant = {
     config: TaskConfigOutput;
     id?: string;
+    login_required: boolean;
     completed: boolean;
 };
 
@@ -616,6 +622,33 @@ export type GetTaskParticipantsResponses = {
 };
 
 export type GetTaskParticipantsResponse = GetTaskParticipantsResponses[keyof GetTaskParticipantsResponses];
+
+export type CreateTaskParticipantData = {
+    body: TaskParticipantCreate;
+    path: {
+        task_id: string;
+    };
+    query?: never;
+    url: '/tasks/{task_id}/participants';
+};
+
+export type CreateTaskParticipantErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateTaskParticipantError = CreateTaskParticipantErrors[keyof CreateTaskParticipantErrors];
+
+export type CreateTaskParticipantResponses = {
+    /**
+     * Successful Response
+     */
+    200: TaskParticipantRead;
+};
+
+export type CreateTaskParticipantResponse = CreateTaskParticipantResponses[keyof CreateTaskParticipantResponses];
 
 export type GetResponsesData = {
     body?: never;

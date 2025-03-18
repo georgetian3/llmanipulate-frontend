@@ -88,8 +88,8 @@ export const Navbar = () => {
             ? <Button
               variant="flat"
               onPress={async () => {
+                await logout() // don't await
                 router.push("/")
-                logout() // don't await
               }}>
               Logout
             </Button>

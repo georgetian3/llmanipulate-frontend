@@ -101,7 +101,6 @@ function TaskGrid({ tasks }: TaskGridProps) {
 function TasksPage() {
   const [tasks, setTasks] = useState<TaskReadParticipant[] | undefined>(undefined)
   const [loading, setLoading] = useState(false)
-  const [forbidden, setForbidden] = useState(false)
   useEffect(() => {
     (async () => {
       setLoading(true)

@@ -1,4 +1,4 @@
-import { createTask, createTaskResponse, deleteTask, getChat, getMe, getMyTasks, getTask, getTaskParticipants, getTaskResponses, getTasks, loginRequired, TaskCreate } from "@/api";
+import { createTask, createTaskParticipant, createTaskResponse, deleteTask, getChat, getMe, getMyTasks, getTask, getTaskParticipants, getTaskResponses, getTasks, loginRequired, TaskCreate } from "@/api";
 import { createClient } from "@hey-api/client-fetch";
 import { ComponentResponsesType } from "./appSlice";
 import { wait } from "@/components/utils";
@@ -55,7 +55,10 @@ const api = {
   },
   async getTaskParticipants(taskId: string) {
     return (await getTaskParticipants({ client: client, path: { task_id: taskId } })).data
-  }
+  },
+  async createTaskParticipant(taskId: string, participantId: string | undefined) {
+    return (await createTaskParticipant({ client: client, path: { task_id: taskId }, body: { user: participantId ?? null } })).data
+  },
 
 }
 
