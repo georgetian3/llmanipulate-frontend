@@ -96,7 +96,7 @@ export const Navbar = () => {
             : <Button variant="flat" onPress={() => router.push("/login")}>Login</Button>
           }
         </Tooltip>
-        {currentUser?.is_admin && <div>
+        {currentUser?.admin && <div>
           Admin
         </div>}
       </NavbarContent>

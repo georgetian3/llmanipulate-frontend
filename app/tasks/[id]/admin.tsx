@@ -65,7 +65,7 @@ function ResponsesTab({ task }: TaskReadProp) {
       case "userId":
         return (
           <Code>
-            {response.user}
+            {response.user_id}
           </Code>
         )
       case "response":
@@ -100,7 +100,7 @@ function ResponsesTab({ task }: TaskReadProp) {
         </TableHeader>
         <TableBody emptyContent={"No responses"} items={responses}>
           {(item) => (
-            <TableRow key={item.user}>
+            <TableRow key={item.user_id}>
               {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
             </TableRow>
           )}
@@ -150,11 +150,11 @@ function ParticipantsTab({ task }: TaskReadProp) {
   }
 
   async function createParticipant() {
-    if (await api.createTaskParticipant(task.id!, participantId ? participantId : undefined)) {
-      await getTaskParticipants()
-    } else {
+    // if (await api.createTaskParticipant(task.id!, participantId ? participantId : undefined)) {
+    //   await getTaskParticipants()
+    // } else {
       console.log("Error creating participant")
-    }
+    // }
   }
 
   const topContent = (
@@ -184,7 +184,7 @@ function ParticipantsTab({ task }: TaskReadProp) {
       case "userId":
         return (
           <Code>
-            {participant.user}
+            {participant.user_id}
           </Code>
         )
       case "completed":
@@ -226,7 +226,7 @@ function ParticipantsTab({ task }: TaskReadProp) {
         </TableHeader>
         <TableBody emptyContent={"No participants"} items={participants}>
           {(item) => (
-            <TableRow key={item.user}>
+            <TableRow key={item.user_id}>
               {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
             </TableRow>
           )}
@@ -247,8 +247,7 @@ export default function AdminTaskPage({ params }: TaskParams) {
       setTaskLoading(true)
       const taskId = (await params).id
       try {
-        console.log("getting task")
-        setTask(await api.getTask(taskId))
+        setTask((await api.getTask(taskId)).data)
       } catch { }
       setTaskLoading(false)
     })()
@@ -275,12 +274,9 @@ export default function AdminTaskPage({ params }: TaskParams) {
         <Tab title="Responses">
           <ResponsesTab task={task} />
         </Tab>
-        {
-          task.config.login_required &&
-          <Tab title="Participants">
-            <ParticipantsTab task={task} />
-          </Tab>
-        }
+        <Tab title="Participants">
+          <ParticipantsTab task={task} />
+        </Tab>
       </Tabs>
     </div>
   )

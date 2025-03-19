@@ -10,12 +10,13 @@ export const siteConfig = {
   name: "LLManipulate",
   description: "LLManipulate",
   navItems: [
-  ] as NavItem[],
-  authedNavItems: [
     {
       label: "Tasks",
       href: "/tasks",
     },
+  ] as NavItem[],
+  authedNavItems: [
+
   ] as NavItem[],
   navMenuItems: [
     {
