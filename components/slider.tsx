@@ -25,15 +25,20 @@ export default function SliderUI({ config }: SliderProps) {
     handleInput(0)
   })
 
+  config = {
+    ...config,
+    labels: undefined
+  }
+
   return (
     <Slider
       aria-label="slider"
       marks={config.labels
         ? config.labels.map((label, i) => { return { value: i, label: getTranslation(label) } })
         : [...Array(config.steps)].map((_, i) => { return { value: i, label: (i + 1).toString() } })}
-      maxValue={config.steps}
-      minValue={1}
-      showSteps={true}
+      maxValue={config.steps - 1}
+      minValue={0}
+      showSteps
       size="sm"
       onChange={handleInput}
     />

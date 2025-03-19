@@ -18,6 +18,7 @@ import {
   ModalFooter,
   useDisclosure,
   Chip,
+  Code,
 } from "@heroui/react";
 import { DeleteIcon, PlusIcon, SearchIcon, ViewIcon } from "@/components/icons";
 import { useEffect, useState } from "react";
@@ -74,9 +75,9 @@ export default function AdminTasksPage() {
     switch (column) {
       case "id":
         return (
-          <div>
+          <Code>
             {task.id}
-          </div>
+          </Code>
         )
       case "name":
         return (
@@ -86,12 +87,12 @@ export default function AdminTasksPage() {
         )
       case "loginRequired":
         return (
-        <div>
-          {task.config.login_required
-            ? <Chip color="success">Yes</Chip>
-            : <Chip color="danger">No</Chip>
-          }
-        </div>
+          <div>
+            {task.config.login_required
+              ? <Chip color="success">Yes</Chip>
+              : <Chip color="danger">No</Chip>
+            }
+          </div>
         )
       case "actions":
         return (

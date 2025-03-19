@@ -13,18 +13,18 @@ import Markdown from "@/components/markdown";
 import ChatUI from "@/components/chat";
 import { getTranslation } from "@/components/utils";
 import { AuthGuard } from "@/components/auth";
-import { Chat, ComponentGroupOutput, FreeText, MultiChoice, SingleChoice, Slider, TaskPageOutput } from "@/api";
+import { ChatConfig, ComponentGroupOutput, FreeText, MultiChoice, SingleChoice, Slider, TaskPageOutput } from "@/api";
 import api from "@/lib/apis";
 import { ComponentIdType, resetCurrentTask, selectCurrentTask, selectCurrentUser, selectState, setCurrentTask } from "@/lib/appSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import { forbidden, useRouter } from "next/navigation";
 import { addToast } from "@heroui/toast";
 import AdminTaskPage from "./admin";
 import { useAppSelector } from "@/lib/hooks";
 import { CenteredSpinner } from "@/components/common";
 
 interface ComponentProps {
-  config: SingleChoice | MultiChoice | Slider | FreeText | Chat;
+  config: SingleChoice | MultiChoice | Slider | FreeText | ChatConfig;
 }
 
 function ComponentUI({ config }: ComponentProps) {
@@ -38,7 +38,7 @@ function ComponentUI({ config }: ComponentProps) {
   } else if (config.type == "free_text") {
     component = <FreeTextUI config={config as FreeText} />;
   } else if (config.type == "chat") {
-    return <ChatUI config={config as Chat} />;
+    return <ChatUI config={config as ChatConfig} />;
   }
 
   return (
@@ -123,8 +123,11 @@ export function TaskUI({ params }: TaskParams) {
       setTaskLoading(true)
       const taskId = (await params).id
       try {
-        const newTask = await api.getTask(taskId)
-        dispatch(setCurrentTask(newTask))
+        const { data, response } = await api.getTask(taskId)
+        if (response.status == 403) {
+          forbidden()
+        }
+        dispatch(setCurrentTask(data))
       } catch (e) {
         console.log("Error getting task config", e)
       }
@@ -132,7 +135,7 @@ export function TaskUI({ params }: TaskParams) {
     })()
   }, [])
 
-  
+
   async function handleNext() {
     if (!pageCount) {
       return
@@ -165,7 +168,7 @@ export function TaskUI({ params }: TaskParams) {
 
 
     if (onLastPage) {
-      const resp = await api.submitResponse(task.id!, currentResponses)
+      const resp = await api.submitResponse(task.id, currentResponses)
       if (resp) {
         dispatch(resetCurrentTask())
         router.push("/tasks")
@@ -214,14 +217,11 @@ export function TaskUI({ params }: TaskParams) {
 
 export default function AuthedTaskPage({ params }: TaskParams) {
   const currentUser = useAppSelector(selectCurrentUser)
-  if (currentUser && currentUser.is_admin) {
+  if (currentUser && currentUser.admin) {
     return <AuthGuard admin>
       <AdminTaskPage params={params} />
     </AuthGuard>
   }
-
-  return <AuthGuard>
-    <TaskUI params={params} />
-  </AuthGuard>
+  return <TaskUI params={params} />
 }
 

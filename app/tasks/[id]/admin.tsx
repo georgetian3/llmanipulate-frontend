@@ -4,7 +4,7 @@ import { TaskParticipantRead, TaskRead, TaskResponseRead, UserRead } from "@/api
 import api from "@/lib/apis"
 import { Centered, CenteredSpinner } from "@/components/common"
 import { notFound } from "next/navigation"
-import { Button, Chip, Input, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from "@heroui/react"
+import { Button, Chip, Code, Input, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from "@heroui/react"
 import { Editor } from "@monaco-editor/react"
 import { useTheme } from "next-themes"
 import { DeleteIcon, PlusIcon } from "@/components/icons"
@@ -64,9 +64,9 @@ function ResponsesTab({ task }: TaskReadProp) {
     switch (column) {
       case "userId":
         return (
-          <div>
-            {response.user}
-          </div>
+          <Code>
+            {response.user_id}
+          </Code>
         )
       case "response":
         return (
@@ -100,7 +100,7 @@ function ResponsesTab({ task }: TaskReadProp) {
         </TableHeader>
         <TableBody emptyContent={"No responses"} items={responses}>
           {(item) => (
-            <TableRow key={item.user}>
+            <TableRow key={item.user_id}>
               {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
             </TableRow>
           )}
@@ -127,11 +127,15 @@ function ParticipantsTab({ task }: TaskReadProp) {
     { name: "actions", label: "Actions" },
   ]
 
+  async function getTaskParticipants() {
+    setLoading(true)
+    setParticipants(await api.getTaskParticipants(task.id!))
+    setLoading(false)
+  }
+
   useEffect(() => {
     (async () => {
-      setLoading(true)
-      setParticipants(await api.getTaskParticipants(task.id!))
-      setLoading(false)
+      await getTaskParticipants()
     })()
   }, [])
 
@@ -145,19 +149,27 @@ function ParticipantsTab({ task }: TaskReadProp) {
     </Centered>
   }
 
+  async function createParticipant() {
+    // if (await api.createTaskParticipant(task.id!, participantId ? participantId : undefined)) {
+    //   await getTaskParticipants()
+    // } else {
+      console.log("Error creating participant")
+    // }
+  }
+
   const topContent = (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-3 items-end">
         <Input
           isClearable
           className="w-full"
-          placeholder="Search by name..."
+          placeholder="Enter a valid UUID4 to make a user this task's participant, or leave empty to create a new user."
           value={participantId}
           onClear={() => setParticipantId("")}
           onValueChange={(value) => setParticipantId(value ?? "")}
         />
         <div className="flex gap-3">
-          <Button isDisabled={validParticipantId === false} color="primary" endContent={<PlusIcon />} onPress={() => {console.log("TODO")}}>
+          <Button isDisabled={validParticipantId === false} color="primary" endContent={<PlusIcon />} onPress={createParticipant}>
             Create {!participantId && "random"}
           </Button>
         </div>
@@ -171,9 +183,9 @@ function ParticipantsTab({ task }: TaskReadProp) {
     switch (column) {
       case "userId":
         return (
-          <div>
-            {participant.user}
-          </div>
+          <Code>
+            {participant.user_id}
+          </Code>
         )
       case "completed":
         return (
@@ -214,7 +226,7 @@ function ParticipantsTab({ task }: TaskReadProp) {
         </TableHeader>
         <TableBody emptyContent={"No participants"} items={participants}>
           {(item) => (
-            <TableRow key={item.user}>
+            <TableRow key={item.user_id}>
               {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
             </TableRow>
           )}
@@ -235,8 +247,7 @@ export default function AdminTaskPage({ params }: TaskParams) {
       setTaskLoading(true)
       const taskId = (await params).id
       try {
-        console.log("getting task")
-        setTask(await api.getTask(taskId))
+        setTask((await api.getTask(taskId)).data)
       } catch { }
       setTaskLoading(false)
     })()
@@ -263,12 +274,9 @@ export default function AdminTaskPage({ params }: TaskParams) {
         <Tab title="Responses">
           <ResponsesTab task={task} />
         </Tab>
-        {
-          task.config.login_required &&
-          <Tab title="Participants">
-            <ParticipantsTab task={task} />
-          </Tab>
-        }
+        <Tab title="Participants">
+          <ParticipantsTab task={task} />
+        </Tab>
       </Tabs>
     </div>
   )

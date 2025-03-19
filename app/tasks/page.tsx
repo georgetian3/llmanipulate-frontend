@@ -2,7 +2,7 @@
 
 import { TaskReadParticipant } from "@/api";
 import api from "@/lib/apis";
-import { AuthGuard } from "@/components/auth";
+import { AuthGuard, initUserId } from "@/components/auth";
 import Markdown from "@/components/markdown";
 import { Avatar, Button, Card, CardBody, CardHeader, Skeleton, Spinner } from "@heroui/react";
 import { useRouter } from "next/navigation";
@@ -86,6 +86,7 @@ function TaskGrid({ tasks }: TaskGridProps) {
   if (tasks === undefined) {
     tasks = [undefined, undefined, undefined, undefined]
   }
+  console.log('tasks', tasks)
   if (tasks.length === 0) {
     return <div>No tasks found</div>
   }
@@ -101,7 +102,6 @@ function TaskGrid({ tasks }: TaskGridProps) {
 function TasksPage() {
   const [tasks, setTasks] = useState<TaskReadParticipant[] | undefined>(undefined)
   const [loading, setLoading] = useState(false)
-  const [forbidden, setForbidden] = useState(false)
   useEffect(() => {
     (async () => {
       setLoading(true)
@@ -109,7 +109,7 @@ function TasksPage() {
       try {
         const resp = await api.getMyTasks()
         setTasks(resp.data)
-      } catch {}
+      } catch { }
       setLoading(false)
     })()
   }, [])
@@ -130,12 +130,10 @@ function TasksPage() {
 
 export default function AuthedTasksPage() {
   const currentUser = useAppSelector(selectCurrentUser)
-  if (currentUser && currentUser.is_admin) {
+  if (currentUser && currentUser.admin) {
     return <AuthGuard admin>
       <AdminTasksPage />
     </AuthGuard>
   }
-  return <AuthGuard>
-    <TasksPage />
-  </AuthGuard>
+  return <TasksPage />
 }
