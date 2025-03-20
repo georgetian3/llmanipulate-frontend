@@ -298,8 +298,6 @@ export type ValidationError = {
 };
 
 export type WebsocketReceive = {
-    user_id: string;
-    chat_id: string;
     typing: boolean;
     message: string;
 };
@@ -376,6 +374,29 @@ export type ExampleReceiveErrors = {
 export type ExampleReceiveError = ExampleReceiveErrors[keyof ExampleReceiveErrors];
 
 export type ExampleReceiveResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type ExampleChatMessageReadData = {
+    body: ChatMessageRead;
+    path?: never;
+    query?: never;
+    url: '/chat/example/chat-message-read';
+};
+
+export type ExampleChatMessageReadErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ExampleChatMessageReadError = ExampleChatMessageReadErrors[keyof ExampleChatMessageReadErrors];
+
+export type ExampleChatMessageReadResponses = {
     /**
      * Successful Response
      */

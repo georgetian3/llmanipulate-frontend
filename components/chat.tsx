@@ -1,7 +1,7 @@
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Textarea } from "@heroui/input";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   ChatConfig,
@@ -10,8 +10,8 @@ import {
   WebsocketSend,
 } from "@/api";
 
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { selectCurrentTask, selectCurrentUser, setComponentResponse } from "@/lib/appSlice";
+import { useAppSelector } from "@/lib/hooks";
+import { selectCurrentTask, selectCurrentUser } from "@/lib/appSlice";
 
 
 interface ChatProps {
@@ -19,25 +19,32 @@ interface ChatProps {
 }
 
 export default function ChatUI({ config }: ChatProps) {
+  const [websocket, setWebsocket] = useState<WebSocket | undefined>(undefined)
   const [chatHistory, setChatHistory] = useState<ChatMessageRead[]>([]);
-  const chatBoxRef = useRef<HTMLDivElement | null>(null);
   const [draft, setDraft] = useState("");
-  const [messageCount, setMessageCount] = useState(0)
-  const dispatch = useAppDispatch()
-
+  const [me, setMe] = useState<string>("")
   const currentTask = useAppSelector(selectCurrentTask)
   const currentUser = useAppSelector(selectCurrentUser)
-  const [me, setMe] = useState<string>("")
-
-  const [websocket, setWebsocket] = useState<WebSocket | undefined>(undefined)
+  const chatBoxRef = useRef<HTMLDivElement | null>(null);
+  const chatHistoryProcessed = useMemo(() => {
+    const ids = new Set();
+    return chatHistory
+      // filter duplicate messages via id
+      .filter(message => !ids.has(message.id) && ids.add(message.id))
+      // timestamp is string, convert into date
+      .map(message => { return { ...message, timestamp: new Date(message.timestamp) } })
+      // sort in ascending order
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+  }, [chatHistory])
 
   useEffect(() => {
     (async () => {
       await connectWebsocket()
     })()
+    return websocket?.close
   }, [])
 
-  async function connectWebsocket() {
+  const connectWebsocket = useCallback(async () => {
     if (websocket) {
       await websocket.close()
     }
@@ -45,56 +52,51 @@ export default function ChatUI({ config }: ChatProps) {
       console.error("Chat no user or task")
       return
     }
-    const params = new URLSearchParams()
-    params.set("user", currentUser.id)
-    params.set("task", currentTask.id)
-    params.set("component", config.id)
+    const params = new URLSearchParams({
+      user: currentUser.id,
+      task: currentTask.id,
+      component: config.id,
+    })
     try {
       const ws = new WebSocket(`${process.env.NEXT_PUBLIC_CHAT_URL}?${params.toString()}`)
-      ws.onopen = () => {
-        console.log(`Websocket open: user ${currentUser.id} task ${currentTask.id} component ${config.id}`)
-      }
-      ws.onmessage = (event) => {
-        const eventData = JSON.parse(event.data) as WebsocketSend
-        console.log(`Websocket message for user ${currentUser.id} task ${currentTask.id} component ${config.id}: ${JSON.stringify(event.data)}`)
-        console.log("got messages", eventData.messages)
-        const ids = new Set();
-        setChatHistory([...chatHistory, ...(eventData.messages ?? [])].filter(message => !ids.has(message.id) && ids.add(message.id)))
-        // .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime()))
-      }
-      ws.onerror = (event) => {
-        console.error(`Websocket error for user ${currentUser.id} task ${currentTask.id} component ${config.id}: ${JSON.stringify(event)}`)
-      }
-      ws.onclose = () => {
-        console.log(`Websocket close: for user ${currentUser.id} task ${currentTask.id} component ${config.id}`)
-      }
+      ws.onopen = wsOnOpen
+      ws.onmessage = wsOnMessage
+      ws.onerror = wsOnError
+      ws.onclose = wsOnClose
       setWebsocket(ws)
     } catch (e) {
       console.error("Error connecting to websocket", e)
     }
-  }
+  }, [currentTask, currentUser, config])
 
-  function checkChatValid() {
-    if (messageCount >= (config.min_messages ?? 0)) {
-      dispatch(setComponentResponse({ componentId: config.id, response: 1 }))
-    }
-  }
-  useEffect(checkChatValid, [])
+  const wsOnOpen = useCallback(() => {
+    console.log(`Websocket open: user ${currentUser?.id} task ${currentTask?.id} component ${config.id}`)
+  }, [currentUser, currentTask, config])
 
+  const wsOnMessage = useCallback((event: MessageEvent) => {
+    const eventData = JSON.parse(event.data) as WebsocketSend
+    // console.log(`Websocket message for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}: ${JSON.stringify(event.data)}`)
+    console.log(eventData.messages)
+    setChatHistory(chatHistory => [...chatHistory, ...(eventData.messages ?? [])])
+  }, [currentUser, currentTask, config])
 
-  function handleSendMessage() {
+  const wsOnError = useCallback((event: Event) => {
+    console.error(`Websocket error for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}: ${JSON.stringify(event)}`)
+  }, [currentUser, currentTask, config])
+
+  const wsOnClose = useCallback(() => {
+    console.log(`Websocket close: for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}`)
+  }, [currentUser, currentTask, config])
+
+  const handleSendMessage = useCallback(() => {
     websocket?.send(JSON.stringify({ user_id: currentUser?.id, message: draft, typing: false } as WebsocketReceive))
     setDraft("");
-    setMessageCount(messageCount + 1)
     setTimeout(scrollToBottom);
-    setTimeout(checkChatValid);
-  }
-
-  console.log(chatHistory)
+  }, [websocket, draft, currentUser]);
 
   function scrollToBottom() {
-    if (chatBoxRef && chatBoxRef.current) {
-      chatBoxRef.current.scrollTop = chatBoxRef.current!.scrollHeight;
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }
 
@@ -106,7 +108,7 @@ export default function ChatUI({ config }: ChatProps) {
         <CardBody className="gap-4">
           <div ref={chatBoxRef} className="overflow-auto p-4">
             <div className="gap-1 flex flex-col justify-end">
-              {chatHistory
+              {chatHistoryProcessed
                 .map((message, index) => {
                   return (
                     <div
