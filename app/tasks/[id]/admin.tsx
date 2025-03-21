@@ -1,6 +1,6 @@
 import { Key, useEffect, useState } from "react"
 import { TaskParams } from "./page"
-import { TaskParticipantRead, TaskRead, TaskResponseRead, UserRead } from "@/api"
+import { ChatReadAdmin, TaskParticipantRead, TaskRead, TaskResponseRead, UserRead } from "@/api"
 import api from "@/lib/apis"
 import { Centered, CenteredSpinner } from "@/components/common"
 import { notFound } from "next/navigation"
@@ -153,7 +153,7 @@ function ParticipantsTab({ task }: TaskReadProp) {
     // if (await api.createTaskParticipant(task.id!, participantId ? participantId : undefined)) {
     //   await getTaskParticipants()
     // } else {
-      console.log("Error creating participant")
+    console.log("Error creating participant")
     // }
   }
 
@@ -236,7 +236,88 @@ function ParticipantsTab({ task }: TaskReadProp) {
   )
 }
 
+function ChatsTab({ task }: TaskReadProp) {
+  const [chats, setChats] = useState<ChatReadAdmin[] | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+  const columns = [
+    { name: "componentId", label: "Component ID" },
+    { name: "chatId", label: "Chat ID" },
+    // { name: "participants", label: "Chat Participants" },
+    { name: "messages", label: "Messages" },
+  ]
 
+  async function getTaskChats() {
+    setLoading(true)
+    setChats(await api.getTaskChats(task.id))
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    (async () => {
+      await getTaskChats()
+    })()
+  }, [])
+
+  if (loading) {
+    return <CenteredSpinner />
+  }
+
+  if (chats === undefined) {
+    return <Centered>
+      Cannot fetch chats
+    </Centered>
+  }
+
+
+  function renderCell(chat: ChatReadAdmin, column: Key) {
+    switch (column) {
+      case "chatId":
+        return <Code>{chat.id}</Code>
+      case "componentId":
+        return <Code>{chat.component_id}</Code>
+      case "messages":
+        return (
+          <div>
+            {chat.messages.map(message =>
+              <div key={message.id}>
+                <span>{message.timestamp.toISOString()} </span>
+                <span className="font-bold">{"Participant x:"} </span>
+                <span>{message.message}</span>
+              </div>
+            )}
+          </div>
+        )
+      default:
+        return ""
+    }
+  }
+
+  return (
+    <div>
+      <Table
+        isHeaderSticky
+        classNames={{ base: "h-[calc(100vh-6rem)] pt-4" }}
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.name} align={"start"}>
+              {column.label}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No chats"} items={chats}>
+          {(item) => (
+            <TableRow key={item.id}>
+              {(column) => <TableCell>{renderCell(item, column)}</TableCell>}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+
+
+}
 
 export default function AdminTaskPage({ params }: TaskParams) {
   const [task, setTask] = useState<TaskRead | undefined>(undefined)
@@ -276,6 +357,9 @@ export default function AdminTaskPage({ params }: TaskParams) {
         </Tab>
         <Tab title="Participants">
           <ParticipantsTab task={task} />
+        </Tab>
+        <Tab title="Chats">
+          <ChatsTab task={task} />
         </Tab>
       </Tabs>
     </div>

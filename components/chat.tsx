@@ -26,16 +26,7 @@ export default function ChatUI({ config }: ChatProps) {
   const currentTask = useAppSelector(selectCurrentTask)
   const currentUser = useAppSelector(selectCurrentUser)
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
-  const chatHistoryProcessed = useMemo(() => {
-    const ids = new Set();
-    return chatHistory
-      // filter duplicate messages via id
-      .filter(message => !ids.has(message.id) && ids.add(message.id))
-      // timestamp is string, convert into date
-      .map(message => { return { ...message, timestamp: new Date(message.timestamp) } })
-      // sort in ascending order
-      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-  }, [chatHistory])
+
 
   useEffect(() => {
     (async () => {
@@ -75,9 +66,19 @@ export default function ChatUI({ config }: ChatProps) {
 
   const wsOnMessage = useCallback((event: MessageEvent) => {
     const eventData = JSON.parse(event.data) as WebsocketSend
-    // console.log(`Websocket message for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}: ${JSON.stringify(event.data)}`)
-    console.log(eventData.messages)
-    setChatHistory(chatHistory => [...chatHistory, ...(eventData.messages ?? [])])
+    console.log(`Websocket message for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}: ${JSON.stringify(event.data)}`)
+    setChatHistory(
+      chatHistory => {
+        const ids = new Set()
+        return [...chatHistory, ...(eventData.messages ?? [])]
+          // filter duplicate messages via id
+          .filter(message => !ids.has(message.id) && ids.add(message.id))
+          // timestamp is string, convert into date
+          .map(message => { return { ...message, timestamp: new Date(message.timestamp) } })
+          // sort in ascending order
+          .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+      }
+    )
   }, [currentUser, currentTask, config])
 
   const wsOnError = useCallback((event: Event) => {
@@ -88,7 +89,10 @@ export default function ChatUI({ config }: ChatProps) {
     console.log(`Websocket close: for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}`)
   }, [currentUser, currentTask, config])
 
-  const handleSendMessage = useCallback(() => {
+  const handleSendMessage = useCallback(async () => {
+    if (!websocket || !websocket.readyState) {
+      await connectWebsocket()
+    }
     websocket?.send(JSON.stringify({ user_id: currentUser?.id, message: draft, typing: false } as WebsocketReceive))
     setDraft("");
     setTimeout(scrollToBottom);
@@ -108,7 +112,7 @@ export default function ChatUI({ config }: ChatProps) {
         <CardBody className="gap-4">
           <div ref={chatBoxRef} className="overflow-auto p-4">
             <div className="gap-1 flex flex-col justify-end">
-              {chatHistoryProcessed
+              {chatHistory
                 .map((message, index) => {
                   return (
                     <div
