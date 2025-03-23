@@ -10,8 +10,9 @@ import {
   WebsocketSend,
 } from "@/api";
 
-import { useAppSelector } from "@/lib/hooks";
-import { selectCurrentTask, selectCurrentUser } from "@/lib/appSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { selectCurrentTask, selectCurrentUser, setComponentResponse } from "@/lib/appSlice";
+import { Avatar, Tooltip } from "@heroui/react";
 
 
 interface ChatProps {
@@ -26,7 +27,7 @@ export default function ChatUI({ config }: ChatProps) {
   const currentTask = useAppSelector(selectCurrentTask)
   const currentUser = useAppSelector(selectCurrentUser)
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
-
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     (async () => {
@@ -67,6 +68,9 @@ export default function ChatUI({ config }: ChatProps) {
   const wsOnMessage = useCallback((event: MessageEvent) => {
     const eventData = JSON.parse(event.data) as WebsocketSend
     console.log(`Websocket message for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}: ${JSON.stringify(event.data)}`)
+    if (eventData.me) {
+      setMe(eventData.me)
+    }
     setChatHistory(
       chatHistory => {
         const ids = new Set()
@@ -93,6 +97,9 @@ export default function ChatUI({ config }: ChatProps) {
     if (!websocket || !websocket.readyState) {
       await connectWebsocket()
     }
+    if (!draft.trim()) {
+      return
+    }
     websocket?.send(JSON.stringify({ user_id: currentUser?.id, message: draft, typing: false } as WebsocketReceive))
     setDraft("");
     setTimeout(scrollToBottom);
@@ -101,6 +108,12 @@ export default function ChatUI({ config }: ChatProps) {
   function scrollToBottom() {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }
+
+  function completed() {
+    if (true || chatHistory.length >= (config.min_messages ?? 0)) {
+      dispatch(setComponentResponse({ componentId: config.id, response: 1 }))
     }
   }
 
@@ -114,12 +127,23 @@ export default function ChatUI({ config }: ChatProps) {
             <div className="gap-1 flex flex-col justify-end">
               {chatHistory
                 .map((message, index) => {
+                  const isMe = message.sender === me
                   return (
                     <div
+                      className={`flex items-end gap-2 ${isMe ? "flex-row-reverse" : ""}`}
                       key={index}
-                      className={`rounded-xl p-2 w-fit max-w-sm ${message.sender == me ? "bg-primary-500 text-primary-foreground self-end" : "bg-neutral-200 dark:bg-neutral-800"}`}
                     >
-                      {message.message}
+                      <Tooltip content={message.sender}>
+                        <Avatar
+                          size="sm"
+                          name={message.sender}
+                        />
+                      </Tooltip>
+                      <div
+                        className={`rounded-xl p-2 w-fit max-w-sm ${isMe ? "bg-primary-500 text-primary-foreground self-end" : "bg-neutral-200 dark:bg-neutral-800"}`}
+                      >
+                        {message.message}
+                      </div>
                     </div>
                   );
                 })}
@@ -131,6 +155,7 @@ export default function ChatUI({ config }: ChatProps) {
               minRows={1}
               value={draft}
               onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={(event) => event.key == "Enter" && handleSendMessage()}
             />
             <Button color="primary" variant="bordered" onPress={handleSendMessage}>
               Send

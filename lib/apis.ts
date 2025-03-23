@@ -19,7 +19,6 @@ const api = {
     return await createTask({ client: client, body: task })
   },
   async getMyTasks() {
-    await wait(1000)
     const resp = await getMyTasks({ client: client })
     return resp
   },

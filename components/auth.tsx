@@ -17,6 +17,9 @@ export function saveUser(user?: UserRead) {
 }
 
 export function getSavedUser() {
+  if (!localStorage) {
+    return undefined
+  }
   let user = undefined
   const json = localStorage.getItem(USER_KEY)
   if (json) {
