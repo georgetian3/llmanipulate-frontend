@@ -1,7 +1,7 @@
 import { Button } from "@heroui/button";
 import { Card, CardBody, CardFooter } from "@heroui/card";
 import { Textarea } from "@heroui/input";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   ChatConfig,
@@ -116,6 +116,8 @@ export default function ChatUI({ config }: ChatProps) {
       dispatch(setComponentResponse({ componentId: config.id, response: 1 }))
     }
   }
+
+  useEffect(completed, [])
 
   useEffect(() => scrollToBottom(), [chatHistory]);
 

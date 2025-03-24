@@ -1,9 +1,8 @@
 import { Key, useEffect, useState } from "react"
 import { TaskParams } from "./page"
-import { ChatReadAdmin, TaskParticipantRead, TaskRead, TaskResponseRead, UserRead } from "@/api"
+import { ChatReadAdmin, TaskParticipantRead, TaskRead, TaskResponseRead } from "@/api"
 import api from "@/lib/apis"
 import { Centered, CenteredSpinner } from "@/components/common"
-import { notFound } from "next/navigation"
 import { Button, Chip, Code, Input, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from "@heroui/react"
 import { Editor } from "@monaco-editor/react"
 import { useTheme } from "next-themes"
@@ -14,7 +13,7 @@ interface TaskReadProp {
 }
 
 function ConfigTab({ task }: TaskReadProp) {
-  const { theme, setTheme } = useTheme()
+  const { theme } = useTheme()
   return (
     <div
       className="h-[calc(100vh-10rem)]"

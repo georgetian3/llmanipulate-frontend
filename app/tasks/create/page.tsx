@@ -65,7 +65,7 @@ const defaultConfig = `{
 `
 
 function TaskCreatePage() {
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const [warning, setWarning] = useState("")
   const [config, setConfig] = useState(defaultConfig)
   const [creating, setCreating] = useState(false)
