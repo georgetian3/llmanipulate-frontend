@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'
-import { Button, Checkbox, Form, Input } from '@heroui/react';
+import { Button, Form, Input } from '@heroui/react';
 import { useLogin } from '@/components/auth';
 
 export default function LoginPage() {
