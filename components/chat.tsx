@@ -1,6 +1,6 @@
-import { Button } from "@heroui/button";
+import { Button } from "@heroui/react";
 import { Card, CardBody, CardFooter } from "@heroui/react";
-import { Textarea } from "@heroui/input";
+import { Textarea } from "@heroui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
