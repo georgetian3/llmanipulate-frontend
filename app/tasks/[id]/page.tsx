@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Button } from "@heroui/button";
 
 import SliderUI from "@/components/slider";
@@ -22,6 +21,7 @@ import { addToast } from "@heroui/toast";
 import AdminTaskPage from "./admin";
 import { useAppSelector } from "@/lib/hooks";
 import { CenteredSpinner } from "@/components/common";
+import { Card, CardBody, CardHeader } from "@heroui/react";
 
 interface ComponentProps {
   config: SingleChoice | MultiChoice | Slider | FreeText | ChatConfig;
