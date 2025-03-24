@@ -5,7 +5,7 @@ import { getTranslation } from "./utils";
 import { useAppDispatch } from "@/lib/hooks";
 import { setComponentResponse } from "@/lib/appSlice";
 import { MultiChoice } from "@/api";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 interface MultiChoiceProps {
   config: MultiChoice;
@@ -15,15 +15,15 @@ export function MultiChoiceUI({ config }: MultiChoiceProps) {
 
   const dispatch = useAppDispatch()
 
-  function handleInput(value: string[]) {
+  const handleInput = useCallback((value: string[]) => {
     dispatch(setComponentResponse({ componentId: config.id, response: value.map(x => Number.parseInt(x)) }))
-  }
+  }, [config.id, dispatch])
 
   useEffect(() => {
     if (config.min_choices === 0) {
       handleInput([])
     }
-  }, [])
+  }, [config.min_choices, handleInput])
 
   return (
     <CheckboxGroup onValueChange={handleInput}>

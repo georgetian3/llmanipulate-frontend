@@ -86,7 +86,6 @@ function TaskGrid({ tasks }: TaskGridProps) {
   if (tasks === undefined) {
     tasks = [undefined, undefined, undefined, undefined]
   }
-  console.log('tasks', tasks)
   if (tasks.length === 0) {
     return <div>No tasks found</div>
   }

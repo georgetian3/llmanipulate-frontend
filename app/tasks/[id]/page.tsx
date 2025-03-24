@@ -102,12 +102,11 @@ function TaskPageUI({ config, hidden }: { config: TaskPageOutput; hidden: boolea
 }
 
 
-export interface TaskParams {
-  params: Promise<{ id: string }>
+interface TaskUIProps {
+  taskId: string
 }
 
-
-export function TaskUI({ params }: TaskParams) {
+function TaskUI({ taskId }: TaskUIProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [nextLoading, setNextLoading] = useState(false)
   const [taskLoading, setTaskLoading] = useState(false)
@@ -121,7 +120,6 @@ export function TaskUI({ params }: TaskParams) {
   useEffect(() => {
     (async () => {
       setTaskLoading(true)
-      const taskId = (await params).id
       try {
         const { data, response } = await api.getTask(taskId)
         if (response.status == 403) {
@@ -133,7 +131,7 @@ export function TaskUI({ params }: TaskParams) {
       }
       setTaskLoading(false)
     })()
-  }, [])
+  }, [dispatch, taskId])
 
 
   async function handleNext() {
@@ -210,18 +208,33 @@ export function TaskUI({ params }: TaskParams) {
         </div>
       </div>
     </>
-
-  );
+  )
 }
 
 
+interface TaskParams {
+  params: Promise<{ id: string }>
+}
+
 export default function AuthedTaskPage({ params }: TaskParams) {
+  const [taskId, setTaskId] = useState("")
   const currentUser = useAppSelector(selectCurrentUser)
+
+  useEffect(() => {
+    (async () => {
+      setTaskId((await params).id)
+    })()
+  }, [params])
+
+  if (!taskId) {
+    return <CenteredSpinner />
+  }
+
   if (currentUser && currentUser.admin) {
     return <AuthGuard admin>
-      <AdminTaskPage params={params} />
+      <AdminTaskPage taskId={taskId} />
     </AuthGuard>
   }
-  return <TaskUI params={params} />
+  return <TaskUI taskId={taskId} />
 }
 

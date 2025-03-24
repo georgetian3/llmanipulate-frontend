@@ -1,5 +1,4 @@
-import { Key, useEffect, useState } from "react"
-import { TaskParams } from "./page"
+import { Key, useCallback, useEffect, useState } from "react"
 import { ChatReadAdmin, TaskParticipantRead, TaskRead, TaskResponseRead } from "@/api"
 import api from "@/lib/apis"
 import { Centered, CenteredSpinner } from "@/components/common"
@@ -43,10 +42,10 @@ function ResponsesTab({ task }: TaskReadProp) {
   useEffect(() => {
     (async () => {
       setLoading(true)
-      setResponses(await api.getTaskResponses(task.id!))
+      setResponses(await api.getTaskResponses(task.id))
       setLoading(false)
     })()
-  }, [])
+  }, [task.id])
 
   if (loading) {
     return <CenteredSpinner />
@@ -126,17 +125,17 @@ function ParticipantsTab({ task }: TaskReadProp) {
     { name: "actions", label: "Actions" },
   ]
 
-  async function getTaskParticipants() {
+  const getTaskParticipants = useCallback(async () => {
     setLoading(true)
-    setParticipants(await api.getTaskParticipants(task.id!))
+    setParticipants(await api.getTaskParticipants(task.id))
     setLoading(false)
-  }
+  }, [task.id])
 
   useEffect(() => {
     (async () => {
       await getTaskParticipants()
     })()
-  }, [])
+  }, [getTaskParticipants])
 
   if (loading) {
     return <CenteredSpinner />
@@ -245,17 +244,17 @@ function ChatsTab({ task }: TaskReadProp) {
     { name: "messages", label: "Messages" },
   ]
 
-  async function getTaskChats() {
+  const getTaskChats = useCallback(async () => {
     setLoading(true)
     setChats(await api.getTaskChats(task.id))
     setLoading(false)
-  }
+  }, [task.id])
 
   useEffect(() => {
     (async () => {
       await getTaskChats()
     })()
-  }, [])
+  }, [getTaskChats])
 
   if (loading) {
     return <CenteredSpinner />
@@ -318,20 +317,23 @@ function ChatsTab({ task }: TaskReadProp) {
 
 }
 
-export default function AdminTaskPage({ params }: TaskParams) {
+export interface AdminTaskPageProps {
+  taskId: string
+}
+
+export default function AdminTaskPage({ taskId }: AdminTaskPageProps) {
   const [task, setTask] = useState<TaskRead | undefined>(undefined)
   const [taskLoading, setTaskLoading] = useState(false)
 
   useEffect(() => {
     (async () => {
       setTaskLoading(true)
-      const taskId = (await params).id
       try {
         setTask((await api.getTask(taskId)).data)
       } catch { }
       setTaskLoading(false)
     })()
-  }, [])
+  }, [taskId])
 
   if (taskLoading) {
     return <CenteredSpinner />
