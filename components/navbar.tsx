@@ -6,8 +6,8 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-} from "@heroui/navbar";
-import { Link } from "@heroui/link";
+} from "@heroui/react";
+import { Link } from "@heroui/react";
 import { link as linkStyles } from "@heroui/theme";
 import NextLink from "next/link";
 import clsx from "clsx";

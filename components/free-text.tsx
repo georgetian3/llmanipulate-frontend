@@ -1,4 +1,4 @@
-import { Textarea } from "@heroui/input";
+import { Textarea } from "@heroui/react";
 
 import { FreeText } from "@/api";
 import { useState } from "react";

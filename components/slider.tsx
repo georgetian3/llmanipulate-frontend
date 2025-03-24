@@ -1,4 +1,4 @@
-import { Slider } from "@heroui/slider";
+import { Slider } from "@heroui/react";
 
 import { Slider as SliderConfig } from "@/api";
 import { useAppDispatch } from "@/lib/hooks";
