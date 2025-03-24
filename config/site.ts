@@ -15,9 +15,6 @@ export const siteConfig = {
       href: "/tasks",
     },
   ] as NavItem[],
-  authedNavItems: [
-
-  ] as NavItem[],
   navMenuItems: [
     {
       label: "Profile",

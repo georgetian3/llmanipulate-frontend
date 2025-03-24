@@ -1,8 +1,7 @@
 "use client";
 
 import { TaskReadParticipant } from "@/api";
-import api from "@/lib/apis";
-import { AuthGuard, initUserId } from "@/components/auth";
+import { AuthGuard } from "@/components/auth";
 import Markdown from "@/components/markdown";
 import { Avatar, Button, Card, CardBody, CardHeader, Skeleton, Spinner } from "@heroui/react";
 import { useRouter } from "next/navigation";
@@ -10,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useAppSelector } from "@/lib/hooks";
 import { selectCurrentUser } from "@/lib/appSlice";
 import AdminTasksPage from "./admin";
+import api from "@/lib/apis";
 
 interface TaskCardProps {
   task?: TaskReadParticipant
@@ -135,5 +135,7 @@ export default function AuthedTasksPage() {
       <AdminTasksPage />
     </AuthGuard>
   }
-  return <TasksPage />
+  return <AuthGuard>
+    <TasksPage />
+  </AuthGuard>
 }

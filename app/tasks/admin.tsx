@@ -31,7 +31,7 @@ import { useRouter } from "next/navigation";
 const columns = [
   { name: "id", label: "ID" },
   { name: "name", label: "Name" },
-  { name: "loginRequired", label: "Login Required" },
+  { name: "public", label: "Public" },
   { name: "actions", label: "Actions" },
 ]
 
@@ -85,10 +85,10 @@ export default function AdminTasksPage() {
             {getTranslation(task.config.name)}
           </div>
         )
-      case "loginRequired":
+      case "public":
         return (
           <div>
-            {task.config.login_required
+            {task.config.public
               ? <Chip color="success">Yes</Chip>
               : <Chip color="danger">No</Chip>
             }
