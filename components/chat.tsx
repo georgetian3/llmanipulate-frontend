@@ -136,7 +136,12 @@ export default function ChatUI({ config }: ChatProps) {
                       <Tooltip content={message.sender}>
                         <Avatar
                           size="sm"
-                          name={message.sender}
+                          name={message.sender // show initials
+                            .split(" ")
+                            .filter(word => word.length > 0)
+                            .map(word => word[0].toUpperCase())
+                            .join('')
+                          }
                         />
                       </Tooltip>
                       <div
