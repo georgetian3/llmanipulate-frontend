@@ -1,4 +1,4 @@
-import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
+import { Checkbox, CheckboxGroup } from "@heroui/react";
 
 
 import { getTranslation } from "./utils";
