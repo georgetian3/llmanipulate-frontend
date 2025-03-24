@@ -89,7 +89,6 @@ function TaskCreatePage() {
     setCreating(true)
     try {
       const resp = await api.createTask({config: JSON.parse(config)})
-      console.log(resp)
       if (resp.response.status < 300) {
         router.push("/tasks")
       } else {

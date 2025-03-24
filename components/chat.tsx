@@ -29,38 +29,6 @@ export default function ChatUI({ config }: ChatProps) {
   const chatBoxRef = useRef<HTMLDivElement | null>(null);
   const dispatch = useAppDispatch()
 
-  useEffect(() => {
-    (async () => {
-      await connectWebsocket()
-    })()
-    return websocket?.close
-  }, [])
-
-  const connectWebsocket = useCallback(async () => {
-    if (websocket) {
-      await websocket.close()
-    }
-    if (!currentTask || !currentUser) {
-      console.error("Chat no user or task")
-      return
-    }
-    const params = new URLSearchParams({
-      user: currentUser.id,
-      task: currentTask.id,
-      component: config.id,
-    })
-    try {
-      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_CHAT_URL}?${params.toString()}`)
-      ws.onopen = wsOnOpen
-      ws.onmessage = wsOnMessage
-      ws.onerror = wsOnError
-      ws.onclose = wsOnClose
-      setWebsocket(ws)
-    } catch (e) {
-      console.error("Error connecting to websocket", e)
-    }
-  }, [currentTask, currentUser, config])
-
   const wsOnOpen = useCallback(() => {
     console.log(`Websocket open: user ${currentUser?.id} task ${currentTask?.id} component ${config.id}`)
   }, [currentUser, currentTask, config])
@@ -93,6 +61,45 @@ export default function ChatUI({ config }: ChatProps) {
     console.log(`Websocket close: for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}`)
   }, [currentUser, currentTask, config])
 
+  const connectWebsocket = useCallback(async () => {
+    if (websocket) {
+      try {
+        await websocket.close()
+      } catch { }
+    }
+    if (!currentTask || !currentUser) {
+      console.error("Chat no user or task")
+      return
+    }
+    const params = new URLSearchParams({
+      user: currentUser.id,
+      task: currentTask.id,
+      component: config.id,
+    })
+    try {
+      const ws = new WebSocket(`${process.env.NEXT_PUBLIC_CHAT_URL}?${params.toString()}`)
+      ws.onopen = wsOnOpen
+      ws.onmessage = wsOnMessage
+      ws.onerror = wsOnError
+      ws.onclose = wsOnClose
+      setWebsocket(ws)
+    } catch (e) {
+      console.error("Error connecting to websocket", e)
+    }
+  }, [currentTask, currentUser, config, websocket, wsOnOpen, wsOnMessage, wsOnError, wsOnClose])
+
+  useEffect(() => {
+    (async () => {
+      await connectWebsocket()
+    })()
+    return () => {
+      try {
+        websocket?.close()
+      } catch { }
+    }
+  }, [])
+
+
   const handleSendMessage = useCallback(async () => {
     if (!websocket || !websocket.readyState) {
       await connectWebsocket()
@@ -103,7 +110,7 @@ export default function ChatUI({ config }: ChatProps) {
     websocket?.send(JSON.stringify({ user_id: currentUser?.id, message: draft, typing: false } as WebsocketReceive))
     setDraft("");
     setTimeout(scrollToBottom);
-  }, [websocket, draft, currentUser]);
+  }, [websocket, draft, currentUser, connectWebsocket]);
 
   function scrollToBottom() {
     if (chatBoxRef.current) {
@@ -117,7 +124,7 @@ export default function ChatUI({ config }: ChatProps) {
     }
   }
 
-  useEffect(completed, [])
+  useEffect(completed, [chatHistory.length, config.min_messages, config.id, dispatch])
 
   useEffect(() => scrollToBottom(), [chatHistory]);
 

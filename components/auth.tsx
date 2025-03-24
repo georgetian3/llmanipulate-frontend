@@ -6,18 +6,23 @@ import { resetState, selectCurrentUser, setCurrentUser } from "@/lib/appSlice"
 import api from "../lib/apis"
 import { v4 as uuid4 } from "uuid"
 import { UserRead } from "@/api"
+import { CenteredSpinner } from "./common"
+import { useEffect } from "react"
 
 // const SET_USER_ID_EVENT = "setUserIdEvent"
 const USER_KEY = "userId"
 
 export function saveUser(user?: UserRead) {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
   console.log("Saving user", user)
   localStorage.setItem(USER_KEY, JSON.stringify(user))
   // window.dispatchEvent(new Event(SET_USER_ID_EVENT))
 }
 
 export function getSavedUser() {
-  if (!localStorage) {
+  if (typeof window === 'undefined') {
     return undefined
   }
   let user = undefined
@@ -32,7 +37,10 @@ export function getSavedUser() {
 }
 
 export function initUser() {
-  console.log("Initiating user")
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+  console.log("Initializing user")
   let user = getSavedUser()
   if (!user) {
     console.log("Autogenerating user")
@@ -122,9 +130,17 @@ interface AuthGuardProps {
 export function AuthGuard({ children, admin }: AuthGuardProps) {
   const dispatch = useAppDispatch()
   let currentUser = useAppSelector(selectCurrentUser)
+
+
+  useEffect(() => {
+    if (!currentUser) {
+      currentUser = initUser()
+      dispatch(setCurrentUser(currentUser))
+    }
+  }, [currentUser, dispatch])
+  
   if (!currentUser) {
-    currentUser = initUser()
-    dispatch(setCurrentUser(currentUser))
+    return <CenteredSpinner />
   }
   api.setUserId(currentUser.id)
 

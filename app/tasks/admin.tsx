@@ -1,3 +1,4 @@
+"use client"
 import { TaskRead } from "@/api";
 import { CenteredSpinner } from "@/components/common";
 import api from "@/lib/apis";
