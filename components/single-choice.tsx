@@ -1,4 +1,4 @@
-import { Radio, RadioGroup } from "@heroui/radio";
+import { Radio, RadioGroup } from "@heroui/react";
 
 
 import { getTranslation } from "./utils";
