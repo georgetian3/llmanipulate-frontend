@@ -2,7 +2,7 @@ import { createTask, createTaskResponse, deleteTask, getMe, getMyTasks, getTask,
 import { createClient } from "@hey-api/client-fetch";
 import { ComponentResponsesType } from "./appSlice";
 
-const API_URL = process.env["NEXT_PUBLIC_API_URL"]
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 console.log("API URL", API_URL)
 const client = createClient({ baseUrl: API_URL })
 
