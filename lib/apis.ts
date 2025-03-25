@@ -1,58 +1,60 @@
 import { createTask, createTaskResponse, deleteTask, getMe, getMyTasks, getTask, getTaskChats, getTaskParticipants, getTaskResponses, getTasks, TaskCreate } from "@/api";
-import { createClient } from "@hey-api/client-fetch";
+import { Client, createClient } from "@hey-api/client-fetch";
 import { ComponentResponsesType } from "./appSlice";
 
-const API_URL_VAR = 'NEXT_PUBLIC_API_URL'
-const API_URL = process.env[API_URL_VAR]
-console.log("API URL", API_URL)
-const client = createClient({ baseUrl: API_URL })
 
-const api = {
+
+class Api {
+
+  client: Client;
+
+  constructor() {
+    this.client = createClient({ baseUrl: process.env.NEXT_PUBLIC_API_URL })
+  }
   setUserId(userId?: string) {
-    const url = process.env.NEXT_PUBLIC_API_URL
-    console.log("API URL", url)
-
-    client.setConfig({ baseUrl: API_URL, auth: userId })
-  },
+    this.client.setConfig({ baseUrl: process.env.NEXT_PUBLIC_API_URL, auth: userId })
+  }
   async getMe() {
-    const resp = await getMe({ client: client })
+    const resp = await getMe({ client: this.client })
     return resp.data
-  },
+  }
   async createTask(task: TaskCreate) {
-    return await createTask({ client: client, body: task })
-  },
+    return await createTask({ client: this.client, body: task })
+  }
   async getMyTasks() {
-    const resp = await getMyTasks({ client: client })
+    const resp = await getMyTasks({ client: this.client })
     return resp
-  },
+  }
   async getTask(taskId: string) {
-    return await getTask({ client: client, path: { task_id: taskId } })
-  },
+    return await getTask({ client: this.client, path: { task_id: taskId } })
+  }
   async getTasks() {
-    return (await getTasks({ client: client })).data
-  },
+    return (await getTasks({ client: this.client })).data
+  }
   async deleteTask(taskId: string) {
-    return (await deleteTask({ client: client, path: { task_id: taskId } }))
-  },
+    return (await deleteTask({ client: this.client, path: { task_id: taskId } }))
+  }
   async submitResponse(taskId: string, responses: ComponentResponsesType) {
     try {
-      const resp = await createTaskResponse({ client: client, path: { task_id: taskId }, body: { response: responses } })
+      const resp = await createTaskResponse({ client: this.client, path: { task_id: taskId }, body: { response: responses } })
       return resp.data
     } catch (e) {
       console.error("Error encountered while submitting response:", e)
       return undefined
     }
-  },
+  }
   async getTaskResponses(taskId: string) {
-    return (await getTaskResponses({ client: client, path: { task_id: taskId } })).data
-  },
+    return (await getTaskResponses({ client: this.client, path: { task_id: taskId } })).data
+  }
   async getTaskParticipants(taskId: string) {
-    return (await getTaskParticipants({ client: client, path: { task_id: taskId } })).data
-  },
+    return (await getTaskParticipants({ client: this.client, path: { task_id: taskId } })).data
+  }
   async getTaskChats(taskId: string) {
-    return (await getTaskChats({ client: client, path: { task_id: taskId } })).data
+    return (await getTaskChats({ client: this.client, path: { task_id: taskId } })).data
   }
 
 }
+
+const api = new Api()
 
 export default api
