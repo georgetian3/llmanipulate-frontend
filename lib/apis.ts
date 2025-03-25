@@ -9,6 +9,9 @@ const client = createClient({ baseUrl: API_URL })
 
 const api = {
   setUserId(userId?: string) {
+    const url = process.env.NEXT_PUBLIC_API_URL
+    console.log("API URL", url)
+
     client.setConfig({ baseUrl: API_URL, auth: userId })
   },
   async getMe() {
