@@ -2,8 +2,9 @@ import { createTask, createTaskResponse, deleteTask, getMe, getMyTasks, getTask,
 import { createClient } from "@hey-api/client-fetch";
 import { ComponentResponsesType } from "./appSlice";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
-console.log("API URL", API_URL, process.env["NEXT_PUBLIC_API_URL"])
+const API_URL_VAR = 'NEXT_PUBLIC_API_URL'
+const API_URL = process.env[API_URL_VAR]
+console.log("API URL", API_URL)
 const client = createClient({ baseUrl: API_URL })
 
 const api = {
@@ -11,7 +12,6 @@ const api = {
     client.setConfig({ baseUrl: API_URL, auth: userId })
   },
   async getMe() {
-    console.log("API URL", process.env.NEXT_PUBLIC_API_URL, process.env["NEXT_PUBLIC_API_URL"])
     const resp = await getMe({ client: client })
     return resp.data
   },
