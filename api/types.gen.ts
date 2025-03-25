@@ -9,7 +9,7 @@ export type AgentConfig = {
     /**
      * The name that will be displayed in chat, leave empty to make the agent look like a human user
      */
-    display_name: string | null;
+    display_name?: string | null;
     /**
      * Attributes specific to the agent type
      */
@@ -57,7 +57,8 @@ export type ChatMessageReadAdmin = {
     id: string;
     message: string;
     timestamp: Date;
-    sender_id: string;
+    user_id?: string | null;
+    agent_id?: string | null;
     sender_display_name: string;
     chat_id: string;
 };
@@ -308,7 +309,7 @@ export type ValidationError = {
 
 export type WebsocketReceive = {
     typing: boolean;
-    message: string;
+    message?: string | null;
 };
 
 export type WebsocketSend = {

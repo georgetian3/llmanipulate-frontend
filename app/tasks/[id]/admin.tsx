@@ -121,6 +121,7 @@ function ParticipantsTab({ task }: TaskReadProp) {
   const validParticipantId = participantId ? isValidUuid4(participantId) : undefined
   const columns = [
     { name: "userId", label: "User ID" },
+    { name: "agentId", label: "Agent ID" },
     { name: "completed", label: "Completed" },
     { name: "actions", label: "Actions" },
   ]
@@ -279,7 +280,7 @@ function ChatsTab({ task }: TaskReadProp) {
             {chat.messages.map(message =>
               <div key={message.id}>
                 <span>{message.timestamp.toISOString()} </span>
-                <span className="font-bold">{"Participant x:"} </span>
+                <span className="font-bold">{message.sender_display_name} </span>
                 <span>{message.message}</span>
               </div>
             )}

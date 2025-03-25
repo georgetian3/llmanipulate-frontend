@@ -60,7 +60,7 @@ const defaultConfig = `{
       ]
     }
   ],
-  "login_required": true
+  "public": true
 }
 `
 
