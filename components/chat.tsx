@@ -1,7 +1,7 @@
 import { Button } from "@heroui/react";
 import { Card, CardBody, CardFooter } from "@heroui/react";
 import { Textarea } from "@heroui/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   ChatConfig,
@@ -13,7 +13,6 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectCurrentTask, selectCurrentUser, setComponentResponse } from "@/lib/appSlice";
 import { Avatar, Tooltip } from "@heroui/react";
-import { RestartIcon } from "./icons";
 
 
 interface ChatProps {
