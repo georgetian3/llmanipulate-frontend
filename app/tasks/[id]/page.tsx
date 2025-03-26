@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@heroui/react";
+import { Button, Tooltip } from "@heroui/react";
 
 import SliderUI from "@/components/slider";
 
@@ -14,7 +14,7 @@ import { getTranslation } from "@/components/utils";
 import { AuthGuard } from "@/components/auth";
 import { ChatConfig, ComponentGroupOutput, FreeText, MultiChoice, SingleChoice, Slider, TaskPageOutput } from "@/api";
 import api from "@/lib/apis";
-import { ComponentIdType, resetCurrentTask, selectCurrentTask, selectCurrentUser, selectState, setCurrentTask } from "@/lib/appSlice";
+import { ComponentIdType, resetCurrentTask, selectCurrentTask, selectCurrentTaskResponse, selectCurrentUser, selectState, setCurrentTask } from "@/lib/appSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { forbidden, useRouter } from "next/navigation";
 import { addToast } from "@heroui/toast";
@@ -110,6 +110,8 @@ function TaskUI({ taskId }: TaskUIProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [nextLoading, setNextLoading] = useState(false)
   const [taskLoading, setTaskLoading] = useState(false)
+  const [pageCompleted, setPageCompleted] = useState(false)
+  const currentTaskResponse = useAppSelector(selectCurrentTaskResponse)
   const state = useSelector(selectState)
   const task = useSelector(selectCurrentTask)
   const pageCount = task?.config.pages.length
@@ -134,15 +136,10 @@ function TaskUI({ taskId }: TaskUIProps) {
   }, [dispatch, taskId])
 
 
-  async function handleNext() {
-    if (!pageCount) {
+  function checkComplete() {
+    if (!task) {
       return
     }
-    setNextLoading(true)
-    const currentResponses = state.currentTaskResponse
-    const onLastPage = currentPage === pageCount - 1
-
-    // checking component responses
     const missingComponentIds: ComponentIdType[] = []
     task.config.pages.map((page, index) => {
       // all components in current and previous pages should have responses
@@ -156,14 +153,22 @@ function TaskUI({ taskId }: TaskUIProps) {
     })
     if (missingComponentIds.length) {
       console.log("Components missing responses:", missingComponentIds)
-      addToast({
-        title: "Please complete all required fields",
-        color: "warning",
-      })
-      setNextLoading(false)
+      setPageCompleted(false)
+    } else {
+      setPageCompleted(true)
+    }
+  }
+
+  useEffect(() => checkComplete(), [currentTaskResponse])
+
+
+  async function handleNext() {
+    if (!pageCount) {
       return
     }
-
+    setNextLoading(true)
+    const currentResponses = state.currentTaskResponse
+    const onLastPage = currentPage === pageCount - 1
 
     if (onLastPage) {
       const resp = await api.submitResponse(task.id, currentResponses)
@@ -202,9 +207,13 @@ function TaskUI({ taskId }: TaskUIProps) {
         ))}
         <div className="flex gap-4 items-center">
           Page {currentPage + 1} of {pageCount}
-          <Button isLoading={nextLoading} color="primary" onPress={handleNext}>
-            Next
-          </Button>
+          <Tooltip content="Please complete this page before proceeding.">
+            <span>
+              <Button isDisabled={!pageCompleted} isLoading={nextLoading} color="primary" onPress={handleNext}>
+                Next
+              </Button>
+            </span>
+          </Tooltip>
         </div>
       </div>
     </>

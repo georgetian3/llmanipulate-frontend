@@ -1,7 +1,7 @@
 import { Button } from "@heroui/react";
 import { Card, CardBody, CardFooter } from "@heroui/react";
 import { Textarea } from "@heroui/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   ChatConfig,
@@ -13,6 +13,7 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { selectCurrentTask, selectCurrentUser, setComponentResponse } from "@/lib/appSlice";
 import { Avatar, Tooltip } from "@heroui/react";
+import { RestartIcon } from "./icons";
 
 
 interface ChatProps {
@@ -21,6 +22,7 @@ interface ChatProps {
 
 export default function ChatUI({ config }: ChatProps) {
   const [websocket, setWebsocket] = useState<WebSocket | undefined>(undefined)
+  const [wsConnected, setWsConnected] = useState(false)
   const [chatHistory, setChatHistory] = useState<ChatMessageRead[]>([]);
   const [draft, setDraft] = useState("");
   const [me, setMe] = useState<string>("")
@@ -31,6 +33,7 @@ export default function ChatUI({ config }: ChatProps) {
 
   const wsOnOpen = useCallback(() => {
     console.log(`Websocket open: user ${currentUser?.id} task ${currentTask?.id} component ${config.id}`)
+    setWsConnected(true)
   }, [currentUser, currentTask, config])
 
   const wsOnMessage = useCallback((event: MessageEvent) => {
@@ -55,13 +58,16 @@ export default function ChatUI({ config }: ChatProps) {
 
   const wsOnError = useCallback((event: Event) => {
     console.error(`Websocket error for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}: ${JSON.stringify(event)}`)
+    setWsConnected(false)
   }, [currentUser, currentTask, config])
 
   const wsOnClose = useCallback(() => {
     console.log(`Websocket close: for user ${currentUser?.id} task ${currentTask?.id} component ${config.id}`)
-  }, [currentUser, currentTask, config])
+    setWsConnected(false)
+  }, [currentUser, currentTask, config, setWsConnected])
 
   const connectWebsocket = useCallback(async () => {
+    setWsConnected(false)
     if (websocket) {
       try {
         await websocket.close()
@@ -163,21 +169,35 @@ export default function ChatUI({ config }: ChatProps) {
                 })}
             </div>
           </div>
-          <CardFooter className="flex gap-2">
-            <Textarea
-              maxRows={1}
-              minRows={1}
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => event.key == "Enter" && handleSendMessage()}
-            />
-            <Button color="primary" variant="bordered" onPress={handleSendMessage}>
-              Send
-            </Button>
-          </CardFooter>
         </CardBody>
       )}
+      <CardFooter className="flex gap-4 p-4 mb-2">
+        {
+          wsConnected
+            ? <div className="flex gap-2 flex-5 flex-nowrap justify-center">
 
+              <div className="text-success">●</div>
+              <div>Connected</div>
+            </div>
+            : <div className="flex gap-2 flex-5 flex-nowrap items-center">
+              <div className="text-danger">●</div>
+              <div>Disconnected</div>
+              <Button variant="bordered" onPress={connectWebsocket}>
+                Reconnect
+              </Button>
+            </div>
+        }
+        <Textarea
+          maxRows={1}
+          minRows={1}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => event.key == "Enter" && handleSendMessage()}
+        />
+        <Button color="primary" variant="bordered" onPress={handleSendMessage}>
+          Send
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

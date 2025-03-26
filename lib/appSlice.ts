@@ -48,11 +48,12 @@ export const appSlice = createAppSlice({
     selectCurrentUser: (state) => state.currentUser,
     selectState: (state) => state,
     selectCurrentTask: (state) => state.currentTask,
+    selectCurrentTaskResponse: (state) => state.currentTaskResponse,
   }
 })
 
 export const { setCurrentUser, setComponentResponse, removeComponentResponse, setCurrentTask, resetCurrentTask, resetState } = appSlice.actions
-export const { selectCurrentUser, selectState, selectCurrentTask } = appSlice.selectors
+export const { selectCurrentUser, selectState, selectCurrentTask, selectCurrentTaskResponse } = appSlice.selectors
 
 // // If you are not using async thunks you can use the standalone `createSlice`.
 // export const counterSlice = createAppSlice({
