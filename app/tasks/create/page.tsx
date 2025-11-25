@@ -1,14 +1,16 @@
 "use client"
 
-import { TaskConfigOutput } from "@/api";
+import { TaskConfigOutput, Translations } from "@/api";
 import { AuthGuard } from "@/components/auth";
 import api from "@/lib/apis";
-import { addToast, Button, Card, CardBody, Tab, Tabs } from "@heroui/react";
+import { addToast, Autocomplete, AutocompleteItem, AutocompleteSection, Button, Card, CardBody, Code, Input, Pagination, Tab, Tabs, Textarea } from "@heroui/react";
 import { Editor } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
-
+import { Dispatch, SetStateAction, useCallback, useMemo, useState } from "react";
+import ISO6391, { LanguageCode } from 'iso-639-1';
+import Test from "@/components/test";
+import { Languages } from "next/dist/lib/metadata/types/alternative-urls-types";
 
 
 const defaultConfig = `{
@@ -116,11 +118,92 @@ function ConfigTab({ taskConfig, setTaskConfig }: ConfigTabProps) {
   )
 }
 
-function CreateTab() {
+
+interface TranslationInputProps {
+  existingLanguages: Set<string>
+  language: string
+  setLanguage: (language: string) => void
+  translation: string
+  setTranslation: (translation: string) => void
+}
+
+function TranslationInput({ existingLanguages, language, setLanguage, translation, setTranslation }: TranslationInputProps) {
+
+
   return (
-    <div></div>
+    
   )
 }
+
+interface TranslationsInputProps {
+  onChange: (translations: Translations) => void
+}
+
+
+function TranslationsInput({ onChange }: TranslationsInputProps) {
+  const [translations, setTranslations] = useState(new Map<string, string>())
+  const languages = useMemo(() => ISO6391.getLanguages(ISO6391.getAllCodes()), [])
+  const usedLanguages = useMemo(() => new Set(translations.keys()), [translations])
+  const unusedLanguages = useMemo(() => new Set(ISO6391.getAllCodes()).difference(usedLanguages), [translations])
+  const [defaultLanguage, setDefaultLanguage] = useState("")
+  const languageFilter = useCallback((textValue: string, inputValue: string) => textValue.includes(inputValue.toLocaleLowerCase()), [])
+
+  const handleTranslationChange = useCallback((language: LanguageCode, translation: string) => {
+    translations.set(language, translation)
+  }, [translations])
+
+  const items = useMemo(() => {
+    const list = []
+    for (let [language, translation] of translations) {
+      list.push(
+        <div className="flex gap-2 items-center">
+          <div className="flex-none">
+            <Autocomplete
+              placeholder="Language"
+              selectedKey={language}
+              onSelectionChange={(key) => setLanguage(key as string)}
+              defaultItems={languages}
+              defaultFilter={languageFilter}
+            >
+              {(language) =>
+                <AutocompleteItem key={language.code} textValue={`${language.code} - ${language.nativeName} - ${language.name}`.toLocaleLowerCase()}>
+                  <Code>{language.code}</Code>
+                  {`- ${language.nativeName} - ${language.name}`}
+                </AutocompleteItem>
+              }
+            </Autocomplete>
+          </div>
+          <div className="grow">
+            <Textarea
+              value={translation}
+              onValueChange={setTranslation}
+              minRows={1}
+            />
+          </div>
+        </div >
+      )
+    }
+    return list
+  }, [translations])
+
+  return (
+    <div>
+      {items}
+    </div>
+  )
+}
+
+function CreateTab() {
+  const [translations, setTranslations] = useState<Translations>()
+  return (
+    <div className="flex flex-col gap-4">
+      <TranslationsInput onChange={(translations) => setTranslations(translations)} />
+      <Test />
+      <Pagination showControls initialPage={1} total={10} />
+    </div>
+  )
+}
+
 
 
 function TaskCreatePage() {
